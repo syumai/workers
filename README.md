@@ -23,7 +23,7 @@ implement your http.Handler and give it to `workers.Serve()`.
 ```go
 func main() {
 	var handler http.HandlerFunc = func (w http.ResponseWriter, req *http.Request) { ... }
-    workers.Serve(handler)
+	workers.Serve(handler)
 }
 ```
 

@@ -2,6 +2,7 @@
 
 * `workers` is a package to run an HTTP server written in Go on [Cloudflare Workers](https://workers.cloudflare.com/).
 * This package can easily serve *http.Handler* on Cloudflare Workers.
+* Caution: This is an experimental project.
 
 ## Features
 

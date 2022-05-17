@@ -32,7 +32,7 @@ or just call `http.Handle` and `http.HandleFunc`, then invoke `workers.Serve()` 
 ```go
 func main() {
 	http.HandleFunc("/hello", func (w http.ResponseWriter, req *http.Request) { ... })
-	workers.Serve(nil) // if nil is given, http.DefaultMux is used.
+	workers.Serve(nil) // if nil is given, http.DefaultServeMux is used.
 }
 ```
 

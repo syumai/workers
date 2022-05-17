@@ -40,6 +40,9 @@ func main() {
 For concrete examples, see `examples` directory.
 Currently, all examples use tinygo instead of Go due to binary size issues.
 
+A template repository is also available.
+* https://github.com/syumai/worker-template-tinygo
+
 ## License
 
 MIT

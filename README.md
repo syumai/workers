@@ -1,4 +1,4 @@
-# workers
+# workers [![Go Reference](https://pkg.go.dev/badge/github.com/syumai/workers.svg)](https://pkg.go.dev/github.com/syumai/workers)
 
 * `workers` is a package to run an HTTP server written in Go on [Cloudflare Workers](https://workers.cloudflare.com/).
 * This package can easily serve *http.Handler* on Cloudflare Workers.

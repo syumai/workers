@@ -1,6 +1,7 @@
 package workers
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -28,8 +29,11 @@ func toHeader(headers js.Value) http.Header {
 	for i := 0; i < headerLen; i++ {
 		entry := entries.Index(i)
 		key := entry.Index(0).String()
-		value := entry.Index(1).String()
-		h[key] = strings.Split(value, ",")
+		values := entry.Index(1).String()
+		fmt.Printf("key: %s, values: %s\n", key, values)
+		for _, value := range strings.Split(values, ",") {
+			h.Add(key, value)
+		}
 	}
 	return h
 }

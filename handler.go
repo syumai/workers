@@ -46,14 +46,16 @@ func handleRequest(reqObj js.Value) (js.Value, error) {
 	w := &responseWriterBuffer{
 		header:     http.Header{},
 		statusCode: http.StatusOK,
-		PipeReader: reader,
-		PipeWriter: writer,
+		reader:     reader,
+		writer:     writer,
+		readyCh:    make(chan struct{}),
 	}
 	go func() {
+		defer w.ready()
 		defer writer.Close()
 		httpHandler.ServeHTTP(w, req)
 	}()
-	return w.toJSResponse()
+	return toJSResponse(w)
 }
 
 // Server serves http.Handler on Cloudflare Workers.

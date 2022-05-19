@@ -5,6 +5,6 @@
 ## Demo
 
 * https://basic-auth-server.syumai.workers.dev/
-
-userName: `user`
-password: `password`
+* Try:
+  - userName: `user`
+  - password: `password`

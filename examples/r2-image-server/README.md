@@ -1,13 +1,25 @@
 # r2-image-server
 
-* An example server which returns image from Cloudflare R2.
-* This server is implemented in Go and compiled with tinygo.
+* An example server of R2.
+* This server can store / load / delete images in R2.
 
-## Example
+## Usage
 
-* https://r2-image-server.syumai.workers.dev/syumai.png
+### Endpoints
+
+* **GET `/images/{key}`**
+  - Get an image object at the `key` and returns it.
+* **PUT `/images/{key}`**
+  - Create an image object at the `key` and uploads image.
+  - Request body must be binary and request header must have `Content-Type`.
+* **DELETE `/images/{key}`**
+  - Delete an image object at the `key`.
 
 ## Development
+
+* See the following documents for details on how to use R2.
+  - https://developers.cloudflare.com/r2/runtime-apis
+  - https://pkg.go.dev/github.com/syumai/workers
 
 ### Requirements
 

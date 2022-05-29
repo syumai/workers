@@ -41,8 +41,8 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Cache-Control", "public, max-age=14400")
 	w.Header().Set("ETag", fmt.Sprintf("W/%s", imgObj.HTTPETag))
 	contentType := "application/octet-stream"
-	if imgObj.HTTPMetadata.ContentType != nil {
-		contentType = *imgObj.HTTPMetadata.ContentType
+	if imgObj.HTTPMetadata.ContentType != "" {
+		contentType = imgObj.HTTPMetadata.ContentType
 	}
 	w.Header().Set("Content-Type", contentType)
 	io.Copy(w, imgObj.Body)

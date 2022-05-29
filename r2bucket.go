@@ -12,7 +12,7 @@ import (
 type R2Bucket interface {
 	Head(key string) (*R2Object, error)
 	Get(key string) (*R2Object, error)
-	Put(key string, value io.Reader) error
+	Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2Object, error)
 	Delete(key string) error
 	List() (*R2Objects, error)
 }
@@ -66,12 +66,57 @@ func (r *r2Bucket) Get(key string) (*R2Object, error) {
 	return toR2Object(v)
 }
 
-func (r *r2Bucket) Put(key string, value io.Reader) error {
-	panic("implement me")
+type R2PutOptions struct {
+	HTTPMetadata   R2HTTPMetadata
+	CustomMetadata map[string]string
+	MD5            string
 }
 
+func (opts *R2PutOptions) toJS() js.Value {
+	if opts == nil {
+		return js.Undefined()
+	}
+	obj := newObject()
+	if opts.HTTPMetadata != (R2HTTPMetadata{}) {
+		obj.Set("httpMetadata", opts.HTTPMetadata.toJS())
+	}
+	if opts.CustomMetadata != nil {
+		// convert map[string]string to map[string]any.
+		// This makes the map convertible to JS.
+		// see: https://pkg.go.dev/syscall/js#ValueOf
+		customMeta := make(map[string]any, len(opts.CustomMetadata))
+		for k, v := range opts.CustomMetadata {
+			customMeta[k] = v
+		}
+		obj.Set("customMetadata", customMeta)
+	}
+	if opts.MD5 != "" {
+		obj.Set("md5", opts.MD5)
+	}
+	return obj
+}
+
+// Put returns the result of `put` call to R2Bucket.
+// * Body field of *R2Object is always nil for Put call.
+// * if a network error happens, returns error.
+func (r *r2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2Object, error) {
+	body := convertReaderToReadableStream(value)
+	p := r.instance.Call("put", key, body, opts.toJS())
+	v, err := awaitPromise(p)
+	if err != nil {
+		return nil, err
+	}
+	return toR2Object(v)
+}
+
+// Delete returns the result of `delete` call to R2Bucket.
+// * if a network error happens, returns error.
 func (r *r2Bucket) Delete(key string) error {
-	panic("implement me")
+	p := r.instance.Call("delete", key)
+	if _, err := awaitPromise(p); err != nil {
+		return err
+	}
+	return nil
 }
 
 // List returns the result of `list` call to R2Bucket.

@@ -71,12 +71,12 @@ func toR2Object(v js.Value) (*R2Object, error) {
 // R2HTTPMetadata represents metadata of R2Object.
 // * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1053
 type R2HTTPMetadata struct {
-	ContentType        *string
-	ContentLanguage    *string
-	ContentDisposition *string
-	ContentEncoding    *string
-	CacheControl       *string
-	CacheExpiry        *time.Time
+	ContentType        string
+	ContentLanguage    string
+	ContentDisposition string
+	ContentEncoding    string
+	CacheControl       string
+	CacheExpiry        time.Time
 }
 
 func toR2HTTPMetadata(v js.Value) (R2HTTPMetadata, error) {
@@ -92,4 +92,24 @@ func toR2HTTPMetadata(v js.Value) (R2HTTPMetadata, error) {
 		CacheControl:       maybeString(v.Get("cacheControl")),
 		CacheExpiry:        cacheExpiry,
 	}, nil
+}
+
+func (md *R2HTTPMetadata) toJS() js.Value {
+	obj := newObject()
+	kv := map[string]string{
+		"contentType":        md.ContentType,
+		"contentLanguage":    md.ContentLanguage,
+		"contentDisposition": md.ContentDisposition,
+		"contentEncoding":    md.ContentEncoding,
+		"cacheControl":       md.CacheControl,
+	}
+	for k, v := range kv {
+		if v != "" {
+			obj.Set(k, v)
+		}
+	}
+	if !md.CacheExpiry.IsZero() {
+		obj.Set("cacheExpiry", timeToDate(md.CacheExpiry))
+	}
+	return obj
 }

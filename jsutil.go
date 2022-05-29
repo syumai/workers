@@ -18,6 +18,8 @@ var (
 	errorClass          = global.Get("Error")
 	readableStreamClass = global.Get("ReadableStream")
 	stringClass         = global.Get("String")
+	dateClass           = global.Get("Date")
+	numberClass         = global.Get("Number")
 )
 
 func newObject() js.Value {
@@ -77,24 +79,19 @@ func strRecordToMap(v js.Value) map[string]string {
 }
 
 // maybeString returns string value of given JavaScript value or returns nil if the value is undefined.
-func maybeString(v js.Value) *string {
+func maybeString(v js.Value) string {
 	if v.IsUndefined() {
-		return nil
+		return ""
 	}
-	s := v.String()
-	return &s
+	return v.String()
 }
 
 // maybeDate returns time.Time value of given JavaScript Date value or returns nil if the value is undefined.
-func maybeDate(v js.Value) (*time.Time, error) {
+func maybeDate(v js.Value) (time.Time, error) {
 	if v.IsUndefined() {
-		return nil, nil
+		return time.Time{}, nil
 	}
-	d, err := dateToTime(v)
-	if err != nil {
-		return nil, err
-	}
-	return &d, nil
+	return dateToTime(v)
 }
 
 // dateToTime converts JavaScript side's Data object into time.Time.
@@ -105,4 +102,10 @@ func dateToTime(v js.Value) (time.Time, error) {
 		return time.Time{}, fmt.Errorf("failed to convert Date to time.Time: %w", err)
 	}
 	return time.UnixMilli(milli), nil
+}
+
+// timeToDate converts Go side's time.Time into Date object.
+func timeToDate(t time.Time) js.Value {
+	milliStr := strconv.FormatInt(t.UnixMilli(), 10)
+	return dateClass.New(numberClass.Call(milliStr))
 }

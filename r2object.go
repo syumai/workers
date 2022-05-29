@@ -21,7 +21,7 @@ type R2Object struct {
 	HTTPMetadata   R2HTTPMetadata
 	CustomMetadata map[string]string
 	// Body is a body of R2Object.
-	// This value becomes nil when `Head` method of R2Bucket is called.
+	// This value is nil for the result of the `Head` or `Put` method.
 	Body io.Reader
 }
 

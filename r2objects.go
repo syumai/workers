@@ -5,7 +5,7 @@ import (
 	"syscall/js"
 )
 
-// R2Objects represents JavaScript side's R2Objects.
+// R2Objects represents Cloudflare R2 objects.
 // * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1121
 type R2Objects struct {
 	Objects           []*R2Object

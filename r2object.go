@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// R2Object represents JavaScript side's R2Object.
+// R2Object represents Cloudflare R2 object.
 // * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1094
 type R2Object struct {
 	instance       js.Value
@@ -68,7 +68,7 @@ func toR2Object(v js.Value) (*R2Object, error) {
 	}, nil
 }
 
-// R2HTTPMetadata represents metadata of R2 Object.
+// R2HTTPMetadata represents metadata of R2Object.
 // * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1053
 type R2HTTPMetadata struct {
 	ContentType        *string

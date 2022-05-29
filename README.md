@@ -15,6 +15,7 @@
   - [ ] Put
   - [ ] Delete
   - [x] List
+  - [ ] Options for R2 methods
 
 ## Installation
 

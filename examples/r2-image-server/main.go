@@ -94,7 +94,7 @@ func (s *server) delete(w http.ResponseWriter, req *http.Request, key string) {
 	w.Write([]byte("successfully deleted image"))
 }
 
-func (s *server) routeHandler(w http.ResponseWriter, req *http.Request) {
+func (s *server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	key := strings.TrimPrefix(req.URL.Path, "/")
 	switch req.Method {
 	case "GET":
@@ -119,5 +119,5 @@ func main() {
 		fmt.Fprintf(os.Stderr, "failed to start server: %v", err)
 		os.Exit(1)
 	}
-	workers.Serve(http.HandlerFunc(s.routeHandler))
+	workers.Serve(s)
 }

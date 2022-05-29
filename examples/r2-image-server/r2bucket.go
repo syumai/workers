@@ -10,11 +10,11 @@ import (
 // - https://developers.cloudflare.com/r2/runtime-apis/#bucket-method-definitions
 // - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1006
 type R2Bucket interface {
-	Head(key string)
-	Get(key string) *R2Object
-	Put(key string, value io.Reader)
-	Delete(key string)
-	List() []*R2Object
+	Head(key string) (*R2Object, error)
+	Get(key string) (*R2Object, error)
+	Put(key string, value io.Reader) error
+	Delete(key string) error
+	List() (*R2Objects, error)
 }
 
 type r2Bucket struct {
@@ -23,24 +23,45 @@ type r2Bucket struct {
 
 var _ R2Bucket = &r2Bucket{}
 
-func (r *r2Bucket) Head(key string) {
+func (r *r2Bucket) Head(key string) (*R2Object, error) {
+	p := r.instance.Call("head", key)
+	v, err := awaitPromise(p)
+	if err != nil {
+		return nil, err
+	}
+	if v.IsNull() {
+		return nil, nil
+	}
+	return toR2Object(v)
+}
+
+func (r *r2Bucket) Get(key string) (*R2Object, error) {
+	p := r.instance.Call("get", key)
+	v, err := awaitPromise(p)
+	if err != nil {
+		return nil, err
+	}
+	if v.IsNull() {
+		return nil, nil
+	}
+	return toR2Object(v)
+}
+
+func (r *r2Bucket) Put(key string, value io.Reader) error {
 	panic("implement me")
 }
 
-func (r *r2Bucket) Get(key string) *R2Object {
-	return nil
-}
-
-func (r *r2Bucket) Put(key string, value io.Reader) {
+func (r *r2Bucket) Delete(key string) error {
 	panic("implement me")
 }
 
-func (r *r2Bucket) Delete(key string) {
-	panic("implement me")
-}
-
-func (r *r2Bucket) List() []*R2Object {
-	panic("implement me")
+func (r *r2Bucket) List() (*R2Objects, error) {
+	p := r.instance.Call("list")
+	v, err := awaitPromise(p)
+	if err != nil {
+		return nil, err
+	}
+	return toR2Objects(v)
 }
 
 func NewR2Bucket(varName string) (R2Bucket, error) {

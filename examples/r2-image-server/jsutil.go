@@ -8,9 +8,50 @@ import (
 )
 
 var (
-	global      = js.Global()
-	objectClass = global.Get("Object")
+	global              = js.Global()
+	objectClass         = global.Get("Object")
+	promiseClass        = global.Get("Promise")
+	uint8ArrayClass     = global.Get("Uint8Array")
+	errorClass          = global.Get("Error")
+	readableStreamClass = global.Get("ReadableStream")
 )
+
+func newObject() js.Value {
+	return objectClass.New()
+}
+
+func newUint8Array(size int) js.Value {
+	return uint8ArrayClass.New(size)
+}
+
+func newPromise(fn js.Func) js.Value {
+	return promiseClass.New(fn)
+}
+
+func awaitPromise(promiseVal js.Value) (js.Value, error) {
+	resultCh := make(chan js.Value)
+	errCh := make(chan error)
+	var then, catch js.Func
+	then = js.FuncOf(func(_ js.Value, args []js.Value) any {
+		defer then.Release()
+		result := args[0]
+		resultCh <- result
+		return js.Undefined()
+	})
+	catch = js.FuncOf(func(_ js.Value, args []js.Value) any {
+		defer catch.Release()
+		result := args[0]
+		errCh <- fmt.Errorf("failed on promise: %s", result.Call("toString").String())
+		return js.Undefined()
+	})
+	promiseVal.Call("then", then).Call("catch", catch)
+	select {
+	case result := <-resultCh:
+		return result, nil
+	case err := <-errCh:
+		return js.Value{}, err
+	}
+}
 
 // dateToTime converts JavaScript side's Data object into time.Time.
 func dateToTime(v js.Value) (time.Time, error) {

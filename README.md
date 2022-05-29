@@ -9,7 +9,12 @@
 * [x] serve http.Handler
 * [ ] environment variables (WIP)
 * [ ] KV (WIP)
-* [ ] R2 (WIP)
+* [ ] R2 - Partially supported
+  - [x] Head
+  - [x] Get
+  - [ ] Put
+  - [ ] Delete
+  - [x] List
 
 ## Installation
 

@@ -8,9 +8,11 @@ import (
 // R2Objects represents Cloudflare R2 objects.
 // * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1121
 type R2Objects struct {
-	Objects           []*R2Object
-	Truncated         bool
-	Cursor            *string
+	Objects   []*R2Object
+	Truncated bool
+	// Cursor indicates next cursor of R2Objects.
+	// * This becomes empty string if cursor doesn't exist.
+	Cursor            string
 	DelimitedPrefixes []string
 }
 

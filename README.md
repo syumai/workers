@@ -7,8 +7,6 @@
 ## Features
 
 * [x] serve http.Handler
-* [ ] environment variables (WIP)
-* [ ] KV (WIP)
 * [ ] R2 - Partially supported
   - [x] Head
   - [x] Get
@@ -16,6 +14,8 @@
   - [ ] Delete
   - [x] List
   - [ ] Options for R2 methods
+* [ ] environment variables (WIP)
+* [ ] KV (WIP)
 
 ## Installation
 

@@ -28,15 +28,15 @@ func toR2Objects(v js.Value) (*R2Objects, error) {
 		}
 		objects[i] = obj
 	}
-	prefixesVal := objectsVal.Get("delimitedPrefixes")
+	prefixesVal := v.Get("delimitedPrefixes")
 	prefixes := make([]string, prefixesVal.Length())
 	for i := 0; i < len(prefixes); i++ {
 		prefixes[i] = prefixesVal.Index(i).String()
 	}
 	return &R2Objects{
 		Objects:           objects,
-		Truncated:         objectsVal.Get("truncated").Bool(),
-		Cursor:            maybeString(objectsVal.Get("cursor")),
+		Truncated:         v.Get("truncated").Bool(),
+		Cursor:            maybeString(v.Get("cursor")),
 		DelimitedPrefixes: prefixes,
 	}, nil
 }

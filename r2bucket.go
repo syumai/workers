@@ -99,11 +99,24 @@ func (opts *R2PutOptions) toJS() js.Value {
 }
 
 // Put returns the result of `put` call to R2Bucket.
+// * This method copies all bytes into memory for implementation restriction.
 // * Body field of *R2Object is always nil for Put call.
 // * if a network error happens, returns error.
 func (r *r2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2Object, error) {
+	/* TODO: implement this in FixedLengthStream: https://developers.cloudflare.com/workers/runtime-apis/streams/transformstream/#fixedlengthstream
 	body := convertReaderToReadableStream(value)
-	p := r.instance.Call("put", key, body, opts.toJS())
+	streams := fixedLengthStreamClass.New(contentLength)
+	rs := streams.Get("readable")
+	body.Call("pipeTo", streams.Get("writable"))
+	*/
+	b, err := io.ReadAll(value)
+	if err != nil {
+		return nil, err
+	}
+	defer value.Close()
+	ua := newUint8Array(len(b))
+	js.CopyBytesToJS(ua, b)
+	p := r.instance.Call("put", key, ua.Get("buffer"), opts.toJS())
 	v, err := awaitPromise(p)
 	if err != nil {
 		return nil, err

@@ -10,8 +10,9 @@
 * [ ] R2 - Partially supported
   - [x] Head
   - [x] Get
-  - [ ] Put
-  - [ ] Delete
+  - [x] Put (load all bytes to memory)
+  - [ ] Put (stream)
+  - [x] Delete
   - [x] List
   - [ ] Options for R2 methods
 * [ ] environment variables (WIP)

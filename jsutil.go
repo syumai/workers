@@ -2,7 +2,6 @@ package workers
 
 import (
 	"fmt"
-	"strconv"
 	"syscall/js"
 	"time"
 )
@@ -17,9 +16,7 @@ var (
 	uint8ArrayClass     = global.Get("Uint8Array")
 	errorClass          = global.Get("Error")
 	readableStreamClass = global.Get("ReadableStream")
-	stringClass         = global.Get("String")
 	dateClass           = global.Get("Date")
-	numberClass         = global.Get("Number")
 )
 
 func newObject() js.Value {
@@ -96,16 +93,11 @@ func maybeDate(v js.Value) (time.Time, error) {
 
 // dateToTime converts JavaScript side's Data object into time.Time.
 func dateToTime(v js.Value) (time.Time, error) {
-	milliStr := stringClass.Invoke(v.Call("getTime")).String()
-	milli, err := strconv.ParseInt(milliStr, 10, 64)
-	if err != nil {
-		return time.Time{}, fmt.Errorf("failed to convert Date to time.Time: %w", err)
-	}
-	return time.UnixMilli(milli), nil
+	milli := v.Call("getTime").Float()
+	return time.UnixMilli(int64(milli)), nil
 }
 
 // timeToDate converts Go side's time.Time into Date object.
 func timeToDate(t time.Time) js.Value {
-	milliStr := strconv.FormatInt(t.UnixMilli(), 10)
-	return dateClass.New(numberClass.Call(milliStr))
+	return dateClass.New(t.UnixMilli())
 }

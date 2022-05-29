@@ -25,7 +25,7 @@ var _ R2Bucket = &r2Bucket{}
 
 // NewR2Bucket returns R2Bucket for given variable name.
 // * variable name must be defined in wrangler.toml.
-//   - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-server
+//   - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
 // * if the given variable name doesn't exist on global object, returns error.
 func NewR2Bucket(varName string) (R2Bucket, error) {
 	inst := js.Global().Get(varName)

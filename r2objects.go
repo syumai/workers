@@ -19,7 +19,6 @@ type R2Objects struct {
 // toR2Objects converts JavaScript side's R2Objects to *R2Objects.
 // * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1121
 func toR2Objects(v js.Value) (*R2Objects, error) {
-	global.Get("console").Call("log", global.Get("JSON").Call("stringify", v, nil, 2))
 	objectsVal := v.Get("objects")
 	objects := make([]*R2Object, objectsVal.Length())
 	for i := 0; i < len(objects); i++ {

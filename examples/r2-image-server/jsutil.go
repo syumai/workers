@@ -29,6 +29,8 @@ func newPromise(fn js.Func) js.Value {
 }
 
 func awaitPromise(promiseVal js.Value) (js.Value, error) {
+	fmt.Println("await promise")
+	fmt.Println(promiseVal.Call("toString").String())
 	resultCh := make(chan js.Value)
 	errCh := make(chan error)
 	var then, catch js.Func
@@ -47,8 +49,10 @@ func awaitPromise(promiseVal js.Value) (js.Value, error) {
 	promiseVal.Call("then", then).Call("catch", catch)
 	select {
 	case result := <-resultCh:
+		fmt.Println("got result of promise")
 		return result, nil
 	case err := <-errCh:
+		fmt.Println("got error of promise")
 		return js.Value{}, err
 	}
 }

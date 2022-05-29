@@ -41,6 +41,7 @@ func (r *r2Bucket) Get(key string) (*R2Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(v)
 	if v.IsNull() {
 		return nil, nil
 	}

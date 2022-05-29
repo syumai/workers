@@ -12,8 +12,9 @@ const load = WebAssembly.instantiate(mod, go.importObject).then((instance) => {
 async function processRequest(event) {
   const req = event.request;
   await load;
-  console.log("finished loading");
   return handleRequest(req);
 }
 
-addEventListener("fetch", (event) => event.respondWith(processRequest(event)))
+addEventListener("fetch", (event) => {
+  event.respondWith(processRequest(event));
+})

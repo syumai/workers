@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/syumai/workers"
 	"io"
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/syumai/workers"
+	"time"
 )
 
 // bucketName is R2 bucket name defined in wrangler.toml.
@@ -38,6 +38,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(fmt.Sprintf("image not found: %s", imgPath)))
 		return
 	}
+	defer imgObj.Body.Close()
 	w.Header().Set("Cache-Control", "public, max-age=14400")
 	w.Header().Set("ETag", fmt.Sprintf("W/%s", imgObj.HTTPETag))
 	contentType := "application/octet-stream"
@@ -45,6 +46,12 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		contentType = *imgObj.HTTPMetadata.ContentType
 	}
 	w.Header().Set("Content-Type", contentType)
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		if err := imgObj.Body.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 	io.Copy(w, imgObj.Body)
 }
 

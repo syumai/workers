@@ -22,7 +22,7 @@ type R2Object struct {
 	CustomMetadata map[string]string
 	// Body is a body of R2Object.
 	// This value becomes nil when `Head` method of R2Bucket is called.
-	Body io.Reader
+	Body io.ReadCloser
 }
 
 // TODO: implement
@@ -50,9 +50,9 @@ func toR2Object(v js.Value) (*R2Object, error) {
 		return nil, fmt.Errorf("error converting httpMetadata: %w", err)
 	}
 	bodyVal := v.Get("body")
-	var body io.Reader
+	var body io.ReadCloser
 	if !bodyVal.IsUndefined() {
-		body = convertStreamReaderToReader(v.Get("body").Call("getReader"))
+		body = convertReadableStreamToReadCloser(v.Get("body"))
 	}
 	return &R2Object{
 		instance:       v,

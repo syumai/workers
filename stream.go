@@ -7,18 +7,20 @@ import (
 	"syscall/js"
 )
 
-// streamReaderToReader implements io.Reader sourced from ReadableStreamDefaultReader.
+// readableStreamToReadCloser implements io.ReadCloser sourced from ReadableStream.
+// * ReadableStream: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 // * ReadableStreamDefaultReader: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader
 // * This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L76
-type streamReaderToReader struct {
-	buf          bytes.Buffer
-	streamReader js.Value
+type readableStreamToReadCloser struct {
+	buf            bytes.Buffer
+	readableStream js.Value
+	streamReader   js.Value
 }
 
 // Read reads bytes from ReadableStreamDefaultReader.
-func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
-	if sr.buf.Len() == 0 {
-		promise := sr.streamReader.Call("read")
+func (rs *readableStreamToReadCloser) Read(p []byte) (n int, err error) {
+	if rs.buf.Len() == 0 {
+		promise := rs.streamReader.Call("read")
 		resultCh := make(chan js.Value)
 		errCh := make(chan error)
 		var then, catch js.Func
@@ -45,7 +47,7 @@ func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
 			_ = js.CopyBytesToGo(chunk, result)
 			// The length written is always the same as the length of chunk, so it can be discarded.
 			// - https://pkg.go.dev/bytes#Buffer.Write
-			_, err := sr.buf.Write(chunk)
+			_, err := rs.buf.Write(chunk)
 			if err != nil {
 				return 0, err
 			}
@@ -53,13 +55,31 @@ func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
 			return 0, err
 		}
 	}
-	return sr.buf.Read(p)
+	return rs.buf.Read(p)
 }
 
-// convertStreamReaderToReader converts ReadableStreamDefaultReader to io.Reader.
-func convertStreamReaderToReader(sr js.Value) io.Reader {
-	return &streamReaderToReader{
-		streamReader: sr,
+// Close cancels ReadableStream.
+// * ReadableStream.cancel: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/cancel
+func (rs *readableStreamToReadCloser) Close() error {
+	fmt.Println("called cancel")
+
+	srP := rs.streamReader.Call("cancel")
+	var (
+		v   js.Value
+		err error
+	)
+	if v, err = awaitPromise(srP); err != nil {
+		return err
+	}
+	fmt.Println("canceled", v.Call("toString").String())
+	return nil
+}
+
+// convertReadableStreamToReadCloser converts ReadableStream to io.ReadCloser.
+func convertReadableStreamToReadCloser(rs js.Value) io.ReadCloser {
+	return &readableStreamToReadCloser{
+		readableStream: rs,
+		streamReader:   rs.Call("getReader"),
 	}
 }
 

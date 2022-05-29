@@ -66,6 +66,8 @@ func (r *r2Bucket) Get(key string) (*R2Object, error) {
 	return toR2Object(v)
 }
 
+// R2PutOptions represents Cloudflare R2 put options.
+// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1128
 type R2PutOptions struct {
 	HTTPMetadata   R2HTTPMetadata
 	CustomMetadata map[string]string

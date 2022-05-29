@@ -105,6 +105,7 @@ func (s *server) routeHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	case "POST":
 		s.post(w, req, key)
+		return
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("url not found\n"))

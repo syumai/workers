@@ -9,7 +9,7 @@
 
 * **GET `/images/{key}`**
   - Get an image object at the `key` and returns it.
-* **PUT `/images/{key}`**
+* **POST `/images/{key}`**
   - Create an image object at the `key` and uploads image.
   - Request body must be binary and request header must have `Content-Type`.
 * **DELETE `/images/{key}`**

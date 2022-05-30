@@ -1,7 +1,7 @@
 # hello
 
 * This app just returns a message `Hello, world!`.
-* If url param like `?name=syumai`, then a message `Hello, syumai!` will be returned.
+* If a url param like `?name=syumai` given, then a message `Hello, syumai!` will be returned.
 
 ## Demo
 

@@ -50,6 +50,18 @@ Currently, all examples use tinygo instead of Go due to binary size issues.
 A template repository is also available.
 * https://github.com/syumai/worker-template-tinygo
 
+## FAQ
+
+### How to deploy the worker?
+
+To deploy a Worker, the following steps are required.
+
+* Create a worker project using [wrangler](https://developers.cloudflare.com/workers/wrangler/).
+* Build a Wasm binary.
+* Upload a Wasm binary with a JavaScript code to load and instantiate Wasm (for entry point).
+
+The [worker-template-tinygo](https://github.com/syumai/worker-template-tinygo) repository contains all the required files, so I recommend using this template.
+
 ## License
 
 MIT

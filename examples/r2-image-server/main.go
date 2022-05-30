@@ -26,7 +26,6 @@ type server struct {
 }
 
 func newServer() (*server, error) {
-	// delete image object from R2
 	bucket, err := workers.NewR2Bucket(bucketName)
 	if err != nil {
 		return nil, err

@@ -52,7 +52,7 @@ A template repository is also available.
 
 ## FAQ
 
-### How to deploy the worker?
+### How do I deploy a worker implemented in this package?
 
 To deploy a Worker, the following steps are required.
 

@@ -1,10 +1,11 @@
-# basic-auth-server
+# basic-auth-proxy
 
-* This is an example of an HTTP server with Basic-Auth .
+* This is an example of an HTTP proxy server with Basic-Auth .
+* This proxy server adds Basic-Auth to `https://syum.ai` .
 
 ## Demo
 
-* https://basic-auth-server.syumai.workers.dev/
+* https://basic-auth-proxy.syumai.workers.dev/
 * Try:
   - userName: `user`
   - password: `password`

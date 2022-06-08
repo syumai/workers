@@ -44,6 +44,11 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 		log.Printf("failed to execute proxy request: %v\n", err)
 		return
 	}
+	for k, values := range resp.Header {
+		for _, v := range values {
+			w.Header().Add(k, v)
+		}
+	}
 	defer resp.Body.Close()
 	io.Copy(w, resp.Body)
 }

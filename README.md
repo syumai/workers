@@ -10,8 +10,7 @@
 * [ ] R2 - Partially supported
   - [x] Head
   - [x] Get
-  - [x] Put (load all bytes to memory)
-  - [ ] Put (stream)
+  - [x] Put
   - [x] Delete
   - [x] List
   - [ ] Options for R2 methods

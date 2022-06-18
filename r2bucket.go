@@ -103,12 +103,7 @@ func (opts *R2PutOptions) toJS() js.Value {
 // * Body field of *R2Object is always nil for Put call.
 // * if a network error happens, returns error.
 func (r *r2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2Object, error) {
-	/* TODO: implement this in FixedLengthStream: https://developers.cloudflare.com/workers/runtime-apis/streams/transformstream/#fixedlengthstream
-	body := convertReaderToReadableStream(value)
-	streams := fixedLengthStreamClass.New(contentLength)
-	rs := streams.Get("readable")
-	body.Call("pipeTo", streams.Get("writable"))
-	*/
+	// fetch body cannot be ReadableStream. see: https://github.com/whatwg/fetch/issues/1438
 	b, err := io.ReadAll(value)
 	if err != nil {
 		return nil, err

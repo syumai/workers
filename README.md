@@ -7,15 +7,22 @@
 ## Features
 
 * [x] serve http.Handler
-* [ ] R2 - Partially supported
+* [ ] R2
   - [x] Head
   - [x] Get
   - [x] Put
   - [x] Delete
   - [x] List
   - [ ] Options for R2 methods
+* [ ] KV
+  - [x] Get
+  - [x] List
+  - [x] Put
+  - [x] Delete
+  - [ ] Options for KV methods
+* [ ] Cache API
+* [ ] Durable Objects
 * [ ] environment variables (WIP)
-* [ ] KV (WIP)
 
 ## Installation
 

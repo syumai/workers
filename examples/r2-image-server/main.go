@@ -22,7 +22,7 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 }
 
 type server struct {
-	bucket workers.R2Bucket
+	bucket *workers.R2Bucket
 }
 
 func newServer() (*server, error) {

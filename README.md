@@ -22,7 +22,7 @@
   - [ ] Options for KV methods
 * [ ] Cache API
 * [ ] Durable Objects
-* [ ] environment variables (WIP)
+* [x] Environment variables
 
 ## Installation
 

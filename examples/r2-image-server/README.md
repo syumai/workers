@@ -7,12 +7,12 @@
 
 ### Endpoints
 
-* **GET `/images/{key}`**
+* **GET `/{key}`**
   - Get an image object at the `key` and returns it.
-* **POST `/images/{key}`**
+* **POST `/{key}`**
   - Create an image object at the `key` and uploads image.
   - Request body must be binary and request header must have `Content-Type`.
-* **DELETE `/images/{key}`**
+* **DELETE `/{key}`**
   - Delete an image object at the `key`.
 
 ## Development

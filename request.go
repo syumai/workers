@@ -10,7 +10,7 @@ import (
 )
 
 // toBody converts JavaScripts sides ReadableStream (can be null) to io.ReadCloser.
-// * ReadableStream: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
+//   - ReadableStream: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 func toBody(streamOrNull js.Value) io.ReadCloser {
 	if streamOrNull.IsNull() {
 		return nil
@@ -20,7 +20,7 @@ func toBody(streamOrNull js.Value) io.ReadCloser {
 }
 
 // toHeader converts JavaScript sides Headers to http.Header.
-// * Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
+//   - Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
 func toHeader(headers js.Value) http.Header {
 	entries := arrayFrom(headers.Call("entries"))
 	headerLen := entries.Length()
@@ -37,7 +37,7 @@ func toHeader(headers js.Value) http.Header {
 }
 
 // toRequest converts JavaScript sides Request to *http.Request.
-// * Request: https://developer.mozilla.org/ja/docs/Web/API/Request
+//   - Request: https://developer.mozilla.org/ja/docs/Web/API/Request
 func toRequest(req js.Value) (*http.Request, error) {
 	reqUrl, err := url.Parse(req.Get("url").String())
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 )
 
 // R2Object represents Cloudflare R2 object.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1094
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1094
 type R2Object struct {
 	instance       js.Value
 	Key            string
@@ -26,7 +26,7 @@ type R2Object struct {
 }
 
 // TODO: implement
-// - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1106
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1106
 // func (o *R2Object) WriteHTTPMetadata(headers http.Header) {
 // }
 
@@ -39,7 +39,7 @@ func (o *R2Object) BodyUsed() (bool, error) {
 }
 
 // toR2Object converts JavaScript side's R2Object to *R2Object.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1094
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1094
 func toR2Object(v js.Value) (*R2Object, error) {
 	uploaded, err := dateToTime(v.Get("uploaded"))
 	if err != nil {
@@ -69,7 +69,7 @@ func toR2Object(v js.Value) (*R2Object, error) {
 }
 
 // R2HTTPMetadata represents metadata of R2Object.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1053
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1053
 type R2HTTPMetadata struct {
 	ContentType        string
 	ContentLanguage    string

@@ -11,7 +11,7 @@ type R2Objects struct {
 	Objects   []*R2Object
 	Truncated bool
 	// Cursor indicates next cursor of R2Objects.
-	// * This becomes empty string if cursor doesn't exist.
+	//   - This becomes empty string if cursor doesn't exist.
 	Cursor            string
 	DelimitedPrefixes []string
 }

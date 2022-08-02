@@ -44,7 +44,7 @@ func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
 			chunk := make([]byte, result.Get("byteLength").Int())
 			_ = js.CopyBytesToGo(chunk, result)
 			// The length written is always the same as the length of chunk, so it can be discarded.
-			// - https://pkg.go.dev/bytes#Buffer.Write
+			//   - https://pkg.go.dev/bytes#Buffer.Write
 			_, err := sr.buf.Write(chunk)
 			if err != nil {
 				return 0, err

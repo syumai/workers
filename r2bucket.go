@@ -89,9 +89,9 @@ func (opts *R2PutOptions) toJS() js.Value {
 }
 
 // Put returns the result of `put` call to R2Bucket.
-// * This method copies all bytes into memory for implementation restriction.
-// * Body field of *R2Object is always nil for Put call.
-// * if a network error happens, returns error.
+//   - This method copies all bytes into memory for implementation restriction.
+//   - Body field of *R2Object is always nil for Put call.
+//   - if a network error happens, returns error.
 func (r *R2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2Object, error) {
 	// fetch body cannot be ReadableStream. see: https://github.com/whatwg/fetch/issues/1438
 	b, err := io.ReadAll(value)
@@ -110,7 +110,7 @@ func (r *R2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2
 }
 
 // Delete returns the result of `delete` call to R2Bucket.
-// * if a network error happens, returns error.
+//   - if a network error happens, returns error.
 func (r *R2Bucket) Delete(key string) error {
 	p := r.instance.Call("delete", key)
 	if _, err := awaitPromise(p); err != nil {
@@ -120,7 +120,7 @@ func (r *R2Bucket) Delete(key string) error {
 }
 
 // List returns the result of `list` call to R2Bucket.
-// * if a network error happens, returns error.
+//   - if a network error happens, returns error.
 func (r *R2Bucket) List() (*R2Objects, error) {
 	p := r.instance.Call("list")
 	v, err := awaitPromise(p)

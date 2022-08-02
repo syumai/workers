@@ -7,8 +7,8 @@ import (
 )
 
 // KVNamespace represents interface of Cloudflare Worker's KV namespace instance.
-// - https://developers.cloudflare.com/workers/runtime-apis/kv/
-// - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L850
+//   - https://developers.cloudflare.com/workers/runtime-apis/kv/
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L850
 type KVNamespace interface {
 	GetString(key string, opts *KVNamespaceGetOptions) (string, error)
 	GetReader(key string, opts *KVNamespaceGetOptions) (io.Reader, error)
@@ -25,8 +25,8 @@ type kvNamespace struct {
 var _ KVNamespace = &kvNamespace{}
 
 // NewKVNamespace returns KVNamespace for given variable name.
-// * variable name must be defined in wrangler.toml as kv_namespace's binding.
-// * if the given variable name doesn't exist on global object, returns error.
+//   - variable name must be defined in wrangler.toml as kv_namespace's binding.
+//   - if the given variable name doesn't exist on global object, returns error.
 func NewKVNamespace(varName string) (KVNamespace, error) {
 	inst := js.Global().Get(varName)
 	if inst.IsUndefined() {
@@ -36,7 +36,7 @@ func NewKVNamespace(varName string) (KVNamespace, error) {
 }
 
 // KVNamespaceGetOptions represents Cloudflare KV namespace get options.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L930
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L930
 type KVNamespaceGetOptions struct {
 	CacheTTL int
 }
@@ -54,7 +54,7 @@ func (opts *KVNamespaceGetOptions) toJS(type_ string) js.Value {
 }
 
 // GetString gets string value by the specified key.
-// * if a network error happens, returns error.
+//   - if a network error happens, returns error.
 func (kv *kvNamespace) GetString(key string, opts *KVNamespaceGetOptions) (string, error) {
 	p := kv.instance.Call("get", key, opts.toJS("text"))
 	v, err := awaitPromise(p)
@@ -65,7 +65,7 @@ func (kv *kvNamespace) GetString(key string, opts *KVNamespaceGetOptions) (strin
 }
 
 // GetReader gets stream value by the specified key.
-// * if a network error happens, returns error.
+//   - if a network error happens, returns error.
 func (kv *kvNamespace) GetReader(key string, opts *KVNamespaceGetOptions) (io.Reader, error) {
 	p := kv.instance.Call("get", key, opts.toJS("stream"))
 	v, err := awaitPromise(p)
@@ -77,7 +77,7 @@ func (kv *kvNamespace) GetReader(key string, opts *KVNamespaceGetOptions) (io.Re
 }
 
 // KVNamespaceListOptions represents Cloudflare KV namespace list options.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L946
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L946
 type KVNamespaceListOptions struct {
 	Limit  int
 	Prefix string
@@ -102,7 +102,7 @@ func (opts *KVNamespaceListOptions) toJS() js.Value {
 }
 
 // KVNamespaceListKey represents Cloudflare KV namespace list key.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L940
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L940
 type KVNamespaceListKey struct {
 	Name string
 	// Expiration is an expiration of KV value cache. The value `0` means no expiration.
@@ -111,7 +111,7 @@ type KVNamespaceListKey struct {
 }
 
 // toKVNamespaceListResult converts JavaScript side's KVNamespaceListKey to *KVNamespaceListKey.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L940
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L940
 func toKVNamespaceListKey(v js.Value) (*KVNamespaceListKey, error) {
 	expVal := v.Get("expiration")
 	var exp int
@@ -126,7 +126,7 @@ func toKVNamespaceListKey(v js.Value) (*KVNamespaceListKey, error) {
 }
 
 // KVNamespaceListResult represents Cloudflare KV namespace list result.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L952
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L952
 type KVNamespaceListResult struct {
 	Keys         []*KVNamespaceListKey
 	ListComplete bool
@@ -134,7 +134,7 @@ type KVNamespaceListResult struct {
 }
 
 // toKVNamespaceListResult converts JavaScript side's KVNamespaceListResult to *KVNamespaceListResult.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L952
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L952
 func toKVNamespaceListResult(v js.Value) (*KVNamespaceListResult, error) {
 	keysVal := v.Get("keys")
 	keys := make([]*KVNamespaceListKey, keysVal.Length())
@@ -170,7 +170,7 @@ func (kv *kvNamespace) List(opts *KVNamespaceListOptions) (*KVNamespaceListResul
 }
 
 // KVNamespacePutOptions represents Cloudflare KV namespace put options.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L958
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L958
 type KVNamespacePutOptions struct {
 	Expiration    int
 	ExpirationTTL int
@@ -192,7 +192,7 @@ func (opts *KVNamespacePutOptions) toJS() js.Value {
 }
 
 // PutString puts string value into KV with key.
-// * if a network error happens, returns error.
+//   - if a network error happens, returns error.
 func (kv *kvNamespace) PutString(key string, value string, opts *KVNamespacePutOptions) error {
 	p := kv.instance.Call("put", key, value, opts.toJS())
 	_, err := awaitPromise(p)
@@ -203,8 +203,8 @@ func (kv *kvNamespace) PutString(key string, value string, opts *KVNamespacePutO
 }
 
 // PutReader puts stream value into KV with key.
-// * This method copies all bytes into memory for implementation restriction.
-// * if a network error happens, returns error.
+//   - This method copies all bytes into memory for implementation restriction.
+//   - if a network error happens, returns error.
 func (kv *kvNamespace) PutReader(key string, value io.Reader, opts *KVNamespacePutOptions) error {
 	// fetch body cannot be ReadableStream. see: https://github.com/whatwg/fetch/issues/1438
 	b, err := io.ReadAll(value)
@@ -222,7 +222,7 @@ func (kv *kvNamespace) PutReader(key string, value io.Reader, opts *KVNamespaceP
 }
 
 // Delete deletes key-value pair specified by the key.
-// * if a network error happens, returns error.
+//   - if a network error happens, returns error.
 func (kv *kvNamespace) Delete(key string) error {
 	p := kv.instance.Call("delete", key)
 	_, err := awaitPromise(p)

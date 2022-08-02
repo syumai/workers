@@ -7,8 +7,8 @@ import (
 )
 
 // R2Bucket represents interface of Cloudflare Worker's R2 Bucket instance.
-// - https://developers.cloudflare.com/r2/runtime-apis/#bucket-method-definitions
-// - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1006
+//   - https://developers.cloudflare.com/r2/runtime-apis/#bucket-method-definitions
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1006
 type R2Bucket interface {
 	Head(key string) (*R2Object, error)
 	Get(key string) (*R2Object, error)
@@ -24,9 +24,9 @@ type r2Bucket struct {
 var _ R2Bucket = &r2Bucket{}
 
 // NewR2Bucket returns R2Bucket for given variable name.
-// * variable name must be defined in wrangler.toml.
-//   - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
-// * if the given variable name doesn't exist on global object, returns error.
+//   - variable name must be defined in wrangler.toml.
+//     - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
+//   - if the given variable name doesn't exist on global object, returns error.
 func NewR2Bucket(varName string) (R2Bucket, error) {
 	inst := js.Global().Get(varName)
 	if inst.IsUndefined() {
@@ -36,9 +36,9 @@ func NewR2Bucket(varName string) (R2Bucket, error) {
 }
 
 // Head returns the result of `head` call to R2Bucket.
-// * Body field of *R2Object is always nil for Head call.
-// * if the object for given key doesn't exist, returns nil.
-// * if a network error happens, returns error.
+//   - Body field of *R2Object is always nil for Head call.
+//   - if the object for given key doesn't exist, returns nil.
+//   - if a network error happens, returns error.
 func (r *r2Bucket) Head(key string) (*R2Object, error) {
 	p := r.instance.Call("head", key)
 	v, err := awaitPromise(p)
@@ -52,8 +52,8 @@ func (r *r2Bucket) Head(key string) (*R2Object, error) {
 }
 
 // Get returns the result of `get` call to R2Bucket.
-// * if the object for given key doesn't exist, returns nil.
-// * if a network error happens, returns error.
+//   - if the object for given key doesn't exist, returns nil.
+//   - if a network error happens, returns error.
 func (r *r2Bucket) Get(key string) (*R2Object, error) {
 	p := r.instance.Call("get", key)
 	v, err := awaitPromise(p)
@@ -67,7 +67,7 @@ func (r *r2Bucket) Get(key string) (*R2Object, error) {
 }
 
 // R2PutOptions represents Cloudflare R2 put options.
-// * https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1128
+//   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1128
 type R2PutOptions struct {
 	HTTPMetadata   R2HTTPMetadata
 	CustomMetadata map[string]string

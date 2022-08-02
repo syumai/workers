@@ -8,8 +8,8 @@ import (
 )
 
 // streamReaderToReader implements io.Reader sourced from ReadableStreamDefaultReader.
-// * ReadableStreamDefaultReader: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader
-// * This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L76
+//   - ReadableStreamDefaultReader: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader
+//   - This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L76
 type streamReaderToReader struct {
 	buf          bytes.Buffer
 	streamReader js.Value
@@ -64,15 +64,15 @@ func convertStreamReaderToReader(sr js.Value) io.Reader {
 }
 
 // readerToReadableStream implements ReadableStream sourced from io.ReadCloser.
-// * ReadableStream: https://developer.mozilla.org/docs/Web/API/ReadableStream
-// * This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L230
+//   - ReadableStream: https://developer.mozilla.org/docs/Web/API/ReadableStream
+//   - This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L230
 type readerToReadableStream struct {
 	reader   io.ReadCloser
 	chunkBuf []byte
 }
 
 // Pull implements ReadableStream's pull method.
-// * https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream#pull
+//   - https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream#pull
 func (rs *readerToReadableStream) Pull(controller js.Value) error {
 	n, err := rs.reader.Read(rs.chunkBuf)
 	if err == io.EOF {
@@ -97,7 +97,7 @@ func (rs *readerToReadableStream) Pull(controller js.Value) error {
 }
 
 // Cancel implements ReadableStream's cancel method.
-// * https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream#cancel
+//   - https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream#cancel
 func (rs *readerToReadableStream) Cancel() error {
 	return rs.reader.Close()
 }

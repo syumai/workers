@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/syumai/tinyutil/httputil"
 	"github.com/syumai/workers"
 )
 
@@ -32,13 +33,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	u := *req.URL
 	u.Scheme = "https"
 	u.Host = "syum.ai"
-	proxyReq, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		handleError(w, http.StatusInternalServerError, "Internal Error")
-		log.Printf("failed to create proxy request: %v\n", err)
-		return
-	}
-	resp, err := (*Transport).RoundTrip(nil, proxyReq)
+	resp, err := httputil.Get(u.String())
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, "Internal Error")
 		log.Printf("failed to execute proxy request: %v\n", err)

@@ -1,7 +1,5 @@
 # basic-auth-proxy
 
-**Currently, not working**
-
 * This is an example of an HTTP proxy server with Basic-Auth .
 * This proxy server adds Basic-Auth to `https://syum.ai` .
 

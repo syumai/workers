@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 // toBody converts JavaScripts sides ReadableStream (can be null) to io.ReadCloser.
@@ -16,13 +18,13 @@ func toBody(streamOrNull js.Value) io.ReadCloser {
 		return nil
 	}
 	sr := streamOrNull.Call("getReader")
-	return io.NopCloser(convertStreamReaderToReader(sr))
+	return io.NopCloser(jsutil.ConvertStreamReaderToReader(sr))
 }
 
 // toHeader converts JavaScript sides Headers to http.Header.
 //   - Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
 func toHeader(headers js.Value) http.Header {
-	entries := arrayFrom(headers.Call("entries"))
+	entries := jsutil.ArrayFrom(headers.Call("entries"))
 	headerLen := entries.Length()
 	h := http.Header{}
 	for i := 0; i < headerLen; i++ {

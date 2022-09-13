@@ -1,4 +1,4 @@
-package workers
+package cloudflare
 
 import (
 	"errors"
@@ -6,6 +6,8 @@ import (
 	"io"
 	"syscall/js"
 	"time"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 // R2Object represents Cloudflare R2 object.
@@ -41,7 +43,7 @@ func (o *R2Object) BodyUsed() (bool, error) {
 // toR2Object converts JavaScript side's R2Object to *R2Object.
 //   - https://github.com/cloudflare/workers-types/blob/3012f263fb1239825e5f0061b267c8650d01b717/index.d.ts#L1094
 func toR2Object(v js.Value) (*R2Object, error) {
-	uploaded, err := dateToTime(v.Get("uploaded"))
+	uploaded, err := jsutil.DateToTime(v.Get("uploaded"))
 	if err != nil {
 		return nil, fmt.Errorf("error converting uploaded: %w", err)
 	}
@@ -52,7 +54,7 @@ func toR2Object(v js.Value) (*R2Object, error) {
 	bodyVal := v.Get("body")
 	var body io.Reader
 	if !bodyVal.IsUndefined() {
-		body = convertStreamReaderToReader(v.Get("body").Call("getReader"))
+		body = jsutil.ConvertStreamReaderToReader(v.Get("body").Call("getReader"))
 	}
 	return &R2Object{
 		instance:       v,
@@ -63,7 +65,7 @@ func toR2Object(v js.Value) (*R2Object, error) {
 		HTTPETag:       v.Get("httpEtag").String(),
 		Uploaded:       uploaded,
 		HTTPMetadata:   r2Meta,
-		CustomMetadata: strRecordToMap(v.Get("customMetadata")),
+		CustomMetadata: jsutil.StrRecordToMap(v.Get("customMetadata")),
 		Body:           body,
 	}, nil
 }
@@ -80,22 +82,22 @@ type R2HTTPMetadata struct {
 }
 
 func toR2HTTPMetadata(v js.Value) (R2HTTPMetadata, error) {
-	cacheExpiry, err := maybeDate(v.Get("cacheExpiry"))
+	cacheExpiry, err := jsutil.MaybeDate(v.Get("cacheExpiry"))
 	if err != nil {
 		return R2HTTPMetadata{}, fmt.Errorf("error converting cacheExpiry: %w", err)
 	}
 	return R2HTTPMetadata{
-		ContentType:        maybeString(v.Get("contentType")),
-		ContentLanguage:    maybeString(v.Get("contentLanguage")),
-		ContentDisposition: maybeString(v.Get("contentDisposition")),
-		ContentEncoding:    maybeString(v.Get("contentEncoding")),
-		CacheControl:       maybeString(v.Get("cacheControl")),
+		ContentType:        jsutil.MaybeString(v.Get("contentType")),
+		ContentLanguage:    jsutil.MaybeString(v.Get("contentLanguage")),
+		ContentDisposition: jsutil.MaybeString(v.Get("contentDisposition")),
+		ContentEncoding:    jsutil.MaybeString(v.Get("contentEncoding")),
+		CacheControl:       jsutil.MaybeString(v.Get("cacheControl")),
 		CacheExpiry:        cacheExpiry,
 	}, nil
 }
 
 func (md *R2HTTPMetadata) toJS() js.Value {
-	obj := newObject()
+	obj := jsutil.NewObject()
 	kv := map[string]string{
 		"contentType":        md.ContentType,
 		"contentLanguage":    md.ContentLanguage,
@@ -109,7 +111,7 @@ func (md *R2HTTPMetadata) toJS() js.Value {
 		}
 	}
 	if !md.CacheExpiry.IsZero() {
-		obj.Set("cacheExpiry", timeToDate(md.CacheExpiry))
+		obj.Set("cacheExpiry", jsutil.TimeToDate(md.CacheExpiry))
 	}
 	return obj
 }

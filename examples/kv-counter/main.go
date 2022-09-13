@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/syumai/workers/cloudflare"
+
 	"github.com/syumai/workers"
 )
 
@@ -24,7 +26,7 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 
 func main() {
 	// initialize KV namespace instance
-	kv, err := workers.NewKVNamespace(counterNamespace)
+	kv, err := cloudflare.NewKVNamespace(counterNamespace)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to init KV: %v", err)
 		os.Exit(1)

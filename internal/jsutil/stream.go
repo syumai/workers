@@ -1,4 +1,4 @@
-package workers
+package jsutil
 
 import (
 	"bytes"
@@ -56,8 +56,8 @@ func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
 	return sr.buf.Read(p)
 }
 
-// convertStreamReaderToReader converts ReadableStreamDefaultReader to io.Reader.
-func convertStreamReaderToReader(sr js.Value) io.Reader {
+// ConvertStreamReaderToReader converts ReadableStreamDefaultReader to io.Reader.
+func ConvertStreamReaderToReader(sr js.Value) io.Reader {
 	return &streamReaderToReader{
 		streamReader: sr,
 	}
@@ -83,14 +83,14 @@ func (rs *readerToReadableStream) Pull(controller js.Value) error {
 		return nil
 	}
 	if err != nil {
-		jsErr := errorClass.New(err.Error())
+		jsErr := ErrorClass.New(err.Error())
 		controller.Call("error", jsErr)
 		if err := rs.reader.Close(); err != nil {
 			return err
 		}
 		return err
 	}
-	ua := newUint8Array(n)
+	ua := NewUint8Array(n)
 	_ = js.CopyBytesToJS(ua, rs.chunkBuf[:n])
 	controller.Call("enqueue", ua)
 	return nil
@@ -105,13 +105,13 @@ func (rs *readerToReadableStream) Cancel() error {
 // https://deno.land/std@0.139.0/streams/conversion.ts#L5
 const defaultChunkSize = 16_640
 
-// convertReaderToReadableStream converts io.ReadCloser to ReadableStream.
-func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
+// ConvertReaderToReadableStream converts io.ReadCloser to ReadableStream.
+func ConvertReaderToReadableStream(reader io.ReadCloser) js.Value {
 	stream := &readerToReadableStream{
 		reader:   reader,
 		chunkBuf: make([]byte, defaultChunkSize),
 	}
-	rsInit := newObject()
+	rsInit := NewObject()
 	rsInit.Set("pull", js.FuncOf(func(_ js.Value, args []js.Value) any {
 		var cb js.Func
 		cb = js.FuncOf(func(this js.Value, pArgs []js.Value) any {
@@ -121,13 +121,13 @@ func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
 			controller := args[0]
 			err := stream.Pull(controller)
 			if err != nil {
-				reject.Invoke(errorClass.New(err.Error()))
+				reject.Invoke(ErrorClass.New(err.Error()))
 				return js.Undefined()
 			}
 			resolve.Invoke()
 			return js.Undefined()
 		})
-		return newPromise(cb)
+		return NewPromise(cb)
 	}))
 	rsInit.Set("cancel", js.FuncOf(func(js.Value, []js.Value) any {
 		err := stream.Cancel()
@@ -136,5 +136,5 @@ func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
 		}
 		return js.Undefined()
 	}))
-	return readableStreamClass.New(rsInit)
+	return ReadableStreamClass.New(rsInit)
 }

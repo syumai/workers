@@ -56,8 +56,8 @@ func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
 	return sr.buf.Read(p)
 }
 
-// convertStreamReaderToReader converts ReadableStreamDefaultReader to io.Reader.
-func convertStreamReaderToReader(sr js.Value) io.Reader {
+// ConvertStreamReaderToReader converts ReadableStreamDefaultReader to io.Reader.
+func ConvertStreamReaderToReader(sr js.Value) io.Reader {
 	return &streamReaderToReader{
 		streamReader: sr,
 	}
@@ -105,8 +105,8 @@ func (rs *readerToReadableStream) Cancel() error {
 // https://deno.land/std@0.139.0/streams/conversion.ts#L5
 const defaultChunkSize = 16_640
 
-// convertReaderToReadableStream converts io.ReadCloser to ReadableStream.
-func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
+// ConvertReaderToReadableStream converts io.ReadCloser to ReadableStream.
+func ConvertReaderToReadableStream(reader io.ReadCloser) js.Value {
 	stream := &readerToReadableStream{
 		reader:   reader,
 		chunkBuf: make([]byte, defaultChunkSize),

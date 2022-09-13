@@ -62,7 +62,7 @@ func (kv *KVNamespace) GetReader(key string, opts *KVNamespaceGetOptions) (io.Re
 		return nil, err
 	}
 	Global.Get("console").Call("log", v)
-	return convertStreamReaderToReader(v.Call("getReader")), nil
+	return ConvertStreamReaderToReader(v.Call("getReader")), nil
 }
 
 // KVNamespaceListOptions represents Cloudflare KV namespace list options.

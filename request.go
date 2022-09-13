@@ -16,7 +16,7 @@ func toBody(streamOrNull js.Value) io.ReadCloser {
 		return nil
 	}
 	sr := streamOrNull.Call("getReader")
-	return io.NopCloser(convertStreamReaderToReader(sr))
+	return io.NopCloser(ConvertStreamReaderToReader(sr))
 }
 
 // toHeader converts JavaScript sides Headers to http.Header.

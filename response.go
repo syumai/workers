@@ -25,6 +25,6 @@ func toJSResponse(w *responseWriterBuffer) (js.Value, error) {
 	respInit.Set("status", status)
 	respInit.Set("statusText", http.StatusText(status))
 	respInit.Set("headers", toJSHeader(w.Header()))
-	readableStream := convertReaderToReadableStream(w.reader)
+	readableStream := ConvertReaderToReadableStream(w.reader)
 	return ResponseClass.New(readableStream, respInit), nil
 }

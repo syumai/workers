@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/syumai/workers"
+	"github.com/syumai/workers/cloudflare"
 )
 
 // bucketName is R2 bucket name defined in wrangler.toml.
@@ -22,7 +23,7 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 // This example is based on implementation in syumai/workers-playground
 //   - https://github.com/syumai/workers-playground/blob/e32881648ccc055e3690a0d9c750a834261c333e/r2-image-viewer/src/index.ts#L30
 func handler(w http.ResponseWriter, req *http.Request) {
-	bucket, err := workers.NewR2Bucket(bucketName)
+	bucket, err := cloudflare.NewR2Bucket(bucketName)
 	if err != nil {
 		handleErr(w, "failed to get R2Bucket\n", err)
 		return

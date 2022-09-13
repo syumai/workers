@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 var httpHandler http.Handler
@@ -28,9 +30,9 @@ func init() {
 			}()
 			return js.Undefined()
 		})
-		return NewPromise(cb)
+		return jsutil.NewPromise(cb)
 	})
-	Global.Set("handleRequest", handleRequestCallback)
+	jsutil.Global.Set("handleRequest", handleRequestCallback)
 }
 
 // handleRequest accepts a Request object and returns Response object.

@@ -3,10 +3,12 @@ package workers
 import (
 	"net/http"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 func toJSHeader(header http.Header) js.Value {
-	h := HeadersClass.New()
+	h := jsutil.HeadersClass.New()
 	for key, values := range header {
 		for _, value := range values {
 			h.Call("append", key, value)
@@ -21,10 +23,10 @@ func toJSResponse(w *responseWriterBuffer) (js.Value, error) {
 	if status == 0 {
 		status = http.StatusOK
 	}
-	respInit := NewObject()
+	respInit := jsutil.NewObject()
 	respInit.Set("status", status)
 	respInit.Set("statusText", http.StatusText(status))
 	respInit.Set("headers", toJSHeader(w.Header()))
-	readableStream := ConvertReaderToReadableStream(w.reader)
-	return ResponseClass.New(readableStream, respInit), nil
+	readableStream := jsutil.ConvertReaderToReadableStream(w.reader)
+	return jsutil.ResponseClass.New(readableStream, respInit), nil
 }

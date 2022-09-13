@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 // R2Bucket represents interface of Cloudflare Worker's R2 Bucket instance.
@@ -31,7 +33,7 @@ func NewR2Bucket(varName string) (*R2Bucket, error) {
 //   - if a network error happens, returns error.
 func (r *R2Bucket) Head(key string) (*R2Object, error) {
 	p := r.instance.Call("head", key)
-	v, err := AwaitPromise(p)
+	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +48,7 @@ func (r *R2Bucket) Head(key string) (*R2Object, error) {
 //   - if a network error happens, returns error.
 func (r *R2Bucket) Get(key string) (*R2Object, error) {
 	p := r.instance.Call("get", key)
-	v, err := AwaitPromise(p)
+	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +70,7 @@ func (opts *R2PutOptions) toJS() js.Value {
 	if opts == nil {
 		return js.Undefined()
 	}
-	obj := NewObject()
+	obj := jsutil.NewObject()
 	if opts.HTTPMetadata != (R2HTTPMetadata{}) {
 		obj.Set("httpMetadata", opts.HTTPMetadata.toJS())
 	}
@@ -99,10 +101,10 @@ func (r *R2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2
 		return nil, err
 	}
 	defer value.Close()
-	ua := NewUint8Array(len(b))
+	ua := jsutil.NewUint8Array(len(b))
 	js.CopyBytesToJS(ua, b)
 	p := r.instance.Call("put", key, ua.Get("buffer"), opts.toJS())
-	v, err := AwaitPromise(p)
+	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +115,7 @@ func (r *R2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2
 //   - if a network error happens, returns error.
 func (r *R2Bucket) Delete(key string) error {
 	p := r.instance.Call("delete", key)
-	if _, err := AwaitPromise(p); err != nil {
+	if _, err := jsutil.AwaitPromise(p); err != nil {
 		return err
 	}
 	return nil
@@ -123,7 +125,7 @@ func (r *R2Bucket) Delete(key string) error {
 //   - if a network error happens, returns error.
 func (r *R2Bucket) List() (*R2Objects, error) {
 	p := r.instance.Call("list")
-	v, err := AwaitPromise(p)
+	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}

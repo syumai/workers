@@ -3,6 +3,8 @@ package workers
 import (
 	"fmt"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 // R2Objects represents Cloudflare R2 objects.
@@ -36,7 +38,7 @@ func toR2Objects(v js.Value) (*R2Objects, error) {
 	return &R2Objects{
 		Objects:           objects,
 		Truncated:         v.Get("truncated").Bool(),
-		Cursor:            MaybeString(v.Get("cursor")),
+		Cursor:            jsutil.MaybeString(v.Get("cursor")),
 		DelimitedPrefixes: prefixes,
 	}, nil
 }

@@ -7,36 +7,36 @@ import (
 )
 
 var (
-	global              = js.Global()
-	objectClass         = global.Get("Object")
-	promiseClass        = global.Get("Promise")
-	responseClass       = global.Get("Response")
-	headersClass        = global.Get("Headers")
-	arrayClass          = global.Get("Array")
-	uint8ArrayClass     = global.Get("Uint8Array")
-	errorClass          = global.Get("Error")
-	readableStreamClass = global.Get("ReadableStream")
-	dateClass           = global.Get("Date")
+	Global              = js.Global()
+	ObjectClass         = Global.Get("Object")
+	PromiseClass        = Global.Get("Promise")
+	ResponseClass       = Global.Get("Response")
+	HeadersClass        = Global.Get("Headers")
+	ArrayClass          = Global.Get("Array")
+	Uint8ArrayClass     = Global.Get("Uint8Array")
+	ErrorClass          = Global.Get("Error")
+	ReadableStreamClass = Global.Get("ReadableStream")
+	DateClass           = Global.Get("Date")
 )
 
-func newObject() js.Value {
-	return objectClass.New()
+func NewObject() js.Value {
+	return ObjectClass.New()
 }
 
-func newUint8Array(size int) js.Value {
-	return uint8ArrayClass.New(size)
+func NewUint8Array(size int) js.Value {
+	return Uint8ArrayClass.New(size)
 }
 
-func newPromise(fn js.Func) js.Value {
-	return promiseClass.New(fn)
+func NewPromise(fn js.Func) js.Value {
+	return PromiseClass.New(fn)
 }
 
-// arrayFrom calls Array.from to given argument and returns result Array.
-func arrayFrom(v js.Value) js.Value {
-	return arrayClass.Call("from", v)
+// ArrayFrom calls Array.from to given argument and returns result Array.
+func ArrayFrom(v js.Value) js.Value {
+	return ArrayClass.Call("from", v)
 }
 
-func awaitPromise(promiseVal js.Value) (js.Value, error) {
+func AwaitPromise(promiseVal js.Value) (js.Value, error) {
 	resultCh := make(chan js.Value)
 	errCh := make(chan error)
 	var then, catch js.Func
@@ -61,9 +61,9 @@ func awaitPromise(promiseVal js.Value) (js.Value, error) {
 	}
 }
 
-// strRecordToMap converts JavaScript side's Record<string, string> into map[string]string.
-func strRecordToMap(v js.Value) map[string]string {
-	entries := objectClass.Call("entries", v)
+// StrRecordToMap converts JavaScript side's Record<string, string> into map[string]string.
+func StrRecordToMap(v js.Value) map[string]string {
+	entries := ObjectClass.Call("entries", v)
 	entriesLen := entries.Get("length").Int()
 	result := make(map[string]string, entriesLen)
 	for i := 0; i < entriesLen; i++ {
@@ -75,29 +75,29 @@ func strRecordToMap(v js.Value) map[string]string {
 	return result
 }
 
-// maybeString returns string value of given JavaScript value or returns nil if the value is undefined.
-func maybeString(v js.Value) string {
+// MaybeString returns string value of given JavaScript value or returns nil if the value is undefined.
+func MaybeString(v js.Value) string {
 	if v.IsUndefined() {
 		return ""
 	}
 	return v.String()
 }
 
-// maybeDate returns time.Time value of given JavaScript Date value or returns nil if the value is undefined.
-func maybeDate(v js.Value) (time.Time, error) {
+// MaybeDate returns time.Time value of given JavaScript Date value or returns nil if the value is undefined.
+func MaybeDate(v js.Value) (time.Time, error) {
 	if v.IsUndefined() {
 		return time.Time{}, nil
 	}
-	return dateToTime(v)
+	return DateToTime(v)
 }
 
-// dateToTime converts JavaScript side's Data object into time.Time.
-func dateToTime(v js.Value) (time.Time, error) {
+// DateToTime converts JavaScript side's Data object into time.Time.
+func DateToTime(v js.Value) (time.Time, error) {
 	milli := v.Call("getTime").Float()
 	return time.UnixMilli(int64(milli)), nil
 }
 
-// timeToDate converts Go side's time.Time into Date object.
-func timeToDate(t time.Time) js.Value {
-	return dateClass.New(t.UnixMilli())
+// TimeToDate converts Go side's time.Time into Date object.
+func TimeToDate(t time.Time) js.Value {
+	return DateClass.New(t.UnixMilli())
 }

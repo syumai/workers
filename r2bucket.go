@@ -15,8 +15,8 @@ type R2Bucket struct {
 
 // NewR2Bucket returns R2Bucket for given variable name.
 //   - variable name must be defined in wrangler.toml.
-//     - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
-//   - if the given variable name doesn't exist on global object, returns error.
+//   - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
+//   - if the given variable name doesn't exist on Global object, returns error.
 func NewR2Bucket(varName string) (*R2Bucket, error) {
 	inst := js.Global().Get(varName)
 	if inst.IsUndefined() {
@@ -31,7 +31,7 @@ func NewR2Bucket(varName string) (*R2Bucket, error) {
 //   - if a network error happens, returns error.
 func (r *R2Bucket) Head(key string) (*R2Object, error) {
 	p := r.instance.Call("head", key)
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (r *R2Bucket) Head(key string) (*R2Object, error) {
 //   - if a network error happens, returns error.
 func (r *R2Bucket) Get(key string) (*R2Object, error) {
 	p := r.instance.Call("get", key)
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (opts *R2PutOptions) toJS() js.Value {
 	if opts == nil {
 		return js.Undefined()
 	}
-	obj := newObject()
+	obj := NewObject()
 	if opts.HTTPMetadata != (R2HTTPMetadata{}) {
 		obj.Set("httpMetadata", opts.HTTPMetadata.toJS())
 	}
@@ -99,10 +99,10 @@ func (r *R2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2
 		return nil, err
 	}
 	defer value.Close()
-	ua := newUint8Array(len(b))
+	ua := NewUint8Array(len(b))
 	js.CopyBytesToJS(ua, b)
 	p := r.instance.Call("put", key, ua.Get("buffer"), opts.toJS())
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (r *R2Bucket) Put(key string, value io.ReadCloser, opts *R2PutOptions) (*R2
 //   - if a network error happens, returns error.
 func (r *R2Bucket) Delete(key string) error {
 	p := r.instance.Call("delete", key)
-	if _, err := awaitPromise(p); err != nil {
+	if _, err := AwaitPromise(p); err != nil {
 		return err
 	}
 	return nil
@@ -123,7 +123,7 @@ func (r *R2Bucket) Delete(key string) error {
 //   - if a network error happens, returns error.
 func (r *R2Bucket) List() (*R2Objects, error) {
 	p := r.instance.Call("list")
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}

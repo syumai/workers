@@ -22,7 +22,7 @@ func toBody(streamOrNull js.Value) io.ReadCloser {
 // toHeader converts JavaScript sides Headers to http.Header.
 //   - Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
 func toHeader(headers js.Value) http.Header {
-	entries := arrayFrom(headers.Call("entries"))
+	entries := ArrayFrom(headers.Call("entries"))
 	headerLen := entries.Length()
 	h := http.Header{}
 	for i := 0; i < headerLen; i++ {

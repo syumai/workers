@@ -83,14 +83,14 @@ func (rs *readerToReadableStream) Pull(controller js.Value) error {
 		return nil
 	}
 	if err != nil {
-		jsErr := errorClass.New(err.Error())
+		jsErr := ErrorClass.New(err.Error())
 		controller.Call("error", jsErr)
 		if err := rs.reader.Close(); err != nil {
 			return err
 		}
 		return err
 	}
-	ua := newUint8Array(n)
+	ua := NewUint8Array(n)
 	_ = js.CopyBytesToJS(ua, rs.chunkBuf[:n])
 	controller.Call("enqueue", ua)
 	return nil
@@ -111,7 +111,7 @@ func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
 		reader:   reader,
 		chunkBuf: make([]byte, defaultChunkSize),
 	}
-	rsInit := newObject()
+	rsInit := NewObject()
 	rsInit.Set("pull", js.FuncOf(func(_ js.Value, args []js.Value) any {
 		var cb js.Func
 		cb = js.FuncOf(func(this js.Value, pArgs []js.Value) any {
@@ -121,13 +121,13 @@ func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
 			controller := args[0]
 			err := stream.Pull(controller)
 			if err != nil {
-				reject.Invoke(errorClass.New(err.Error()))
+				reject.Invoke(ErrorClass.New(err.Error()))
 				return js.Undefined()
 			}
 			resolve.Invoke()
 			return js.Undefined()
 		})
-		return newPromise(cb)
+		return NewPromise(cb)
 	}))
 	rsInit.Set("cancel", js.FuncOf(func(js.Value, []js.Value) any {
 		err := stream.Cancel()
@@ -136,5 +136,5 @@ func convertReaderToReadableStream(reader io.ReadCloser) js.Value {
 		}
 		return js.Undefined()
 	}))
-	return readableStreamClass.New(rsInit)
+	return ReadableStreamClass.New(rsInit)
 }

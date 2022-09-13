@@ -28,9 +28,9 @@ func init() {
 			}()
 			return js.Undefined()
 		})
-		return newPromise(cb)
+		return NewPromise(cb)
 	})
-	global.Set("handleRequest", handleRequestCallback)
+	Global.Set("handleRequest", handleRequestCallback)
 }
 
 // handleRequest accepts a Request object and returns Response object.

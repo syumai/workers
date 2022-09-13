@@ -36,7 +36,7 @@ func toR2Objects(v js.Value) (*R2Objects, error) {
 	return &R2Objects{
 		Objects:           objects,
 		Truncated:         v.Get("truncated").Bool(),
-		Cursor:            maybeString(v.Get("cursor")),
+		Cursor:            MaybeString(v.Get("cursor")),
 		DelimitedPrefixes: prefixes,
 	}, nil
 }

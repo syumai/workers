@@ -15,7 +15,7 @@ type KVNamespace struct {
 
 // NewKVNamespace returns KVNamespace for given variable name.
 //   - variable name must be defined in wrangler.toml as kv_namespace's binding.
-//   - if the given variable name doesn't exist on global object, returns error.
+//   - if the given variable name doesn't exist on Global object, returns error.
 func NewKVNamespace(varName string) (*KVNamespace, error) {
 	inst := js.Global().Get(varName)
 	if inst.IsUndefined() {
@@ -31,7 +31,7 @@ type KVNamespaceGetOptions struct {
 }
 
 func (opts *KVNamespaceGetOptions) toJS(type_ string) js.Value {
-	obj := newObject()
+	obj := NewObject()
 	obj.Set("type", type_)
 	if opts == nil {
 		return obj
@@ -46,7 +46,7 @@ func (opts *KVNamespaceGetOptions) toJS(type_ string) js.Value {
 //   - if a network error happens, returns error.
 func (kv *KVNamespace) GetString(key string, opts *KVNamespaceGetOptions) (string, error) {
 	p := kv.instance.Call("get", key, opts.toJS("text"))
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return "", err
 	}
@@ -57,11 +57,11 @@ func (kv *KVNamespace) GetString(key string, opts *KVNamespaceGetOptions) (strin
 //   - if a network error happens, returns error.
 func (kv *KVNamespace) GetReader(key string, opts *KVNamespaceGetOptions) (io.Reader, error) {
 	p := kv.instance.Call("get", key, opts.toJS("stream"))
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
-	global.Get("console").Call("log", v)
+	Global.Get("console").Call("log", v)
 	return convertStreamReaderToReader(v.Call("getReader")), nil
 }
 
@@ -77,7 +77,7 @@ func (opts *KVNamespaceListOptions) toJS() js.Value {
 	if opts == nil {
 		return js.Undefined()
 	}
-	obj := newObject()
+	obj := NewObject()
 	if opts.Limit != 0 {
 		obj.Set("limit", opts.Limit)
 	}
@@ -151,7 +151,7 @@ func toKVNamespaceListResult(v js.Value) (*KVNamespaceListResult, error) {
 // List lists keys stored into the KV namespace.
 func (kv *KVNamespace) List(opts *KVNamespaceListOptions) (*KVNamespaceListResult, error) {
 	p := kv.instance.Call("list", opts.toJS())
-	v, err := awaitPromise(p)
+	v, err := AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func (opts *KVNamespacePutOptions) toJS() js.Value {
 	if opts == nil {
 		return js.Undefined()
 	}
-	obj := newObject()
+	obj := NewObject()
 	if opts.Expiration != 0 {
 		obj.Set("expiration", opts.Expiration)
 	}
@@ -184,7 +184,7 @@ func (opts *KVNamespacePutOptions) toJS() js.Value {
 //   - if a network error happens, returns error.
 func (kv *KVNamespace) PutString(key string, value string, opts *KVNamespacePutOptions) error {
 	p := kv.instance.Call("put", key, value, opts.toJS())
-	_, err := awaitPromise(p)
+	_, err := AwaitPromise(p)
 	if err != nil {
 		return err
 	}
@@ -200,10 +200,10 @@ func (kv *KVNamespace) PutReader(key string, value io.Reader, opts *KVNamespaceP
 	if err != nil {
 		return err
 	}
-	ua := newUint8Array(len(b))
+	ua := NewUint8Array(len(b))
 	js.CopyBytesToJS(ua, b)
 	p := kv.instance.Call("put", key, ua.Get("buffer"), opts.toJS())
-	_, err = awaitPromise(p)
+	_, err = AwaitPromise(p)
 	if err != nil {
 		return err
 	}
@@ -214,7 +214,7 @@ func (kv *KVNamespace) PutReader(key string, value io.Reader, opts *KVNamespaceP
 //   - if a network error happens, returns error.
 func (kv *KVNamespace) Delete(key string) error {
 	p := kv.instance.Call("delete", key)
-	_, err := awaitPromise(p)
+	_, err := AwaitPromise(p)
 	if err != nil {
 		return err
 	}

@@ -67,5 +67,6 @@ func Serve(handler http.Handler) {
 		handler = http.DefaultServeMux
 	}
 	httpHandler = handler
+	jsutil.Global.Call("ready")
 	select {}
 }

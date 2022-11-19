@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/syumai/workers/cloudflare"
-
 	"github.com/syumai/workers"
+	"github.com/syumai/workers/cloudflare"
 )
 
 func main() {

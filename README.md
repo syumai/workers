@@ -22,6 +22,7 @@
   - [ ] Options for KV methods
 * [ ] Cache API
 * [ ] Durable Objects
+* [ ] D1
 * [x] Environment variables
 
 ## Installation

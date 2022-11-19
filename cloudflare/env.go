@@ -1,4 +1,4 @@
-package workers
+package cloudflare
 
 import "github.com/syumai/workers/internal/jsutil"
 

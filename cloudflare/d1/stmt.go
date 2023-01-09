@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql/driver"
 	"errors"
-	"github.com/syumai/workers/internal/jsutil"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 type stmt struct {

@@ -3,10 +3,11 @@ package d1
 import (
 	"database/sql/driver"
 	"errors"
-	"github.com/syumai/workers/internal/jsutil"
 	"io"
 	"sync"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 type rows struct {

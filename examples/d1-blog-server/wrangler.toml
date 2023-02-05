@@ -1,0 +1,21 @@
+name = "d1-blog-server-2"
+main = "./js/worker.mjs"
+compatibility_date = "2023-01-09"
+
+[build]
+command = "make build-tinygo"
+#command = "make build"
+
+[[ d1_databases ]]
+binding = "BlogDB"
+database_name = "d1-blog-server"
+database_id = "c6d5e4c0-3134-42fa-834c-812b24fea3cf"
+preview_database_id = "9f44099e-a008-45c2-88e4-aed0bd754a86"
+
+[[ d1_databases ]]
+# workaround to migrate preview DB
+# - https://github.com/cloudflare/wrangler2/issues/2446
+binding = "BlogDB-Preview"
+database_name = "d1-blog-server-preview"
+database_id = "9f44099e-a008-45c2-88e4-aed0bd754a86"
+preview_database_id = "9f44099e-a008-45c2-88e4-aed0bd754a86"

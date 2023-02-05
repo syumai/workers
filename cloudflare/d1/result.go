@@ -17,8 +17,8 @@ var (
 // LastInsertId returns id of result's last row.
 // If lastRowId can't be retrieved, this method returns error.
 func (r *result) LastInsertId() (int64, error) {
-	v := r.resultObj.Get("lastRowId")
-	if v.IsNull() {
+	v := r.resultObj.Get("meta").Get("lastRowId")
+	if v.IsNull() || v.IsUndefined() {
 		return 0, errors.New("d1: lastRowId cannot be retrieved")
 	}
 	id := v.Int()

@@ -64,7 +64,10 @@ func (s *stmt) QueryContext(_ context.Context, args []driver.NamedValue) (driver
 	if err != nil {
 		return nil, err
 	}
+	if !rowsObj.Get("success").Bool() {
+		return nil, errors.New("d1: failed to query")
+	}
 	return &rows{
-		rowsObj: rowsObj,
+		rowsObj: rowsObj.Get("results"),
 	}, nil
 }

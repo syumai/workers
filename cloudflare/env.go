@@ -1,10 +1,12 @@
 package cloudflare
 
-import "github.com/syumai/workers/internal/jsutil"
+import (
+	"context"
+)
 
 // Getenv gets a value of an environment variable.
 //   - https://developers.cloudflare.com/workers/platform/environment-variables/
-//   - Technically, this function is just an alias for js.Global().Get(env_name).String().
-func Getenv(name string) string {
-	return jsutil.Global.Get(name).String()
+//   - This function panics when a runtime context is not found.
+func Getenv(ctx context.Context, name string) string {
+	return getRuntimeContextEnv(ctx).Get(name).String()
 }

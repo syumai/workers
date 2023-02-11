@@ -1,10 +1,9 @@
-name = "d1-blog-server-2"
-main = "./js/worker.mjs"
+name = "d1-blog-server"
+main = "./worker.mjs"
 compatibility_date = "2023-01-09"
 
 [build]
-command = "make build-tinygo"
-#command = "make build"
+command = "make build"
 
 [[ d1_databases ]]
 binding = "BlogDB"

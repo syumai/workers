@@ -29,7 +29,7 @@ func (h *articleHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	switch req.Method {
 	case http.MethodGet:
-		h.listArticles(w, db)
+		h.listArticles(w, req, db)
 		return
 	case http.MethodPost:
 		h.createArticle(w, req, db)
@@ -62,7 +62,7 @@ func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request,
 		CreatedAt: uint64(now),
 	}
 
-	_, err := db.Exec(`
+	_, err := db.ExecContext(req.Context(), `
 INSERT INTO articles (id, title, body, created_at)
 VALUES (?, ?, ?, ?)
    `, article.ID, article.Title, article.Body, article.CreatedAt)
@@ -83,8 +83,8 @@ VALUES (?, ?, ?, ?)
 	}
 }
 
-func (h *articleHandler) listArticles(w http.ResponseWriter, db *sql.DB) {
-	rows, err := db.Query(`
+func (h *articleHandler) listArticles(w http.ResponseWriter, req *http.Request, db *sql.DB) {
+	rows, err := db.QueryContext(req.Context(), `
 SELECT id, title, body, created_at FROM articles
 ORDER BY created_at DESC;
    `)

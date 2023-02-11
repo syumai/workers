@@ -1,6 +1,7 @@
 package cloudflare
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"syscall/js"
@@ -18,9 +19,10 @@ type R2Bucket struct {
 // NewR2Bucket returns R2Bucket for given variable name.
 //   - variable name must be defined in wrangler.toml.
 //   - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
-//   - if the given variable name doesn't exist on Global object, returns error.
-func NewR2Bucket(varName string) (*R2Bucket, error) {
-	inst := js.Global().Get(varName)
+//   - if the given variable name doesn't exist on runtime context, returns error.
+//   - This function panics when a runtime context is not found.
+func NewR2Bucket(ctx context.Context, varName string) (*R2Bucket, error) {
+	inst := getRuntimeContextEnv(ctx).Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)
 	}

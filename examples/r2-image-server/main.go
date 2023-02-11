@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/syumai/workers"
@@ -22,20 +22,19 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 	w.Write([]byte(msg))
 }
 
-type server struct {
-	bucket *cloudflare.R2Bucket
-}
+type server struct{}
 
-func newServer() (*server, error) {
-	bucket, err := cloudflare.NewR2Bucket(bucketName)
-	if err != nil {
-		return nil, err
-	}
-	return &server{bucket: bucket}, nil
+func (s *server) bucket(ctx context.Context) (*cloudflare.R2Bucket, error) {
+	return cloudflare.NewR2Bucket(ctx, bucketName)
 }
 
 func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
-	objects, err := s.bucket.List()
+	bucket, err := s.bucket(req.Context())
+	if err != nil {
+		handleErr(w, "failed to initialize R2Bucket\n", err)
+		return
+	}
+	objects, err := bucket.List()
 	if err != nil {
 		handleErr(w, "failed to list R2Objects\n", err)
 		return
@@ -47,7 +46,7 @@ func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
 			return
 		}
 	}
-	_, err = s.bucket.Put(key, req.Body, &cloudflare.R2PutOptions{
+	_, err = bucket.Put(key, req.Body, &cloudflare.R2PutOptions{
 		HTTPMetadata: cloudflare.R2HTTPMetadata{
 			ContentType: req.Header.Get("Content-Type"),
 		},
@@ -64,7 +63,12 @@ func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
 
 func (s *server) get(w http.ResponseWriter, req *http.Request, key string) {
 	// get image object from R2
-	imgObj, err := s.bucket.Get(key)
+	bucket, err := s.bucket(req.Context())
+	if err != nil {
+		handleErr(w, "failed to initialize R2Bucket\n", err)
+		return
+	}
+	imgObj, err := bucket.Get(key)
 	if err != nil {
 		handleErr(w, "failed to get R2Object\n", err)
 		return
@@ -86,7 +90,12 @@ func (s *server) get(w http.ResponseWriter, req *http.Request, key string) {
 
 func (s *server) delete(w http.ResponseWriter, req *http.Request, key string) {
 	// delete image object from R2
-	if err := s.bucket.Delete(key); err != nil {
+	bucket, err := s.bucket(req.Context())
+	if err != nil {
+		handleErr(w, "failed to initialize R2Bucket\n", err)
+		return
+	}
+	if err := bucket.Delete(key); err != nil {
 		handleErr(w, "failed to delete R2Object\n", err)
 		return
 	}
@@ -114,10 +123,5 @@ func (s *server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	s, err := newServer()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to start server: %v", err)
-		os.Exit(1)
-	}
-	workers.Serve(s)
+	workers.Serve(&server{})
 }

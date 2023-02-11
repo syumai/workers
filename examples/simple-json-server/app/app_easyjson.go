@@ -4,7 +4,6 @@ package app
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -18,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp(in *jlexer.Lexer, out *HelloResponse) {
+func easyjsonD2c14bDecodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp(in *jlexer.Lexer, out *HelloResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -49,7 +48,7 @@ func easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp(in *jlexer.Le
 		in.Consumed()
 	}
 }
-func easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp(out *jwriter.Writer, in HelloResponse) {
+func easyjsonD2c14bEncodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp(out *jwriter.Writer, in HelloResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -64,27 +63,27 @@ func easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp(out *jwriter.
 // MarshalJSON supports json.Marshaler interface
 func (v HelloResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp(&w, v)
+	easyjsonD2c14bEncodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v HelloResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp(w, v)
+	easyjsonD2c14bEncodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *HelloResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp(&r, v)
+	easyjsonD2c14bDecodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *HelloResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp(l, v)
+	easyjsonD2c14bDecodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp(l, v)
 }
-func easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp1(in *jlexer.Lexer, out *HelloRequest) {
+func easyjsonD2c14bDecodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp1(in *jlexer.Lexer, out *HelloRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -115,7 +114,7 @@ func easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp1(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp1(out *jwriter.Writer, in HelloRequest) {
+func easyjsonD2c14bEncodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp1(out *jwriter.Writer, in HelloRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -130,23 +129,23 @@ func easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp1(out *jwriter
 // MarshalJSON supports json.Marshaler interface
 func (v HelloRequest) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp1(&w, v)
+	easyjsonD2c14bEncodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v HelloRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2c14bEncodeGithubComSyumaiWorkersPlaygroundTinygoApp1(w, v)
+	easyjsonD2c14bEncodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *HelloRequest) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp1(&r, v)
+	easyjsonD2c14bDecodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *HelloRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2c14bDecodeGithubComSyumaiWorkersPlaygroundTinygoApp1(l, v)
+	easyjsonD2c14bDecodeGithubComSyumaiWorkersExamplesSimpleJsonServerApp1(l, v)
 }

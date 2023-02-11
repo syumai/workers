@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql/driver"
 	"errors"
-	"syscall/js"
+
+	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
 )
 
 type Conn struct {
-	dbObj js.Value
+	dbName string
 }
 
 var (
@@ -18,14 +19,18 @@ var (
 )
 
 func (c *Conn) Prepare(query string) (driver.Stmt, error) {
-	stmtObj := c.dbObj.Call("prepare", query)
-	return &stmt{
-		stmtObj: stmtObj,
-	}, nil
+	return nil, errors.New("d1: Prepare is not implemented. please use PrepareContext instead")
 }
 
 func (c *Conn) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) {
-	return c.Prepare(query)
+	dbObj := cfruntimecontext.GetRuntimeContextEnv(ctx).Get(c.dbName)
+	if dbObj.IsUndefined() {
+		return nil, ErrDatabaseNotFound
+	}
+	stmtObj := dbObj.Call("prepare", query)
+	return &stmt{
+		stmtObj: stmtObj,
+	}, nil
 }
 
 func (c *Conn) Close() error {

@@ -55,14 +55,14 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
 	w := &jsutil.ResponseWriterBuffer{
-		header:     http.Header{},
-		statusCode: http.StatusOK,
-		reader:     reader,
-		writer:     writer,
-		readyCh:    make(chan struct{}),
+		HeaderValue: http.Header{},
+		StatusCode:  http.StatusOK,
+		Reader:      reader,
+		Writer:      writer,
+		ReadyCh:     make(chan struct{}),
 	}
 	go func() {
-		defer w.ready()
+		defer w.Ready()
 		defer writer.Close()
 		httpHandler.ServeHTTP(w, req)
 	}()

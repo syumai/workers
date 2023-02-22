@@ -16,8 +16,8 @@ func ToJSHeader(header http.Header) js.Value {
 }
 
 func ToJSResponse(w *ResponseWriterBuffer) (js.Value, error) {
-	<-w.readyCh // wait until ready
-	status := w.statusCode
+	<-w.ReadyCh // wait until ready
+	status := w.StatusCode
 	if status == 0 {
 		status = http.StatusOK
 	}
@@ -25,6 +25,6 @@ func ToJSResponse(w *ResponseWriterBuffer) (js.Value, error) {
 	respInit.Set("status", status)
 	respInit.Set("statusText", http.StatusText(status))
 	respInit.Set("headers", ToJSHeader(w.Header()))
-	readableStream := ConvertReaderToReadableStream(w.reader)
+	readableStream := ConvertReaderToReadableStream(w.Reader)
 	return ResponseClass.New(readableStream, respInit), nil
 }

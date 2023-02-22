@@ -7,32 +7,32 @@ import (
 )
 
 type ResponseWriterBuffer struct {
-	header     http.Header
-	statusCode int
-	reader     *io.PipeReader
-	writer     *io.PipeWriter
-	readyCh    chan struct{}
-	once       sync.Once
+	HeaderValue http.Header
+	StatusCode  int
+	Reader      *io.PipeReader
+	Writer      *io.PipeWriter
+	ReadyCh     chan struct{}
+	Once        sync.Once
 }
 
 var _ http.ResponseWriter = &ResponseWriterBuffer{}
 
-// ready indicates that ResponseWriterBuffer is ready to be converted to Response.
-func (w *ResponseWriterBuffer) ready() {
-	w.once.Do(func() {
-		close(w.readyCh)
+// Ready indicates that ResponseWriterBuffer is ready to be converted to Response.
+func (w *ResponseWriterBuffer) Ready() {
+	w.Once.Do(func() {
+		close(w.ReadyCh)
 	})
 }
 
 func (w *ResponseWriterBuffer) Write(data []byte) (n int, err error) {
-	w.ready()
-	return w.writer.Write(data)
+	w.Ready()
+	return w.Writer.Write(data)
 }
 
 func (w *ResponseWriterBuffer) Header() http.Header {
-	return w.header
+	return w.HeaderValue
 }
 
 func (w *ResponseWriterBuffer) WriteHeader(statusCode int) {
-	w.statusCode = statusCode
+	w.StatusCode = statusCode
 }

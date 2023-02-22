@@ -22,6 +22,7 @@
   - [ ] Options for KV methods
 * [ ] Cache API
 * [ ] Durable Objects
+  - [x] Calling stubs
 * [ ] D1
 * [x] Environment variables
 
@@ -77,4 +78,4 @@ MIT
 
 ## Author
 
-syumai
+syumai, akarasz

@@ -10,6 +10,7 @@ var (
 	Global              = js.Global()
 	ObjectClass         = Global.Get("Object")
 	PromiseClass        = Global.Get("Promise")
+	RequestClass        = Global.Get("Request")
 	ResponseClass       = Global.Get("Response")
 	HeadersClass        = Global.Get("Headers")
 	ArrayClass          = Global.Get("Array")

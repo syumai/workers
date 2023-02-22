@@ -47,14 +47,14 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if httpHandler == nil {
 		return js.Value{}, fmt.Errorf("Serve must be called before handleRequest.")
 	}
-	req, err := toRequest(reqObj)
+	req, err := jsutil.ToRequest(reqObj)
 	if err != nil {
 		panic(err)
 	}
 	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
-	w := &responseWriterBuffer{
+	w := &jsutil.ResponseWriterBuffer{
 		header:     http.Header{},
 		statusCode: http.StatusOK,
 		reader:     reader,
@@ -66,7 +66,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 		defer writer.Close()
 		httpHandler.ServeHTTP(w, req)
 	}()
-	return toJSResponse(w)
+	return jsutil.ToJSResponse(w)
 }
 
 // Server serves http.Handler on Cloudflare Workers.

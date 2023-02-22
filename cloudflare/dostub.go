@@ -2,8 +2,8 @@ package cloudflare
 
 import (
 	"context"
-	"io"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -89,21 +89,10 @@ func toHeader(headers js.Value) http.Header {
 	return h
 }
 
-// copied from workers#response.go
-func toJSHeader(header http.Header) js.Value {
-	h := jsutil.HeadersClass.New()
-	for key, values := range header {
-		for _, value := range values {
-			h.Call("append", key, value)
-		}
-	}
-	return h
-}
-
 func toJSRequest(req *http.Request) js.Value {
 	jsReqOptions := jsutil.NewObject()
 	jsReqOptions.Set("method", req.Method)
-	jsReqOptions.Set("headers", toJSHeader(req.Header))
+	jsReqOptions.Set("headers", jsutil.ToJSHeader(req.Header))
 	jsReqBody := js.Undefined()
 	if req.Body != nil {
 		jsReqBody = jsutil.ConvertReaderToReadableStream(req.Body)
@@ -124,10 +113,10 @@ func toResponse(res js.Value) (*http.Response, error) {
 	contentLength, _ := strconv.ParseInt(header.Get("Content-Length"), 10, 64)
 
 	return &http.Response{
-		Status: strconv.Itoa(status) + " " + res.Get("statusText").String(),
-		StatusCode: status,
-		Header: header,
-		Body: io.NopCloser(strings.NewReader(body.String())),
+		Status:        strconv.Itoa(status) + " " + res.Get("statusText").String(),
+		StatusCode:    status,
+		Header:        header,
+		Body:          io.NopCloser(strings.NewReader(body.String())),
 		ContentLength: contentLength,
 	}, nil
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-// ToBody converts JavaScripts sides ReadableStream (can be null) to io.ReadCloser.
+// ToBody converts JavaScript sides ReadableStream (can be null) to io.ReadCloser.
 //   - ReadableStream: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 func ToBody(streamOrNull js.Value) io.ReadCloser {
 	if streamOrNull.IsNull() {
@@ -19,23 +19,6 @@ func ToBody(streamOrNull js.Value) io.ReadCloser {
 	}
 	sr := streamOrNull.Call("getReader")
 	return io.NopCloser(jsutil.ConvertStreamReaderToReader(sr))
-}
-
-// ToHeader converts JavaScript sides Headers to http.Header.
-//   - Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
-func ToHeader(headers js.Value) http.Header {
-	entries := jsutil.ArrayFrom(headers.Call("entries"))
-	headerLen := entries.Length()
-	h := http.Header{}
-	for i := 0; i < headerLen; i++ {
-		entry := entries.Index(i)
-		key := entry.Index(0).String()
-		values := entry.Index(1).String()
-		for _, value := range strings.Split(values, ",") {
-			h.Add(key, value)
-		}
-	}
-	return h
 }
 
 // ToRequest converts JavaScript sides Request to *http.Request.

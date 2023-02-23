@@ -7,16 +7,6 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-func ToJSHeader(header http.Header) js.Value {
-	h := jsutil.HeadersClass.New()
-	for key, values := range header {
-		for _, value := range values {
-			h.Call("append", key, value)
-		}
-	}
-	return h
-}
-
 func ToJSResponse(w *ResponseWriterBuffer) (js.Value, error) {
 	<-w.ReadyCh // wait until ready
 	status := w.StatusCode

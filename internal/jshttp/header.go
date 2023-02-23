@@ -9,7 +9,7 @@ import (
 )
 
 // ToHeader converts JavaScript sides Headers to http.Header.
-//   - Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
+//   - Headers: https://developer.mozilla.org/docs/Web/API/Headers
 func ToHeader(headers js.Value) http.Header {
 	entries := jsutil.ArrayFrom(headers.Call("entries"))
 	headerLen := entries.Length()
@@ -26,7 +26,7 @@ func ToHeader(headers js.Value) http.Header {
 }
 
 // ToJSHeader converts http.Header to JavaScript sides Headers.
-//   - Headers: https://developer.mozilla.org/ja/docs/Web/API/Headers
+//   - Headers: https://developer.mozilla.org/docs/Web/API/Headers
 func ToJSHeader(header http.Header) js.Value {
 	h := jsutil.HeadersClass.New()
 	for key, values := range header {

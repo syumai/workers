@@ -11,7 +11,7 @@ import (
 )
 
 // ToResponse converts JavaScript sides Response to *http.Response.
-//   - Response: https://developer.mozilla.org/ja/docs/Web/API/Response
+//   - Response: https://developer.mozilla.org/docs/Web/API/Response
 func ToResponse(res js.Value) (*http.Response, error) {
 	status := res.Get("status").Int()
 	promise := res.Call("text")
@@ -32,7 +32,7 @@ func ToResponse(res js.Value) (*http.Response, error) {
 }
 
 // ToJSResponse converts *http.Response to JavaScript sides Response.
-//   - Response: https://developer.mozilla.org/ja/docs/Web/API/Response
+//   - Response: https://developer.mozilla.org/docs/Web/API/Response
 func ToJSResponse(w *ResponseWriterBuffer) (js.Value, error) {
 	<-w.ReadyCh // wait until ready
 	status := w.StatusCode

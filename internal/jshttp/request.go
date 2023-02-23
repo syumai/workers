@@ -22,7 +22,7 @@ func ToBody(streamOrNull js.Value) io.ReadCloser {
 }
 
 // ToRequest converts JavaScript sides Request to *http.Request.
-//   - Request: https://developer.mozilla.org/ja/docs/Web/API/Request
+//   - Request: https://developer.mozilla.org/docs/Web/API/Request
 func ToRequest(req js.Value) (*http.Request, error) {
 	reqUrl, err := url.Parse(req.Get("url").String())
 	if err != nil {
@@ -44,7 +44,7 @@ func ToRequest(req js.Value) (*http.Request, error) {
 }
 
 // ToJSRequest converts *http.Request to JavaScript sides Request.
-//   - Request: https://developer.mozilla.org/ja/docs/Web/API/Request
+//   - Request: https://developer.mozilla.org/docs/Web/API/Request
 func ToJSRequest(req *http.Request) js.Value {
 	jsReqOptions := jsutil.NewObject()
 	jsReqOptions.Set("method", req.Method)

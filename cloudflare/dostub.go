@@ -3,10 +3,7 @@ package cloudflare
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
-	"strconv"
-	"strings"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jshttp"
@@ -63,7 +60,7 @@ type DurableObjectStub struct {
 //
 // https://developers.cloudflare.com/workers/runtime-apis/durable-objects/#sending-http-requests
 func (s *DurableObjectStub) Fetch(req *http.Request) (*http.Response, error) {
-	jsReq := toJSRequest(req)
+	jsReq := jshttp.ToJSRequest(req)
 
 	promise := s.val.Call("fetch", jsReq)
 	jsRes, err := jsutil.AwaitPromise(promise)
@@ -71,37 +68,5 @@ func (s *DurableObjectStub) Fetch(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
-	return toResponse(jsRes)
-}
-
-func toJSRequest(req *http.Request) js.Value {
-	jsReqOptions := jsutil.NewObject()
-	jsReqOptions.Set("method", req.Method)
-	jsReqOptions.Set("headers", jshttp.ToJSHeader(req.Header))
-	jsReqBody := js.Undefined()
-	if req.Body != nil {
-		jsReqBody = jsutil.ConvertReaderToReadableStream(req.Body)
-	}
-	jsReqOptions.Set("body", jsReqBody)
-	jsReq := jsutil.RequestClass.New(req.URL.String(), jsReqOptions)
-	return jsReq
-}
-
-func toResponse(res js.Value) (*http.Response, error) {
-	status := res.Get("status").Int()
-	promise := res.Call("text")
-	body, err := jsutil.AwaitPromise(promise)
-	if err != nil {
-		return nil, err
-	}
-	header := jshttp.ToHeader(res.Get("headers"))
-	contentLength, _ := strconv.ParseInt(header.Get("Content-Length"), 10, 64)
-
-	return &http.Response{
-		Status:        strconv.Itoa(status) + " " + res.Get("statusText").String(),
-		StatusCode:    status,
-		Header:        header,
-		Body:          io.NopCloser(strings.NewReader(body.String())),
-		ContentLength: contentLength,
-	}, nil
+	return jshttp.ToResponse(jsRes)
 }

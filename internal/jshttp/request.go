@@ -42,3 +42,18 @@ func ToRequest(req js.Value) (*http.Request, error) {
 		Host:             header.Get("Host"),
 	}, nil
 }
+
+// ToJSRequest converts *http.Request to JavaScript sides Request.
+//   - Request: https://developer.mozilla.org/ja/docs/Web/API/Request
+func ToJSRequest(req *http.Request) js.Value {
+	jsReqOptions := jsutil.NewObject()
+	jsReqOptions.Set("method", req.Method)
+	jsReqOptions.Set("headers", ToJSHeader(req.Header))
+	jsReqBody := js.Undefined()
+	if req.Body != nil {
+		jsReqBody = jsutil.ConvertReaderToReadableStream(req.Body)
+	}
+	jsReqOptions.Set("body", jsReqBody)
+	jsReq := jsutil.RequestClass.New(req.URL.String(), jsReqOptions)
+	return jsReq
+}

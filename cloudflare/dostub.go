@@ -74,22 +74,6 @@ func (s *DurableObjectStub) Fetch(req *http.Request) (*http.Response, error) {
 	return toResponse(jsRes)
 }
 
-// copied from workers#request.go
-func toHeader(headers js.Value) http.Header {
-	entries := jsutil.ArrayFrom(headers.Call("entries"))
-	headerLen := entries.Length()
-	h := http.Header{}
-	for i := 0; i < headerLen; i++ {
-		entry := entries.Index(i)
-		key := entry.Index(0).String()
-		values := entry.Index(1).String()
-		for _, value := range strings.Split(values, ",") {
-			h.Add(key, value)
-		}
-	}
-	return h
-}
-
 func toJSRequest(req *http.Request) js.Value {
 	jsReqOptions := jsutil.NewObject()
 	jsReqOptions.Set("method", req.Method)
@@ -110,7 +94,7 @@ func toResponse(res js.Value) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	header := toHeader(res.Get("headers"))
+	header := jshttp.ToHeader(res.Get("headers"))
 	contentLength, _ := strconv.ParseInt(header.Get("Content-Length"), 10, 64)
 
 	return &http.Response{

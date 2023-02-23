@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"syscall/js"
 
+	"github.com/syumai/workers/internal/jshttp"
 	"github.com/syumai/workers/internal/jsutil"
 	"github.com/syumai/workers/internal/runtimecontext"
 )
@@ -47,14 +48,14 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if httpHandler == nil {
 		return js.Value{}, fmt.Errorf("Serve must be called before handleRequest.")
 	}
-	req, err := jsutil.ToRequest(reqObj)
+	req, err := jshttp.ToRequest(reqObj)
 	if err != nil {
 		panic(err)
 	}
 	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
-	w := &jsutil.ResponseWriterBuffer{
+	w := &jshttp.ResponseWriterBuffer{
 		HeaderValue: http.Header{},
 		StatusCode:  http.StatusOK,
 		Reader:      reader,
@@ -66,7 +67,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 		defer writer.Close()
 		httpHandler.ServeHTTP(w, req)
 	}()
-	return jsutil.ToJSResponse(w)
+	return jshttp.ToJSResponse(w)
 }
 
 // Server serves http.Handler on Cloudflare Workers.

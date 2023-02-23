@@ -9,6 +9,7 @@ import (
 	"strings"
 	"syscall/js"
 
+	"github.com/syumai/workers/internal/jshttp"
 	"github.com/syumai/workers/internal/jsutil"
 )
 
@@ -92,7 +93,7 @@ func toHeader(headers js.Value) http.Header {
 func toJSRequest(req *http.Request) js.Value {
 	jsReqOptions := jsutil.NewObject()
 	jsReqOptions.Set("method", req.Method)
-	jsReqOptions.Set("headers", jsutil.ToJSHeader(req.Header))
+	jsReqOptions.Set("headers", jshttp.ToJSHeader(req.Header))
 	jsReqBody := js.Undefined()
 	if req.Body != nil {
 		jsReqBody = jsutil.ConvertReaderToReadableStream(req.Body)

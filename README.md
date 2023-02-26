@@ -23,7 +23,7 @@
 * [ ] Cache API
 * [ ] Durable Objects
   - [x] Calling stubs
-* [ ] D1
+* [x] D1 (alpha)
 * [x] Environment variables
 
 ## Installation

@@ -1,4 +1,4 @@
-package cloudflare
+package cfruntimecontext
 
 import (
 	"context"
@@ -19,17 +19,17 @@ import (
  * - see: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#LL564
  */
 
-// getRuntimeContextEnv gets object which holds environment variables bound to Cloudflare worker.
+// GetRuntimeContextEnv gets object which holds environment variables bound to Cloudflare worker.
 // - see: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#L566
-func getRuntimeContextEnv(ctx context.Context) js.Value {
+func GetRuntimeContextEnv(ctx context.Context) js.Value {
 	runtimeCtxValue := runtimecontext.MustExtract(ctx)
 	return runtimeCtxValue.Get("env")
 }
 
-// getExecutionContext gets ExecutionContext object from context.
+// GetExecutionContext gets ExecutionContext object from context.
 // - see: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#L567
 // - see also: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#L554
-func getExecutionContext(ctx context.Context) js.Value {
+func GetExecutionContext(ctx context.Context) js.Value {
 	runtimeCtxValue := runtimecontext.MustExtract(ctx)
 	return runtimeCtxValue.Get("ctx")
 }

@@ -6,6 +6,7 @@ import (
 	"io"
 	"syscall/js"
 
+	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
 	"github.com/syumai/workers/internal/jsutil"
 )
 
@@ -22,7 +23,7 @@ type R2Bucket struct {
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
 func NewR2Bucket(ctx context.Context, varName string) (*R2Bucket, error) {
-	inst := getRuntimeContextEnv(ctx).Get(varName)
+	inst := cfruntimecontext.GetRuntimeContextEnv(ctx).Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)
 	}

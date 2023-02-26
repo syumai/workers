@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/syumai/workers/cloudflare/d1"
 	_ "github.com/syumai/workers/cloudflare/d1" // register driver
@@ -62,22 +61,29 @@ func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request,
 
 	now := time.Now().Unix()
 	article := model.Article{
-		ID:        uuid.New().String(),
 		Title:     createArticleReq.Title,
 		Body:      createArticleReq.Body,
 		CreatedAt: uint64(now),
 	}
 
-	_, err := db.Exec(`
-INSERT INTO articles (id, title, body, created_at)
-VALUES (?, ?, ?, ?)
-   `, article.ID, article.Title, article.Body, article.CreatedAt)
+	result, err := db.Exec(`
+INSERT INTO articles (title, body, created_at)
+VALUES (?, ?, ?)
+   `, article.Title, article.Body, article.CreatedAt)
 	if err != nil {
 		log.Println(err)
 		h.handleErr(w, http.StatusInternalServerError,
 			"failed to save article")
 		return
 	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		h.handleErr(w, http.StatusInternalServerError,
+			"failed to get ID of inserted article")
+		return
+	}
+	article.ID = uint64(id)
 
 	res := model.CreateArticleResponse{
 		Article: article,
@@ -103,15 +109,15 @@ ORDER BY created_at DESC;
 	articles := []model.Article{}
 	for rows.Next() {
 		var (
-			id, title, body string
-			createdAt       float64 // number value is always retrieved as float64.
+			title, body   string
+			id, createdAt float64 // number value is always retrieved as float64.
 		)
 		err = rows.Scan(&id, &title, &body, &createdAt)
 		if err != nil {
 			break
 		}
 		articles = append(articles, model.Article{
-			ID:        id,
+			ID:        uint64(id),
 			Title:     title,
 			Body:      body,
 			CreatedAt: uint64(createdAt),

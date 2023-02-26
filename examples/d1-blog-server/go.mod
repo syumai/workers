@@ -9,7 +9,4 @@ require (
 
 replace github.com/syumai/workers => ../../
 
-require (
-	github.com/google/uuid v1.3.0 // indirect
-	github.com/josharian/intern v1.0.0 // indirect
-)
+require github.com/josharian/intern v1.0.0 // indirect

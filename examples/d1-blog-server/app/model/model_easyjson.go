@@ -274,7 +274,7 @@ func easyjsonC80ae7adDecodeGithubComSyumaiWorkersExamplesD1BlogServerAppModel3(i
 		}
 		switch key {
 		case "id":
-			out.ID = string(in.String())
+			out.ID = uint64(in.Uint64())
 		case "title":
 			out.Title = string(in.String())
 		case "body":
@@ -298,7 +298,7 @@ func easyjsonC80ae7adEncodeGithubComSyumaiWorkersExamplesD1BlogServerAppModel3(o
 	{
 		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
-		out.String(string(in.ID))
+		out.Uint64(uint64(in.ID))
 	}
 	{
 		const prefix string = ",\"title\":"

@@ -8,11 +8,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/mailru/easyjson"
 	"github.com/syumai/workers/cloudflare/d1"
 	_ "github.com/syumai/workers/cloudflare/d1" // register driver
 	"github.com/syumai/workers/examples/d1-blog-server/app/model"
-	"github.com/syumai/workers/internal/jsutil"
 )
 
 type articleHandler struct{}
@@ -62,7 +63,7 @@ func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request,
 
 	now := time.Now().Unix()
 	article := model.Article{
-		ID:        jsutil.NewUUID(),
+		ID:        uuid.New().String(),
 		Title:     createArticleReq.Title,
 		Body:      createArticleReq.Body,
 		CreatedAt: uint64(now),

@@ -18,7 +18,6 @@ var (
 	ErrorClass          = Global.Get("Error")
 	ReadableStreamClass = Global.Get("ReadableStream")
 	DateClass           = Global.Get("Date")
-	Crypto              = Global.Get("crypto")
 )
 
 func NewObject() js.Value {
@@ -102,8 +101,4 @@ func DateToTime(v js.Value) (time.Time, error) {
 // TimeToDate converts Go side's time.Time into Date object.
 func TimeToDate(t time.Time) js.Value {
 	return DateClass.New(t.UnixMilli())
-}
-
-func NewUUID() string {
-	return Crypto.Call("randomUUID").String()
 }

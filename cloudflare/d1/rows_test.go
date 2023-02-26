@@ -10,12 +10,20 @@ func Test_isIntegralNumber(t *testing.T) {
 		f    float64
 		want bool
 	}{
-		"valid integral value": {
+		"valid positive integral value": {
 			f:    1,
 			want: true,
 		},
-		"invalid float value": {
+		"valid negative integral value": {
+			f:    -1,
+			want: true,
+		},
+		"invalid positive float value": {
 			f:    1.1,
+			want: false,
+		},
+		"invalid negative float value": {
+			f:    -1.1,
 			want: false,
 		},
 		"invalid NaN": {

@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"io"
+	"math"
 	"sync"
 	"syscall/js"
 
@@ -50,6 +51,15 @@ func (r *rows) Close() error {
 	return nil
 }
 
+// isIntegralNumber returns if given float64 value is integral value or not.
+func isIntegralNumber(f float64) bool {
+	// If the value is NaN or Inf, returns the value to avoid being mistakenly treated as an integral value.
+	if math.IsNaN(f) || math.IsInf(f, 0) {
+		return false
+	}
+	return f == math.Trunc(f)
+}
+
 // convertRowColumnValueToDriverValue converts row column's value in JS to Go's driver.Value.
 // row column value is `null | Number | String | ArrayBuffer`.
 // see: https://developers.cloudflare.com/d1/platform/client-api/#type-conversion
@@ -58,8 +68,12 @@ func convertRowColumnValueToAny(v js.Value) (driver.Value, error) {
 	case js.TypeNull:
 		return nil, nil
 	case js.TypeNumber:
-		// TODO: handle INTEGER type.
-		return v.Float(), nil
+		fv := v.Float()
+		// if the value can be treated as integral value, return as int64.
+		if isIntegralNumber(fv) {
+			return int64(fv), nil
+		}
+		return fv, nil
 	case js.TypeString:
 		return v.String(), nil
 	case js.TypeObject:

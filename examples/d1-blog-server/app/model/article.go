@@ -3,7 +3,7 @@ package model
 
 //easyjson:json
 type Article struct {
-	ID        string `json:"id"`
+	ID        uint64 `json:"id"`
 	Title     string `json:"title"`
 	Body      string `json:"body"`
 	CreatedAt uint64 `json:"createdAt"`

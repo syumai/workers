@@ -65,13 +65,19 @@ This project requires these tools to be installed globally.
 
 ### Commands
 
-* Before development, 1. create your own D1 database, 2. set database ID to wrangler.toml and run `wrangler d1 migrations apply [DB Name]`.
-
 ```
-make dev     # run dev server
-make build   # build Go Wasm binary
+# development
+make init-db-preview # initialize preview DB (remove all rows)
+make generate        # generate easyjson models
+make dev             # run dev server
+make build           # build Go Wasm binary
+
+# production
+make init-db # initialize production DB (remove all rows)
 make publish # publish worker
 ```
+
+* Notice: This example uses raw SQL commands to initialize the DB for simplicity, but in general you should use `wrangler d1 migraions` for your application.
 
 ## Author
 

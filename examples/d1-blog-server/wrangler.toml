@@ -9,12 +9,4 @@ command = "make build"
 binding = "BlogDB"
 database_name = "d1-blog-server"
 database_id = "c6d5e4c0-3134-42fa-834c-812b24fea3cf"
-preview_database_id = "9f44099e-a008-45c2-88e4-aed0bd754a86"
-
-[[ d1_databases ]]
-# workaround to migrate preview DB
-# - https://github.com/cloudflare/wrangler2/issues/2446
-binding = "BlogDB-Preview"
-database_name = "d1-blog-server-preview"
-database_id = "9f44099e-a008-45c2-88e4-aed0bd754a86"
-preview_database_id = "9f44099e-a008-45c2-88e4-aed0bd754a86"
+preview_database_id = "777e3713-4386-438e-ba71-30d2f772750d"

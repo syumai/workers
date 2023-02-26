@@ -108,20 +108,15 @@ ORDER BY created_at DESC;
 
 	articles := []model.Article{}
 	for rows.Next() {
-		var (
-			title, body   string
-			id, createdAt float64 // number value is always retrieved as float64.
-		)
-		err = rows.Scan(&id, &title, &body, &createdAt)
+		var a model.Article
+		err = rows.Scan(&a.ID, &a.Title, &a.Body, &a.CreatedAt)
 		if err != nil {
-			break
+			log.Println(err)
+			h.handleErr(w, http.StatusInternalServerError,
+				"failed to scan article")
+			return
 		}
-		articles = append(articles, model.Article{
-			ID:        uint64(id),
-			Title:     title,
-			Body:      body,
-			CreatedAt: uint64(createdAt),
-		})
+		articles = append(articles, a)
 	}
 	res := model.ListArticlesResponse{
 		Articles: articles,

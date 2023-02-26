@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-
 	"github.com/mailru/easyjson"
 	"github.com/syumai/workers/cloudflare/d1"
 	_ "github.com/syumai/workers/cloudflare/d1" // register driver

@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"io"
+	"math"
 	"sync"
 	"syscall/js"
 
@@ -58,8 +59,12 @@ func convertRowColumnValueToAny(v js.Value) (driver.Value, error) {
 	case js.TypeNull:
 		return nil, nil
 	case js.TypeNumber:
-		// TODO: handle INTEGER type.
-		return v.Float(), nil
+		fv := v.Float()
+		// if the value can be treated as integer, return as int64.
+		if fv == math.Trunc(fv) {
+			return int64(fv), nil
+		}
+		return fv, nil
 	case js.TypeString:
 		return v.String(), nil
 	case js.TypeObject:

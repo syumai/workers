@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mailru/easyjson"
+	"github.com/syumai/workers/cloudflare/d1"
 	_ "github.com/syumai/workers/cloudflare/d1" // register driver
 	"github.com/syumai/workers/examples/d1-blog-server/app/model"
 	"github.com/syumai/workers/internal/jsutil"
@@ -23,10 +24,15 @@ func NewArticleHandler() http.Handler {
 }
 
 func (h *articleHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	db, err := sql.Open("d1", "BlogDB")
+	// initialize DB.
+	// D1 connector requires request's context to initialize DB.
+	c, err := d1.OpenConnector(req.Context(), "BlogDB")
 	if err != nil {
 		h.handleErr(w, http.StatusInternalServerError, fmt.Sprintf("failed to initialize DB: %v", err))
 	}
+	// use sql.OpenDB instead of sql.Open.
+	db := sql.OpenDB(c)
+
 	switch req.Method {
 	case http.MethodGet:
 		h.listArticles(w, req, db)
@@ -62,7 +68,7 @@ func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request,
 		CreatedAt: uint64(now),
 	}
 
-	_, err := db.ExecContext(req.Context(), `
+	_, err := db.Exec(`
 INSERT INTO articles (id, title, body, created_at)
 VALUES (?, ?, ?, ?)
    `, article.ID, article.Title, article.Body, article.CreatedAt)
@@ -84,7 +90,7 @@ VALUES (?, ?, ?, ?)
 }
 
 func (h *articleHandler) listArticles(w http.ResponseWriter, req *http.Request, db *sql.DB) {
-	rows, err := db.QueryContext(req.Context(), `
+	rows, err := db.Query(`
 SELECT id, title, body, created_at FROM articles
 ORDER BY created_at DESC;
    `)

@@ -11,8 +11,12 @@ import (
 func WaitUntil(ctx context.Context, task func()) {
 	executionContext := cfruntimecontext.GetExecutionContext(ctx)
 
-	executionContext.Call("waitUntil", jsutil.NewPromise(js.FuncOf(func(this js.Value, args []js.Value) any {
-		task()
-		return nil
+	executionContext.Call("waitUntil", jsutil.NewPromise(js.FuncOf(func(this js.Value, pArgs []js.Value) any {
+		resolve := pArgs[0]
+		go func() {
+			task()
+			resolve.Invoke(js.Undefined())
+		}()
+		return js.Undefined()
 	})))
 }

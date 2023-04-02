@@ -12,7 +12,7 @@ func (c *Client) Do(req *Request) (*http.Response, error) {
 	jsReq := jshttp.ToJSRequest(req.Request)
 
 	init := jsutil.NewObject()
-	promise := c.namespace.Call("fetch2", jsReq, init)
+	promise := c.namespace.Call("fetch", jsReq, init)
 	jsRes, err := jsutil.AwaitPromise(promise)
 	if err != nil {
 		return nil, err

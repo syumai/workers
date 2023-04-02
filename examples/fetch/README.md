@@ -1,7 +1,7 @@
-# hello
+# fetch
 
-* This app just returns a message `Hello, world!`.
-* If a url param like `?name=syumai` given, then a message `Hello, syumai!` will be returned.
+* Get the latest release of this repository from the Github API.
+* (wip)
 
 ## Development
 

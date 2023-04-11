@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"net/http"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jsutil"
@@ -16,6 +17,15 @@ type Client struct {
 func (c *Client) applyOptions(opts []ClientOption) {
 	for _, opt := range opts {
 		opt(c)
+	}
+}
+
+// HTTPClient returns *http.Client.
+func (c *Client) HTTPClient() *http.Client {
+	return &http.Client{
+		Transport: &transport{
+			namespace: c.namespace,
+		},
 	}
 }
 

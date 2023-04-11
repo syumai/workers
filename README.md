@@ -75,11 +75,3 @@ To deploy a Worker, the following steps are required.
 The [worker-template-tinygo](https://github.com/syumai/worker-template-tinygo) repository contains all the required files, so I recommend using this template.
 
 The [worker-template-go](https://github.com/syumai/worker-template-go) repository (using regular Go, not tinygo) is also available, but it requires a paid plan of Cloudflare Workers (due to the large binary size).
-
-## License
-
-MIT
-
-## Author
-
-syumai, akarasz

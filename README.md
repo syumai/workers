@@ -1,4 +1,7 @@
-# workers [![Go Reference](https://pkg.go.dev/badge/github.com/syumai/workers.svg)](https://pkg.go.dev/github.com/syumai/workers)
+# workers
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/syumai/workers.svg)](https://pkg.go.dev/github.com/syumai/workers)
+[![Discord Server](https://img.shields.io/discord/1095344956421447741?logo=discord&style=social)](https://discord.gg/tYhtatRqGs)
 
 * `workers` is a package to run an HTTP server written in Go on [Cloudflare Workers](https://workers.cloudflare.com/).
 * This package can easily serve *http.Handler* on Cloudflare Workers.
@@ -75,3 +78,7 @@ To deploy a Worker, the following steps are required.
 The [worker-template-tinygo](https://github.com/syumai/worker-template-tinygo) repository contains all the required files, so I recommend using this template.
 
 The [worker-template-go](https://github.com/syumai/worker-template-go) repository (using regular Go, not tinygo) is also available, but it requires a paid plan of Cloudflare Workers (due to the large binary size).
+
+### Where can I have discussions about contributions, or ask questions about how to use the library?
+
+You can do both through GitHub Issues. If you want to have a more casual conversation, please use the [Discord server](https://discord.gg/tYhtatRqGs).

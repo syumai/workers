@@ -78,11 +78,3 @@ make publish # publish worker
 ```
 
 * Notice: This example uses raw SQL commands to initialize the DB for simplicity, but in general you should use `wrangler d1 migraions` for your application.
-
-## Author
-
-syumai
-
-## License
-
-MIT

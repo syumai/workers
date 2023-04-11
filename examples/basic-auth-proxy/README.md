@@ -26,11 +26,3 @@ make dev     # run dev server
 make build   # build Go Wasm binary
 make publish # publish worker
 ```
-
-## Author
-
-syumai
-
-## License
-
-MIT

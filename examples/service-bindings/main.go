@@ -13,17 +13,11 @@ import (
 func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
+		bind := cloudflare.GetBinding(ctx, "hello")
+		fc := fetch.NewClient(fetch.WithBinding(bind))
 
-		obj := cloudflare.GetBinding(ctx, "hello")
-		cli := fetch.NewClient(fetch.WithBinding(obj))
-		r, err := fetch.NewRequest(ctx, http.MethodGet, req.URL.String(), nil)
-		if err != nil {
-			fmt.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		res, err := cli.Do(r)
+		hc := fc.HTTPClient()
+		res, err := hc.Do(req)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

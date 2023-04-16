@@ -140,11 +140,10 @@ func TestToJS(t *testing.T) {
 			assert.True(t, arrayCmp.Invoke(expected, actual).Bool())
 		})
 		t.Run("Null Slice", func(t *testing.T) {
-			// WIP: need to fix later
-			expected := eval.Invoke(`null`)
-			actual := translate.ToJS(make([]any, 3))
+			expected := eval.Invoke(`[null,null,null]`)
+			actual := translate.ToJS(make([]*string, 3))
 
-			assert.True(t, valueCmp.Invoke(expected, actual).Bool())
+			assert.True(t, arrayCmp.Invoke(expected, actual).Bool())
 		})
 	})
 

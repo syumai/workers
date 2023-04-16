@@ -73,9 +73,9 @@ func sliceToJSArray(v reflect.Value) js.Value {
 	}
 	a := array.New()
 	for i := 0; i < v.Len(); i++ {
-		// WIP: need to fix later
-		if v.Index(i).IsValid() && v.Index(i).Interface() == nil {
-			return null
+		if v.Index(i).Interface() == nil {
+			a.SetIndex(i, null)
+			continue
 		}
 
 		a.SetIndex(i, ToJS(v.Index(i).Interface()))

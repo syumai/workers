@@ -28,5 +28,12 @@ func WaitUntil(ctx context.Context, task func()) {
 // see: https://developers.cloudflare.com/workers/runtime-apis/fetch-event/#passthroughonexception
 func PassThroughOnException(ctx context.Context) {
 	exCtx := cfruntimecontext.GetExecutionContext(ctx)
-	exCtx.Call("passThroughOnException")
+	jsutil.AwaitPromise(jsutil.NewPromise(js.FuncOf(func(this js.Value, pArgs []js.Value) any {
+		resolve := pArgs[0]
+		go func() {
+			exCtx.Call("passThroughOnException")
+			resolve.Invoke(js.Undefined())
+		}()
+		return js.Undefined()
+	})))
 }

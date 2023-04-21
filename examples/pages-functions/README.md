@@ -2,6 +2,10 @@
 
 * This app is the Pages Functions version of hello.
 
+## Demo
+
+* https://pages-functions-example-6dr.pages.dev/
+
 ## Development
 
 ### Requirements

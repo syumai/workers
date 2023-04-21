@@ -28,10 +28,7 @@
   - [x] Calling stubs
 * [x] D1 (alpha)
 * [x] Environment variables
-* FetchEvent's [lifecycle methods](https://developers.cloudflare.com/workers/runtime-apis/fetch-event/#lifecycle-methods)
-  - [x] waitUntil
-  - [ ] respondWith
-  - [ ] passThroughOnException
+* [x] FetchEvent
 
 ## Installation
 

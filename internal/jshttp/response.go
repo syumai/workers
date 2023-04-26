@@ -43,6 +43,12 @@ func ToJSResponse(w *ResponseWriterBuffer) (js.Value, error) {
 	respInit.Set("status", status)
 	respInit.Set("statusText", http.StatusText(status))
 	respInit.Set("headers", ToJSHeader(w.Header()))
+	if status == http.StatusSwitchingProtocols ||
+		status == http.StatusNoContent ||
+		status == http.StatusResetContent ||
+		status == http.StatusNotModified {
+		return jsutil.ResponseClass.New(jsutil.Null, respInit), nil
+	}
 	readableStream := jsutil.ConvertReaderToReadableStream(w.Reader)
 	return jsutil.ResponseClass.New(readableStream, respInit), nil
 }

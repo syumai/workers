@@ -18,6 +18,7 @@ var (
 	ErrorClass          = Global.Get("Error")
 	ReadableStreamClass = Global.Get("ReadableStream")
 	DateClass           = Global.Get("Date")
+	Null                = js.ValueOf(nil)
 )
 
 func NewObject() js.Value {

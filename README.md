@@ -23,7 +23,7 @@
   - [x] Put
   - [x] Delete
   - [ ] Options for KV methods
-* [ ] Cache API
+* [x] Cache API
 * [ ] Durable Objects
   - [x] Calling stubs
 * [x] D1 (alpha)

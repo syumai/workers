@@ -39,8 +39,8 @@ func (c *Cache) Put(req *http.Request, res *http.Response) error {
 	return nil
 }
 
-// ErrCacheNotFount is returned when there is no matching cache.
-var ErrCacheNotFount = errors.New("cache not found")
+// ErrCacheNotFound is returned when there is no matching cache.
+var ErrCacheNotFound = errors.New("cache not found")
 
 // MatchOptions represents the options of the Match method.
 type MatchOptions struct {
@@ -66,7 +66,7 @@ func (c *Cache) Match(req *http.Request, opts *MatchOptions) (*http.Response, er
 		return nil, err
 	}
 	if res.IsUndefined() {
-		return nil, ErrCacheNotFount
+		return nil, ErrCacheNotFound
 	}
 	return jshttp.ToResponse(res)
 }
@@ -96,7 +96,7 @@ func (c *Cache) Delete(req *http.Request, opts *DeleteOptions) error {
 		return err
 	}
 	if !res.Bool() {
-		return ErrCacheNotFount
+		return ErrCacheNotFound
 	}
 	return nil
 }

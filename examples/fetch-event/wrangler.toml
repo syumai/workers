@@ -1,5 +1,5 @@
 name = "fetch-event"
-main = "./worker.mjs"
+main = "./build/worker.mjs"
 compatibility_date = "2023-02-24"
 
 routes = [

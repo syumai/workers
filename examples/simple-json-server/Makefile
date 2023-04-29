@@ -4,7 +4,7 @@ dev:
 
 .PHONY: build
 build:
-	mkdir -p dist
+	go run github.com/syumai/workers/cmd/workers-assets-gen@latest
 	tinygo build -o ./dist/app.wasm -target wasm ./main.go
 
 .PHONY: publish

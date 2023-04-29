@@ -56,7 +56,7 @@ func copyWasmExecJS(mode Mode) error {
 	case ModeTinygo:
 		fileName = "wasm_exec_tinygo.js"
 	case ModeGo:
-		fileName = "wasm_exec_tinygo.js"
+		fileName = "wasm_exec_go.js"
 	default:
 		return fmt.Errorf("unexpected mode: %s", mode)
 	}

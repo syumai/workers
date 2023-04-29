@@ -67,7 +67,8 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 		defer writer.Close()
 		httpHandler.ServeHTTP(w, req)
 	}()
-	return jshttp.ToJSResponse(w)
+	<-w.ReadyCh
+	return w.ToJSResponse(), nil
 }
 
 // Server serves http.Handler on Cloudflare Workers.

@@ -9,22 +9,6 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-// toJSResponse converts *http.Response to JS Response
-func toJSResponse(res *http.Response) js.Value {
-	status := res.StatusCode
-	if status == 0 {
-		status = http.StatusOK
-	}
-	respInit := jsutil.NewObject()
-	respInit.Set("status", status)
-	respInit.Set("statusText", http.StatusText(status))
-	respInit.Set("headers", jshttp.ToJSHeader(res.Header))
-
-	readableStream := jsutil.ConvertReaderToReadableStream(res.Body)
-
-	return jsutil.ResponseClass.New(readableStream, respInit)
-}
-
 // Put attempts to add a response to the cache, using the given request as the key.
 // Returns an error for the following conditions
 // - the request passed is a method other than GET.
@@ -32,7 +16,7 @@ func toJSResponse(res *http.Response) js.Value {
 // - Cache-Control instructs not to cache or if the response is too large.
 // docs: https://developers.cloudflare.com/workers/runtime-apis/cache/#put
 func (c *Cache) Put(req *http.Request, res *http.Response) error {
-	_, err := jsutil.AwaitPromise(c.instance.Call("put", jshttp.ToJSRequest(req), toJSResponse(res)))
+	_, err := jsutil.AwaitPromise(c.instance.Call("put", jshttp.ToJSRequest(req), jshttp.ToJSResponse(res)))
 	if err != nil {
 		return err
 	}

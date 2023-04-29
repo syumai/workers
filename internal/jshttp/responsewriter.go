@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"sync"
+	"syscall/js"
 )
 
 type ResponseWriterBuffer struct {
@@ -35,4 +36,10 @@ func (w *ResponseWriterBuffer) Header() http.Header {
 
 func (w *ResponseWriterBuffer) WriteHeader(statusCode int) {
 	w.StatusCode = statusCode
+}
+
+// ToJSResponse converts *ResponseWriterBuffer to JavaScript sides Response.
+//   - Response: https://developer.mozilla.org/docs/Web/API/Response
+func (w *ResponseWriterBuffer) ToJSResponse() js.Value {
+	return newJSResponse(w.StatusCode, w.HeaderValue, w.Reader)
 }

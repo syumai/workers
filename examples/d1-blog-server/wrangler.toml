@@ -1,5 +1,5 @@
 name = "d1-blog-server"
-main = "./worker.mjs"
+main = "./build/worker.mjs"
 compatibility_date = "2023-01-09"
 
 [build]

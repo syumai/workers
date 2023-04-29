@@ -4,8 +4,8 @@ dev:
 
 .PHONY: build
 build:
-	mkdir -p dist
-	tinygo build -o ./dist/app.wasm -target wasm ./main.go
+	go run ../../cmd/workers-assets-gen
+	tinygo build -o ./build/app.wasm -target wasm ./main.go
 
 .PHONY: publish
 publish:

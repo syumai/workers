@@ -7,7 +7,7 @@ import (
 	"syscall/js"
 )
 
-type ResponseWriterBuffer struct {
+type ResponseWriter struct {
 	HeaderValue http.Header
 	StatusCode  int
 	Reader      *io.PipeReader
@@ -16,30 +16,30 @@ type ResponseWriterBuffer struct {
 	Once        sync.Once
 }
 
-var _ http.ResponseWriter = &ResponseWriterBuffer{}
+var _ http.ResponseWriter = &ResponseWriter{}
 
-// Ready indicates that ResponseWriterBuffer is ready to be converted to Response.
-func (w *ResponseWriterBuffer) Ready() {
+// Ready indicates that ResponseWriter is ready to be converted to Response.
+func (w *ResponseWriter) Ready() {
 	w.Once.Do(func() {
 		close(w.ReadyCh)
 	})
 }
 
-func (w *ResponseWriterBuffer) Write(data []byte) (n int, err error) {
+func (w *ResponseWriter) Write(data []byte) (n int, err error) {
 	w.Ready()
 	return w.Writer.Write(data)
 }
 
-func (w *ResponseWriterBuffer) Header() http.Header {
+func (w *ResponseWriter) Header() http.Header {
 	return w.HeaderValue
 }
 
-func (w *ResponseWriterBuffer) WriteHeader(statusCode int) {
+func (w *ResponseWriter) WriteHeader(statusCode int) {
 	w.StatusCode = statusCode
 }
 
-// ToJSResponse converts *ResponseWriterBuffer to JavaScript sides Response.
+// ToJSResponse converts *ResponseWriter to JavaScript sides Response.
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
-func (w *ResponseWriterBuffer) ToJSResponse() js.Value {
+func (w *ResponseWriter) ToJSResponse() js.Value {
 	return newJSResponse(w.StatusCode, w.HeaderValue, w.Reader)
 }

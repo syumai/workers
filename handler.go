@@ -55,7 +55,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
-	w := &jshttp.ResponseWriterBuffer{
+	w := &jshttp.ResponseWriter{
 		HeaderValue: http.Header{},
 		StatusCode:  http.StatusOK,
 		Reader:      reader,

@@ -31,24 +31,28 @@ func ToResponse(res js.Value) (*http.Response, error) {
 	}, nil
 }
 
-// ToJSResponse converts *http.Response to JavaScript sides Response.
+// ToJSResponse converts *http.Response to JavaScript sides Response class object.
+func ToJSResponse(res *http.Response) js.Value {
+	return newJSResponse(res.StatusCode, res.Header, res.Body)
+}
+
+// newJSResponse creates JavaScript sides Response class object.
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
-func ToJSResponse(w *ResponseWriterBuffer) (js.Value, error) {
-	<-w.ReadyCh // wait until ready
-	status := w.StatusCode
+func newJSResponse(statusCode int, headers http.Header, body io.ReadCloser) js.Value {
+	status := statusCode
 	if status == 0 {
 		status = http.StatusOK
 	}
 	respInit := jsutil.NewObject()
 	respInit.Set("status", status)
 	respInit.Set("statusText", http.StatusText(status))
-	respInit.Set("headers", ToJSHeader(w.Header()))
+	respInit.Set("headers", ToJSHeader(headers))
 	if status == http.StatusSwitchingProtocols ||
 		status == http.StatusNoContent ||
 		status == http.StatusResetContent ||
 		status == http.StatusNotModified {
-		return jsutil.ResponseClass.New(jsutil.Null, respInit), nil
+		return jsutil.ResponseClass.New(jsutil.Null, respInit)
 	}
-	readableStream := jsutil.ConvertReaderToReadableStream(w.Reader)
-	return jsutil.ResponseClass.New(readableStream, respInit), nil
+	readableStream := jsutil.ConvertReaderToReadableStream(body)
+	return jsutil.ResponseClass.New(readableStream, respInit)
 }

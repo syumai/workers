@@ -62,14 +62,14 @@ Currently, all examples use tinygo instead of Go due to binary size issues.
 
 ## Quick Start
 
-At first, please install the tools below.
+First, please install the following tools:
 
-* Node.js (& npm)
+* Node.js (and npm)
 * [wrangler](https://developers.cloudflare.com/workers/wrangler/)
-  - just run `npm install -g wrangler`
+  - You can install it by running `npm install -g wrangler`.
 * tinygo
 
-Next, please execute commands below.
+After installation, please run the following commands.
 
 ```console
 $ wrangler generate my-app syumai/workers/_templates/cloudflare/worker-tinygo
@@ -81,7 +81,7 @@ $ curl http://localhost:8787/hello
 Hello!
 ```
 
-If you want to read more detail description, please refer to the README.md in the generated directory.
+If you want a more detailed description, please refer to the README.md file in the generated directory.
 
 ## FAQ
 

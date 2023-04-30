@@ -1,4 +1,4 @@
-module github.com/syumai/pages-functions
+module github.com/syumai/workers/_examples/kv-counter
 
 go 1.18
 

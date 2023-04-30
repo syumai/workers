@@ -1,4 +1,4 @@
-module github.com/syumai/workers/examples/env
+module github.com/syumai/workers/_examples/hello
 
 go 1.18
 

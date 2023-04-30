@@ -1,4 +1,4 @@
-module github.com/syumai/workers/examples/scheduled
+module github.com/syumai/workers/_examples/durable-object-counter
 
 go 1.18
 

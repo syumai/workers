@@ -1,4 +1,4 @@
-module github.com/syumai/workers/examples/r2-image-viewer-tinygo
+module github.com/syumai/workers/_examples/r2-image-viewer-tinygo
 
 go 1.18
 

@@ -1,10 +1,10 @@
-module github.com/syumai/workers/examples/simple-json-server
+module github.com/syumai/workers/_examples/d1-blog-server
 
-go 1.18
+go 1.19
 
 require (
 	github.com/mailru/easyjson v0.7.7
-	github.com/syumai/workers v0.0.0-00010101000000-000000000000
+	github.com/syumai/workers v0.9.0
 )
 
 replace github.com/syumai/workers => ../../

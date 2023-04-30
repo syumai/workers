@@ -11,45 +11,43 @@ import (
 	"github.com/syumai/workers/internal/runtimecontext"
 )
 
-// CronEvent represents information about the Cron that invoked this worker.
-type CronEvent struct {
-	// Type string
+// Event represents information about the Cron that invoked this worker.
+type Event struct {
 	Cron          string
 	ScheduledTime time.Time
 }
 
-// toGo converts JS Object to CronEvent
-func (ce *CronEvent) toGo(obj js.Value) error {
+// toEvent converts JS Object to Go Event struct
+func toEvent(obj js.Value) (*Event, error) {
 	if obj.IsUndefined() {
-		return errors.New("event is null")
+		return nil, errors.New("event is null")
 	}
 	cronVal := obj.Get("cron").String()
-	ce.Cron = cronVal
 	scheduledTimeVal := obj.Get("scheduledTime").Float()
-	ce.ScheduledTime = time.Unix(int64(scheduledTimeVal)/1000, 0).UTC()
-
-	return nil
+	return &Event{
+		Cron:          cronVal,
+		ScheduledTime: time.Unix(int64(scheduledTimeVal)/1000, 0).UTC(),
+	}, nil
 }
 
-type CronFunc func(ctx context.Context, event CronEvent) error
+type Task func(ctx context.Context, event *Event) error
 
-var cronTask CronFunc
+var scheduledTask Task
 
-// ScheduleTask sets the CronFunc to be executed
-func ScheduleTask(task CronFunc) {
-	cronTask = task
+// ScheduleTask sets the Task to be executed
+func ScheduleTask(task Task) {
+	scheduledTask = task
 	jsutil.Global.Call("ready")
 	select {}
 }
 
 func runScheduler(eventObj js.Value, runtimeCtxObj js.Value) error {
 	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
-	event := CronEvent{}
-	err := event.toGo(eventObj)
+	event, err := toEvent(eventObj)
 	if err != nil {
 		return err
 	}
-	err = cronTask(ctx, event)
+	err = scheduledTask(ctx, event)
 	if err != nil {
 		return err
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/syumai/workers/cloudflare/cron"
 )
 
-func task(ctx context.Context, event cron.CronEvent) error {
+func task(ctx context.Context, event cron.Event) error {
 	fmt.Println(cloudflare.Getenv(ctx, "HELLO"))
 
 	if event.ScheduledTime.Minute()%2 == 0 {

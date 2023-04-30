@@ -22,3 +22,8 @@ export async function fetch(req, env, ctx) {
   await run();
   return handleRequest(req, { env, ctx });
 }
+
+export async function scheduled(event, env, ctx) {
+  await run();
+  return runScheduler(event, { env, ctx });
+}

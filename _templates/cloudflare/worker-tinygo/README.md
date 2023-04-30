@@ -16,14 +16,13 @@
 
 ## Getting Started
 
-```
-$ wrangler generate my-app syumai/workers/_templates/cloudflare/worker-tinygo
-$ cd my-app
-$ go mod init
-$ go mod tidy
-$ make dev # start running dev server
-$ curl http://localhost:8787/hello
-Hello!
+```console
+wrangler generate my-app syumai/workers/_templates/cloudflare/worker-tinygo
+cd my-app
+go mod init
+go mod tidy
+make dev # start running dev server
+curl http://localhost:8787/hello # outputs "Hello!"
 ```
 
 - To change worker name, please edit `name` property in `wrangler.toml`.

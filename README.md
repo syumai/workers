@@ -72,13 +72,12 @@ First, please install the following tools:
 After installation, please run the following commands.
 
 ```console
-$ wrangler generate my-app syumai/workers/_templates/cloudflare/worker-tinygo
-$ cd my-app
-$ go mod init
-$ go mod tidy
-$ make dev # start running dev server
-$ curl http://localhost:8787/hello
-Hello!
+wrangler generate my-app syumai/workers/_templates/cloudflare/worker-tinygo
+cd my-app
+go mod init
+go mod tidy
+make dev # start running dev server
+curl http://localhost:8787/hello # outputs "Hello!"
 ```
 
 If you want a more detailed description, please refer to the README.md file in the generated directory.

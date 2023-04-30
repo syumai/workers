@@ -29,6 +29,7 @@
 * [x] D1 (alpha)
 * [x] Environment variables
 * [x] FetchEvent
+* [x] Cron Triggers
 
 ## Installation
 

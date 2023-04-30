@@ -1,4 +1,4 @@
-module github.com/syumai/basic-auth-server
+module github.com/syumai/workers/_examples/basic-auth-server
 
 go 1.18
 

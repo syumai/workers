@@ -1,4 +1,4 @@
-module github.com/syumai/workers/examples/kv-counter
+module github.com/syumai/workers/_examples/kv-counter
 
 go 1.18
 

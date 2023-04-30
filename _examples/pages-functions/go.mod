@@ -1,4 +1,4 @@
-module github.com/syumai/pages-functions
+module github.com/syumai/workers/_examples/pages-functions
 
 go 1.18
 

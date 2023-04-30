@@ -1,4 +1,4 @@
-module github.com/syumai/workers/examples/d1-blog-server
+module github.com/syumai/workers/_examples/d1-blog-server
 
 go 1.19
 

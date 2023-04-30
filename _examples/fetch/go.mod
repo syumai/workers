@@ -1,4 +1,4 @@
-module github.com/syumai/fetch
+module github.com/syumai/workers/_examples/fetch
 
 go 1.18
 

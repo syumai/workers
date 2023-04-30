@@ -1,4 +1,4 @@
-module github.com/syumai/workers/examples/simple-json-server
+module github.com/syumai/workers/_examples/simple-json-server
 
 go 1.18
 

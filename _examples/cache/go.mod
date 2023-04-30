@@ -1,4 +1,4 @@
-module github.com/syumai/cache
+module github.com/syumai/workers/_examples/cache
 
 go 1.18
 

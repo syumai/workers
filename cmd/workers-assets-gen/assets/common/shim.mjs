@@ -27,3 +27,10 @@ export async function scheduled(event, env, ctx) {
   await run();
   return runScheduler(event, { env, ctx });
 }
+
+// onRequest handles request to Cloudflare Pages
+export async function onRequest(ctx) {
+  await run();
+  const { request, env } = ctx;
+  return handleRequest(request, { env, ctx });
+}

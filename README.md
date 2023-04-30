@@ -57,7 +57,7 @@ func main() {
 }
 ```
 
-For concrete examples, see `examples` directory.
+For concrete examples, see `_examples` directory.
 Currently, all examples use tinygo instead of Go due to binary size issues.
 
 ## Quick Start

@@ -18,7 +18,7 @@ This project requires these tools to be installed globally.
 ### Commands
 
 ```
-make dev     # run dev server
 make build   # build Go Wasm binary
+make dev     # run dev server
 make publish # publish worker
 ```

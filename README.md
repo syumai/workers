@@ -60,8 +60,28 @@ func main() {
 For concrete examples, see `examples` directory.
 Currently, all examples use tinygo instead of Go due to binary size issues.
 
-A template repository is also available.
-* https://github.com/syumai/worker-template-tinygo
+## Quick Start
+
+First, please install the following tools:
+
+* Node.js (and npm)
+* [wrangler](https://developers.cloudflare.com/workers/wrangler/)
+  - You can install it by running `npm install -g wrangler`.
+* tinygo
+
+After installation, please run the following commands.
+
+```console
+$ wrangler generate my-app syumai/workers/_templates/cloudflare/worker-tinygo
+$ cd my-app
+$ go mod init
+$ go mod tidy
+$ make dev # start running dev server
+$ curl http://localhost:8787/hello
+Hello!
+```
+
+If you want a more detailed description, please refer to the README.md file in the generated directory.
 
 ## FAQ
 
@@ -73,9 +93,9 @@ To deploy a Worker, the following steps are required.
 * Build a Wasm binary.
 * Upload a Wasm binary with a JavaScript code to load and instantiate Wasm (for entry point).
 
-The [worker-template-tinygo](https://github.com/syumai/worker-template-tinygo) repository contains all the required files, so I recommend using this template.
+The [worker-tinygo template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-tinygo) contains all the required files, so I recommend using this template.
 
-The [worker-template-go](https://github.com/syumai/worker-template-go) repository (using regular Go, not tinygo) is also available, but it requires a paid plan of Cloudflare Workers (due to the large binary size).
+The [worker-go template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-go) (using regular Go, not tinygo) is also available, but it requires a paid plan of Cloudflare Workers (due to the large binary size).
 
 ### Where can I have discussions about contributions, or ask questions about how to use the library?
 

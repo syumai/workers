@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/syumai/workers"
 	"github.com/syumai/workers/cloudflare"
+	"github.com/syumai/workers/cloudflare/cron"
 )
 
-func task(ctx context.Context, event workers.CronEvent) error {
+func task(ctx context.Context, event *cron.Event) error {
 	fmt.Println(cloudflare.Getenv(ctx, "HELLO"))
 
 	if event.ScheduledTime.Minute()%2 == 0 {
@@ -20,5 +20,5 @@ func task(ctx context.Context, event workers.CronEvent) error {
 }
 
 func main() {
-	workers.ScheduleTask(task)
+	cron.ScheduleTask(task)
 }

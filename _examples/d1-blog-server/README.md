@@ -74,7 +74,7 @@ make build           # build Go Wasm binary
 
 # production
 make init-db # initialize production DB (remove all rows)
-make publish # publish worker
+make deploy # deploy worker
 ```
 
 * Notice: This example uses raw SQL commands to initialize the DB for simplicity, but in general you should use `wrangler d1 migraions` for your application.

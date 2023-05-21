@@ -8,7 +8,7 @@ _The durable object is written in js; only the stub is called from go!_
 
 ## Demo
 
-After `make publish` the trigger is `http://durable-object-counter.YOUR-DOMAIN.workers.dev`
+After `make deploy` the trigger is `http://durable-object-counter.YOUR-DOMAIN.workers.dev`
 
 * https://durable-object-counter.YOUR-DOMAIN.workers.dev/
 * https://durable-object-counter.YOUR-DOMAIN.workers.dev/increment
@@ -28,7 +28,7 @@ This project requires these tools to be installed globally.
 ```
 make dev     # run dev server
 make build   # build Go Wasm binary
-make publish # publish worker
+make deploy # deploy worker
 ```
 
 ## Author

@@ -24,7 +24,7 @@ This project requires these tools to be installed globally.
 3. Deploy this example.
     ```
     make build   # build Go Wasm binary
-    make publish # publish worker
+    make deploy # deploy worker
     ```
 
 ## Documents

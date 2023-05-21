@@ -33,5 +33,5 @@ This project requires these tools to be installed globally.
 ```
 make dev     # run dev server
 make build   # build Go Wasm binary
-make publish # publish worker
+make deploy # deploy worker
 ```

@@ -75,11 +75,18 @@ type readerToReadableStream struct {
 //   - https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream#pull
 func (rs *readerToReadableStream) Pull(controller js.Value) error {
 	n, err := rs.reader.Read(rs.chunkBuf)
-	if err == io.EOF {
+	if n != 0 {
+		ua := NewUint8Array(n)
+		js.CopyBytesToJS(ua, rs.chunkBuf[:n])
+		controller.Call("enqueue", ua)
+	}
+	// Cloudflare Workers sometimes call `pull` to closed ReadableStream.
+	// When the call happens, `io.ErrClosedPipe` should be ignored.
+	if err == io.EOF || err == io.ErrClosedPipe {
+		controller.Call("close")
 		if err := rs.reader.Close(); err != nil {
 			return err
 		}
-		controller.Call("close")
 		return nil
 	}
 	if err != nil {
@@ -90,9 +97,6 @@ func (rs *readerToReadableStream) Pull(controller js.Value) error {
 		}
 		return err
 	}
-	ua := NewUint8Array(n)
-	_ = js.CopyBytesToJS(ua, rs.chunkBuf[:n])
-	controller.Call("enqueue", ua)
 	return nil
 }
 

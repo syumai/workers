@@ -21,7 +21,7 @@ func main() {
 		}
 		r.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/111.0")
 
-		res, err := cli.Do(r)
+		res, err := cli.Do(r, nil)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

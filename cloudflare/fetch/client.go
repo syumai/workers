@@ -21,10 +21,11 @@ func (c *Client) applyOptions(opts []ClientOption) {
 }
 
 // HTTPClient returns *http.Client.
-func (c *Client) HTTPClient() *http.Client {
+func (c *Client) HTTPClient(redirect RedirectMode) *http.Client {
 	return &http.Client{
 		Transport: &transport{
 			namespace: c.namespace,
+			redirect:  redirect,
 		},
 	}
 }

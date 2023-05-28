@@ -32,7 +32,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	// responds with origin server
 	fc := fetch.NewClient()
 	proxy := httputil.ReverseProxy{
-		Transport: fc.HTTPClient().Transport,
+		Transport: fc.HTTPClient(fetch.RedirectModeManual).Transport,
 		Director: func(r *http.Request) {
 			r.URL = req.URL
 		},

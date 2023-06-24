@@ -19,7 +19,7 @@ type R2Bucket struct {
 
 // NewR2Bucket returns R2Bucket for given variable name.
 //   - variable name must be defined in wrangler.toml.
-//   - see example: https://github.com/syumai/workers/tree/main/examples/r2-image-viewer
+//   - see example: https://github.com/syumai/workers/tree/main/_examples/r2-image-viewer
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
 func NewR2Bucket(ctx context.Context, varName string) (*R2Bucket, error) {

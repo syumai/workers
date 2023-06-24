@@ -5,7 +5,7 @@ dev:
 .PHONY: build
 build:
 	go run ../../cmd/workers-assets-gen
-	tinygo build -o ./build/app.wasm -target wasm ./main.go
+	tinygo build -o ./build/app.wasm -target wasm -no-debug ./main.go
 
 .PHONY: deploy
 deploy:

@@ -32,8 +32,6 @@ This project requires these tools to be installed globally.
 
 * wrangler
 * tinygo
-* [easyjson](https://github.com/mailru/easyjson)
-  - `go install github.com/mailru/easyjson/...@latest`
 
 ### Commands
 

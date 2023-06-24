@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/examples/d1-blog-server/app"
+	"github.com/syumai/workers/_examples/d1-blog-server/app"
 )
 
 func main() {

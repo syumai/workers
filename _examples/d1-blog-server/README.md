@@ -12,9 +12,9 @@
 ### Create blog post
 
 ```
-$ curl --location --request POST 'https://d1-blog-server.syumai.workers.dev/articles' \
---header 'Content-Type: application/json' \
---data-raw '{
+$ curl -X POST 'https://d1-blog-server.syumai.workers.dev/articles' \
+-H 'Content-Type: application/json' \
+-d '{
   "title":"example post",
   "body":"body of the example post"
 }'
@@ -60,15 +60,12 @@ This project requires these tools to be installed globally.
 
 * wrangler
 * tinygo
-* [easyjson](https://github.com/mailru/easyjson)
-  - `go install github.com/mailru/easyjson/...@latest`
 
 ### Commands
 
 ```
 # development
 make init-db-preview # initialize preview DB (remove all rows)
-make generate        # generate easyjson models
 make dev             # run dev server
 make build           # build Go Wasm binary
 

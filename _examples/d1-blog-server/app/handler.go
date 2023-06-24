@@ -2,16 +2,16 @@ package app
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/mailru/easyjson"
+	"github.com/syumai/workers/_examples/d1-blog-server/app/model"
 	"github.com/syumai/workers/cloudflare/d1"
 	_ "github.com/syumai/workers/cloudflare/d1" // register driver
-	"github.com/syumai/workers/examples/d1-blog-server/app/model"
 )
 
 type articleHandler struct{}
@@ -53,7 +53,7 @@ func (h *articleHandler) handleErr(w http.ResponseWriter, status int, msg string
 
 func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request, db *sql.DB) {
 	var createArticleReq model.CreateArticleRequest
-	if err := easyjson.UnmarshalFromReader(req.Body, &createArticleReq); err != nil {
+	if err := json.NewDecoder(req.Body).Decode(&createArticleReq); err != nil {
 		h.handleErr(w, http.StatusBadRequest,
 			"request format is invalid")
 		return
@@ -90,7 +90,7 @@ VALUES (?, ?, ?)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if _, err := easyjson.MarshalToWriter(&res, w); err != nil {
+	if err := json.NewEncoder(w).Encode(res); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to encode response: %w\n", err)
 	}
 }
@@ -123,7 +123,7 @@ ORDER BY created_at DESC;
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if _, err := easyjson.MarshalToWriter(&res, w); err != nil {
+	if err := json.NewEncoder(w).Encode(res); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to encode response: %w\n", err)
 	}
 }

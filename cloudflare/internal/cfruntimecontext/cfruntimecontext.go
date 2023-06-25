@@ -2,6 +2,7 @@ package cfruntimecontext
 
 import (
 	"context"
+	"errors"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/runtimecontext"
@@ -13,6 +14,7 @@ import (
  *  type RuntimeContext {
  *    env: Env;
  *    ctx: ExecutionContext;
+ *    ...
  *  }
  *  ```
  * This type is based on the type definition of ExportedHandlerFetchHandler.
@@ -32,4 +34,17 @@ func GetRuntimeContextEnv(ctx context.Context) js.Value {
 func GetExecutionContext(ctx context.Context) js.Value {
 	runtimeCtxValue := runtimecontext.MustExtract(ctx)
 	return runtimeCtxValue.Get("ctx")
+}
+
+var ErrValueNotFound = errors.New("execution context value for specified key not found")
+
+// GetRuntimeContextValue gets value for specified key from RuntimeContext.
+// - if the value is undefined, return error.
+func GetRuntimeContextValue(ctx context.Context, key string) (js.Value, error) {
+	runtimeCtxValue := runtimecontext.MustExtract(ctx)
+	v := runtimeCtxValue.Get(key)
+	if v.IsUndefined() {
+		return js.Value{}, ErrValueNotFound
+	}
+	return v, nil
 }

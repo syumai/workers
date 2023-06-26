@@ -52,12 +52,9 @@ func (d *Dialer) Dial(ctx context.Context, network, addr string) (net.Conn, erro
 	sock.writer = sock.socket.Get("writable").Call("getWriter")
 	sock.reader = sock.socket.Get("readable").Call("getReader")
 	sock.options = d.opts
+	sock.rd = jsutil.ConvertReadableStreamToReader(sock.reader)
 
 	sock.ctx, sock.cn = context.WithCancel(d.ctx)
-
-	{
-		sock.rd = jsutil.ConvertReadableStreamToReader(sock.reader)
-	}
 
 	return sock, nil
 }

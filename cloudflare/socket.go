@@ -78,6 +78,10 @@ type TCPSocket struct {
 	cn  context.CancelFunc
 }
 
+func (t *TCPSocket) Socket() js.Value {
+	return t.socket
+}
+
 // Read reads data from the connection.
 // Read can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetReadDeadline.
@@ -122,7 +126,7 @@ func (t *TCPSocket) Write(b []byte) (n int, err error) {
 }
 
 // StartTls will call startTls on the socket
-func (t *TCPSocket) Close() error {
+func (t *TCPSocket) StartTls() error {
 	t.socket.Call("startTls")
 	return nil
 }

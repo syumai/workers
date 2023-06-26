@@ -49,14 +49,17 @@ func (d *Dialer) Dial(ctx context.Context, network, addr string) (net.Conn, erro
 	}
 	sock := &TCPSocket{}
 	sock.socket = d.connect.Invoke(addr, optionsObj)
+	sock.options = d.opts
+	sock.ctx, sock.cn = context.WithCancel(ctx)
+	sock.init(d.ctx)
+	return sock, nil
+}
+
+func (sock *TCPSocket) init(ctx context.Context) {
 	sock.writer = sock.socket.Get("writable").Call("getWriter")
 	sock.reader = sock.socket.Get("readable").Call("getReader")
-	sock.options = d.opts
 	sock.rd = jsutil.ConvertReadableStreamToReader(sock.reader)
-
-	sock.ctx, sock.cn = context.WithCancel(d.ctx)
-
-	return sock, nil
+	return
 }
 
 type TCPSocket struct {
@@ -123,9 +126,10 @@ func (t *TCPSocket) Write(b []byte) (n int, err error) {
 }
 
 // StartTls will call startTls on the socket
-func (t *TCPSocket) StartTls() error {
-	t.socket.Call("startTls")
-	return nil
+func (t *TCPSocket) StartTls() *TCPSocket {
+	t.socket = t.socket.Call("startTls")
+	t.init(t.ctx)
+	return t
 }
 
 // Close closes the connection.

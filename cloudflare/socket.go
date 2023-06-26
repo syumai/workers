@@ -51,6 +51,7 @@ func (d *Dialer) Dial(ctx context.Context, network, addr string) (net.Conn, erro
 	sock.socket = d.connect.Invoke(addr, optionsObj)
 	sock.options = d.opts
 	sock.ctx, sock.cn = context.WithCancel(ctx)
+	sock.SetDeadline(time.Now().Add(999999 * time.Hour))
 	sock.init(d.ctx)
 	return sock, nil
 }

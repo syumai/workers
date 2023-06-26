@@ -121,6 +121,12 @@ func (t *TCPSocket) Write(b []byte) (n int, err error) {
 	}
 }
 
+// StartTls will call startTls on the socket
+func (t *TCPSocket) Close() error {
+	t.socket.Call("startTls")
+	return nil
+}
+
 // Close closes the connection.
 // Any blocked Read or Write operations will be unblocked and return errors.
 func (t *TCPSocket) Close() error {

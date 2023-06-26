@@ -15,6 +15,7 @@ import (
 type Dialer struct {
 	connect js.Value
 	opts    *SocketOptions
+	ctx     context.Context
 }
 
 type SocketOptions struct {
@@ -28,7 +29,7 @@ func NewDialer(ctx context.Context, options *SocketOptions) (*Dialer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Dialer{connect: connect, opts: options}, nil
+	return &Dialer{connect: connect, opts: options, ctx: ctx}, nil
 }
 
 func (d *Dialer) Dial(ctx context.Context, network, addr string) (net.Conn, error) {
@@ -52,7 +53,7 @@ func (d *Dialer) Dial(ctx context.Context, network, addr string) (net.Conn, erro
 	sock.reader = sock.socket.Get("readable").Call("getReader")
 	sock.options = d.opts
 
-	sock.ctx, sock.cn = context.WithCancel(context.Background())
+	sock.ctx, sock.cn = context.WithCancel(d.ctx)
 
 	{
 		sock.rd = jsutil.ConvertReadableStreamToReader(sock.reader)

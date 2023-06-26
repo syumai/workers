@@ -23,7 +23,7 @@ func main() {
 		}
 		defer conn.Close()
 		conn.SetDeadline(time.Now().Add(1 * time.Hour))
-		_, err = conn.Write([]byte("hello."))
+		_, err = conn.Write([]byte("hello.\n"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

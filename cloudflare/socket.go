@@ -52,8 +52,6 @@ func (d *Dialer) Dial(ctx context.Context, network, addr string) (net.Conn, erro
 	sock.reader = sock.socket.Get("readable").Call("getReader")
 	sock.options = d.opts
 
-	sock.goSide, sock.jsSide = net.Pipe()
-
 	sock.ctx, sock.cn = context.WithCancel(context.Background())
 
 	{
@@ -76,9 +74,6 @@ type TCPSocket struct {
 	readDeadline  time.Time
 	writeDeadline time.Time
 
-	goSide net.Conn
-	jsSide net.Conn
-
 	ctx context.Context
 	cn  context.CancelFunc
 }
@@ -87,21 +82,19 @@ type TCPSocket struct {
 // Read can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetReadDeadline.
 func (t *TCPSocket) Read(b []byte) (n int, err error) {
-	//ctx, cn := context.WithDeadline(t.ctx, t.readDeadline)
-	//defer cn()
-	//done := make(chan struct{})
-	//go func() {
-	n, err = t.rd.Read(b)
-	//	close(done)
-	//}()
-	//select {
-	//case <-done:
-	//	return
-	//case <-ctx.Done():
-	//	return 0, os.ErrDeadlineExceeded
-	//}
-
-	return
+	ctx, cn := context.WithDeadline(t.ctx, t.readDeadline)
+	defer cn()
+	done := make(chan struct{})
+	go func() {
+		n, err = t.rd.Read(b)
+		close(done)
+	}()
+	select {
+	case <-done:
+		return
+	case <-ctx.Done():
+		return 0, os.ErrDeadlineExceeded
+	}
 }
 
 // Write writes data to the connection.
@@ -189,7 +182,7 @@ func (t *TCPSocket) SetDeadline(deadline time.Time) error {
 // and any currently-blocked Read call.
 // A zero value for t means Read will not time out.
 func (t *TCPSocket) SetReadDeadline(deadline time.Time) error {
-	t.goSide.SetReadDeadline(deadline)
+	t.readDeadline = deadline
 	return nil
 }
 

@@ -1,5 +1,6 @@
 # tcp
 
+- makes a connection to tcpbin.com:4242
 
 ## Development
 
@@ -8,7 +9,7 @@
 This project requires these tools to be installed globally.
 
 * wrangler
-* tinygo
+* go
 
 ### Commands
 

@@ -68,7 +68,6 @@ type TCPSocket struct {
 	reader js.Value
 
 	rd io.Reader
-	wr io.Writer
 
 	options *SocketOptions
 

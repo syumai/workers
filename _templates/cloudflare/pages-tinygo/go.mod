@@ -1,4 +1,4 @@
-module github.com/syumai/workers/_examples/pages-functions
+module github.com/syumai/workers/_examples/pages-tinygo
 
 go 1.18
 

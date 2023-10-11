@@ -67,8 +67,8 @@ First, please install the following tools:
 * Node.js (and npm)
 * [wrangler](https://developers.cloudflare.com/workers/wrangler/)
   - You can install it by running `npm install -g wrangler`.
-* tinygo
-* gonew command
+* tinygo 0.29.0 or later
+* [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew)
   - You can install it by running `go install golang.org/x/tools/cmd/gonew@latest`
 
 After installation, please run the following commands.

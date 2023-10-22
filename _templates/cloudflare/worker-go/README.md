@@ -17,14 +17,22 @@
 - Node.js
 - [wrangler](https://developers.cloudflare.com/workers/wrangler/)
   - just run `npm install -g wrangler`
-- Go
+- Go 1.21.0 or later
 
 ## Getting Started
 
+* If not already installed, please install the [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew) command.
+
 ```console
-wrangler generate my-app syumai/workers/_templates/cloudflare/worker-go
+go install golang.org/x/tools/cmd/gonew@latest
+```
+
+* Create a new project using this template.
+  - Second argument passed to `gonew` is a module path of your new app.
+
+```console
+gonew github.com/syumai/workers/_templates/cloudflare/worker-go your.module/my-app # e.g. github.com/syumai/my-app
 cd my-app
-go mod init
 go mod tidy
 make dev # start running dev server
 curl http://localhost:8787/hello # outputs "Hello!"

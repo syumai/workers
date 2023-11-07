@@ -29,6 +29,7 @@ go install golang.org/x/tools/cmd/gonew@latest
 gonew github.com/syumai/workers/_templates/cloudflare/pages-tinygo your.module/my-app # e.g. github.com/syumai/my-app
 cd my-app
 go mod tidy
+make build # build Go Wasm binary
 make dev # start running dev server
 curl http://localhost:8787/api/hello # outputs "Hello, Pages Functions!"
 ```

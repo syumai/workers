@@ -4,7 +4,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"strings"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jsutil"
@@ -14,8 +13,8 @@ import (
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
 func ToResponse(res js.Value) (*http.Response, error) {
 	status := res.Get("status").Int()
-	promise := res.Call("text")
-	body, err := jsutil.AwaitPromise(promise)
+	promise := res.Call("blob")
+	blob, err := jsutil.AwaitPromise(promise)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +25,7 @@ func ToResponse(res js.Value) (*http.Response, error) {
 		Status:        strconv.Itoa(status) + " " + res.Get("statusText").String(),
 		StatusCode:    status,
 		Header:        header,
-		Body:          io.NopCloser(strings.NewReader(body.String())),
+		Body:          io.NopCloser(jsutil.ConvertStreamReaderToReader(blob.Call("stream").Call("getReader"))),
 		ContentLength: contentLength,
 	}, nil
 }

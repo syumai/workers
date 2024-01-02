@@ -1,3 +1,4 @@
+// export auto-generated entrypoint script
 export { default } from "./build/worker.mjs";
 
 // Durable Object

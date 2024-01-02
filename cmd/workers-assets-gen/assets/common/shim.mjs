@@ -1,4 +1,3 @@
-import "./polyfill_performance.js";
 import "./wasm_exec.js";
 
 const go = new Go();

@@ -1,9 +1,4 @@
-import * as imports from "../assets/shim.mjs";
-import mod from "./build/app.wasm";
-
-imports.init(mod);
-
-export default { fetch: imports.fetch }
+export { default } from "./build/worker.mjs";
 
 // Durable Object
 

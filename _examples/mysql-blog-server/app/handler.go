@@ -37,6 +37,7 @@ func (h *articleHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
+	defer db.Close()
 
 	switch req.Method {
 	case http.MethodGet:

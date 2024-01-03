@@ -12,7 +12,7 @@ import (
 // It accepts an asynchronous task which the Workers runtime will execute before the handler terminates but without blocking the response.
 // see: https://developers.cloudflare.com/workers/runtime-apis/fetch-event/#waituntil
 func WaitUntil(ctx context.Context, task func()) {
-	exCtx := cfruntimecontext.GetExecutionContext(ctx)
+	exCtx := cfruntimecontext.MustGetExecutionContext(ctx)
 	exCtx.Call("waitUntil", jsutil.NewPromise(js.FuncOf(func(this js.Value, pArgs []js.Value) any {
 		resolve := pArgs[0]
 		go func() {
@@ -27,7 +27,7 @@ func WaitUntil(ctx context.Context, task func()) {
 // Instead, the request forwards to the origin server as if it had not gone through the worker.
 // see: https://developers.cloudflare.com/workers/runtime-apis/fetch-event/#passthroughonexception
 func PassThroughOnException(ctx context.Context) {
-	exCtx := cfruntimecontext.GetExecutionContext(ctx)
+	exCtx := cfruntimecontext.MustGetExecutionContext(ctx)
 	jsutil.AwaitPromise(jsutil.NewPromise(js.FuncOf(func(this js.Value, pArgs []js.Value) any {
 		resolve := pArgs[0]
 		go func() {

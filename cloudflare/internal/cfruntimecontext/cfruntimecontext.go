@@ -21,19 +21,27 @@ import (
  * - see: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#LL564
  */
 
-// GetRuntimeContextEnv gets object which holds environment variables bound to Cloudflare worker.
+// MustGetRuntimeContextEnv gets object which holds environment variables bound to Cloudflare worker.
 // - see: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#L566
-func GetRuntimeContextEnv(ctx context.Context) js.Value {
-	runtimeCtxValue := runtimecontext.MustExtract(ctx)
-	return runtimeCtxValue.Get("env")
+func MustGetRuntimeContextEnv(ctx context.Context) js.Value {
+	return MustGetRuntimeContextValue(ctx, "env")
 }
 
-// GetExecutionContext gets ExecutionContext object from context.
+// MustGetExecutionContext gets ExecutionContext object from context.
 // - see: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#L567
 // - see also: https://github.com/cloudflare/workers-types/blob/c8d9533caa4415c2156d2cf1daca75289d01ae70/index.d.ts#L554
-func GetExecutionContext(ctx context.Context) js.Value {
-	runtimeCtxValue := runtimecontext.MustExtract(ctx)
-	return runtimeCtxValue.Get("ctx")
+func MustGetExecutionContext(ctx context.Context) js.Value {
+	return MustGetRuntimeContextValue(ctx, "ctx")
+}
+
+// MustGetRuntimeContextValue gets value for specified key from RuntimeContext.
+// - if the value is undefined, this function panics.
+func MustGetRuntimeContextValue(ctx context.Context, key string) js.Value {
+	val, err := GetRuntimeContextValue(ctx, key)
+	if err != nil {
+		panic(err)
+	}
+	return val
 }
 
 var ErrValueNotFound = errors.New("execution context value for specified key not found")

@@ -1,6 +1,6 @@
-# tcp
+# sockets
 
-- makes a connection to tcpbin.com:4242
+- makes a TCP connection to tcpbin.com:4242.
 
 ## Development
 

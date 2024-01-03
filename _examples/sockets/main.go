@@ -11,12 +11,7 @@ import (
 
 func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		dialer, err := sockets.NewDialer(req.Context(), nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		conn, err := dialer.Dial(req.Context(), "tcp", "tcpbin.com:4242")
+		conn, err := sockets.Connect(req.Context(), "tcpbin.com:4242", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

@@ -11,34 +11,41 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-func newSocket(ctx context.Context, sockVal js.Value) *Socket {
+func newSocket(ctx context.Context, sockVal js.Value, readDeadline, writeDeadline time.Time) *Socket {
 	ctx, cancel := context.WithCancel(ctx)
-	reader := sockVal.Get("readable").Call("getReader")
-	sock := &Socket{
-		socket: sockVal,
-		writer: sockVal.Get("writable").Call("getWriter"),
-		reader: reader,
-		rd:     jsutil.ConvertStreamReaderToReader(reader),
+	writerVal := sockVal.Get("writable").Call("getWriter")
+	readerVal := sockVal.Get("readable").Call("getReader")
+	return &Socket{
 		ctx:    ctx,
 		cancel: cancel,
+
+		reader:    jsutil.ConvertStreamReaderToReader(readerVal),
+		writerVal: writerVal,
+
+		readDeadline:  readDeadline,
+		writeDeadline: writeDeadline,
+
+		startTLS:   func() js.Value { return sockVal.Call("startTls") },
+		close:      func() { sockVal.Call("close") },
+		closeRead:  func() { readerVal.Call("close") },
+		closeWrite: func() { writerVal.Call("close") },
 	}
-	// SetDeadline returns no error
-	_ = sock.SetDeadline(time.Now().Add(999999 * time.Hour))
-	return sock
 }
 
 type Socket struct {
-	socket js.Value
-	writer js.Value
-	reader js.Value
+	ctx    context.Context
+	cancel context.CancelFunc
 
-	rd io.Reader
+	reader    io.Reader
+	writerVal js.Value
 
 	readDeadline  time.Time
 	writeDeadline time.Time
 
-	ctx    context.Context
-	cancel context.CancelFunc
+	startTLS   func() js.Value
+	close      func()
+	closeRead  func()
+	closeWrite func()
 }
 
 var _ net.Conn = (*Socket)(nil)
@@ -51,7 +58,7 @@ func (t *Socket) Read(b []byte) (n int, err error) {
 	defer cancel()
 	done := make(chan struct{})
 	go func() {
-		n, err = t.rd.Read(b)
+		n, err = t.reader.Read(b)
 		close(done)
 	}()
 	select {
@@ -72,7 +79,8 @@ func (t *Socket) Write(b []byte) (n int, err error) {
 	go func() {
 		arr := jsutil.NewUint8Array(len(b))
 		js.CopyBytesToJS(arr, b)
-		_, err = jsutil.AwaitPromise(t.writer.Call("write", arr))
+		_, err = jsutil.AwaitPromise(t.writerVal.Call("write", arr))
+		// TODO: handle error
 		if err == nil {
 			n = len(b)
 		}
@@ -86,29 +94,29 @@ func (t *Socket) Write(b []byte) (n int, err error) {
 	}
 }
 
-// StartTls will call startTls on the socket
-func (t *Socket) StartTls() *Socket {
-	sockVal := t.socket.Call("startTls")
-	return newSocket(t.ctx, sockVal)
+// StartTLS upgrades an insecure socket to a secure one that uses TLS, returning a new *Socket.
+
+func (t *Socket) StartTLS() *Socket {
+	return newSocket(t.ctx, t.startTLS(), t.readDeadline, t.writeDeadline)
 }
 
 // Close closes the connection.
 // Any blocked Read or Write operations will be unblocked and return errors.
 func (t *Socket) Close() error {
-	t.cancel()
-	t.socket.Call("close")
+	defer t.cancel()
+	t.close()
 	return nil
 }
 
 // CloseRead closes the read side of the connection.
 func (t *Socket) CloseRead() error {
-	t.reader.Call("close")
+	t.closeRead()
 	return nil
 }
 
 // CloseWrite closes the write side of the connection.
 func (t *Socket) CloseWrite() error {
-	t.writer.Call("close")
+	t.closeWrite()
 	return nil
 }
 

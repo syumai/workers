@@ -1,3 +1,4 @@
 dist
 build
-.cf
+node_modules
+.wrangler

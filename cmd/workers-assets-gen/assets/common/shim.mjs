@@ -1,4 +1,3 @@
-import "./polyfill_performance.js";
 import "./wasm_exec.js";
 import { connect } from 'cloudflare:sockets';
 

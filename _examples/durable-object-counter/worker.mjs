@@ -1,9 +1,5 @@
-import * as imports from "../assets/shim.mjs";
-import mod from "./build/app.wasm";
-
-imports.init(mod);
-
-export default { fetch: imports.fetch }
+// export auto-generated entrypoint script
+export { default } from "./build/worker.mjs";
 
 // Durable Object
 
@@ -15,7 +11,7 @@ export class Counter {
   // Handle HTTP requests from clients.
   async fetch(request) {
     // Apply requested action.
-    let url = new URL(request.url);
+    const url = new URL(request.url);
 
     // Durable Object storage is automatically cached in-memory, so reading the
     // same key every request is fast. (That said, you could also store the

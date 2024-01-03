@@ -3,6 +3,7 @@ package sockets
 import (
 	"context"
 	"net"
+	"syscall/js"
 	"time"
 
 	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
@@ -42,7 +43,12 @@ func Connect(ctx context.Context, addr string, opts *SocketOptions) (net.Conn, e
 			optionsObj.Set("secureTransport", string(opts.SecureTransport))
 		}
 	}
-	sockVal := connect.Invoke(addr, optionsObj)
+	sockVal, err := jsutil.TryCatch(js.FuncOf(func(_ js.Value, args []js.Value) any {
+		return connect.Invoke(addr, optionsObj)
+	}))
+	if err != nil {
+		return nil, err
+	}
 	deadline := time.Now().Add(defaultDeadline)
 	return newSocket(ctx, sockVal, deadline, deadline), nil
 }

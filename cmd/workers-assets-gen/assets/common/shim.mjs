@@ -5,6 +5,18 @@ const go = new Go();
 
 let mod;
 
+globalThis.tryCatch = (fn) => {
+  try {
+    return {
+      result: fn(),
+    };
+  } catch(e) {
+    return {
+      error: e,
+    }
+  }
+}
+
 export function init(m) {
   mod = m;
 }

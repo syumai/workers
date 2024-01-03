@@ -39,7 +39,7 @@ func Connect(ctx context.Context, addr string, opts *SocketOptions) (net.Conn, e
 			optionsObj.Set("allowHalfOpen", true)
 		}
 		if opts.SecureTransport != "" {
-			optionsObj.Set("secureTransport", opts.SecureTransport)
+			optionsObj.Set("secureTransport", string(opts.SecureTransport))
 		}
 	}
 	sockVal := connect.Invoke(addr, optionsObj)

@@ -23,7 +23,7 @@ type R2Bucket struct {
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
 func NewR2Bucket(ctx context.Context, varName string) (*R2Bucket, error) {
-	inst := cfruntimecontext.GetRuntimeContextEnv(ctx).Get(varName)
+	inst := cfruntimecontext.MustGetRuntimeContextEnv(ctx).Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)
 	}

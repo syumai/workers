@@ -1,8 +1,21 @@
 import "./wasm_exec.js";
+import { connect } from 'cloudflare:sockets';
 
 const go = new Go();
 
 let mod;
+
+globalThis.tryCatch = (fn) => {
+  try {
+    return {
+      result: fn(),
+    };
+  } catch(e) {
+    return {
+      error: e,
+    }
+  }
+}
 
 export function init(m) {
   mod = m;
@@ -17,19 +30,27 @@ async function run() {
   await readyPromise;
 }
 
+function createRuntimeContext(env, ctx) {
+  return {
+    env,
+    ctx,
+    connect,
+  }
+}
+
 export async function fetch(req, env, ctx) {
   await run();
-  return handleRequest(req, { env, ctx });
+  return handleRequest(req, createRuntimeContext(env, ctx));
 }
 
 export async function scheduled(event, env, ctx) {
   await run();
-  return runScheduler(event, { env, ctx });
+  return runScheduler(event, createRuntimeContext(env, ctx));
 }
 
 // onRequest handles request to Cloudflare Pages
 export async function onRequest(ctx) {
   await run();
   const { request, env } = ctx;
-  return handleRequest(request, { env, ctx });
+  return handleRequest(request, createRuntimeContext(env, ctx));
 }

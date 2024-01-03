@@ -1,0 +1,1 @@
+MYSQL_DSN=user:pass@tcp(hostname)/database-name?interpolateParams=true

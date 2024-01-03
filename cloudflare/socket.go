@@ -59,7 +59,7 @@ func (sock *TCPSocket) init(ctx context.Context) {
 	sock.writer = sock.socket.Get("writable").Call("getWriter")
 	sock.reader = sock.socket.Get("readable").Call("getReader")
 	sock.rd = jsutil.ConvertStreamReaderToReader(sock.reader)
-	sock.ctx, sock.cn = context.WithCancel(ctx)
+	sock.ctx, sock.cancel = context.WithCancel(ctx)
 	return
 }
 
@@ -75,8 +75,8 @@ type TCPSocket struct {
 	readDeadline  time.Time
 	writeDeadline time.Time
 
-	ctx context.Context
-	cn  context.CancelFunc
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 func (t *TCPSocket) Socket() js.Value {
@@ -89,8 +89,8 @@ var _ net.Conn = (*TCPSocket)(nil)
 // Read can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetReadDeadline.
 func (t *TCPSocket) Read(b []byte) (n int, err error) {
-	ctx, cn := context.WithDeadline(t.ctx, t.readDeadline)
-	defer cn()
+	ctx, cancel := context.WithDeadline(t.ctx, t.readDeadline)
+	defer cancel()
 	done := make(chan struct{})
 	go func() {
 		n, err = t.rd.Read(b)
@@ -108,8 +108,8 @@ func (t *TCPSocket) Read(b []byte) (n int, err error) {
 // Write can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetWriteDeadline.
 func (t *TCPSocket) Write(b []byte) (n int, err error) {
-	ctx, cn := context.WithDeadline(t.ctx, t.writeDeadline)
-	defer cn()
+	ctx, cancel := context.WithDeadline(t.ctx, t.writeDeadline)
+	defer cancel()
 	done := make(chan struct{})
 	go func() {
 		arr := jsutil.NewUint8Array(len(b))
@@ -140,7 +140,7 @@ func (t *TCPSocket) StartTls() *TCPSocket {
 // Close closes the connection.
 // Any blocked Read or Write operations will be unblocked and return errors.
 func (t *TCPSocket) Close() error {
-	t.cn()
+	t.cancel()
 	t.socket.Call("close")
 	return nil
 }

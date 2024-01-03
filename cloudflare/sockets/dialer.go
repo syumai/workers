@@ -8,9 +8,17 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
+type SecureTransport string
+
+const (
+	SecureTransportOn       SecureTransport = "on"
+	SecureTransportOff      SecureTransport = "off"
+	SecureTransportStartTLS SecureTransport = "starttls"
+)
+
 type SocketOptions struct {
-	SecureTransport string `json:"secureTransport"`
-	AllowHalfOpen   bool   `json:"allowHalfOpen"`
+	SecureTransport SecureTransport `json:"secureTransport"`
+	AllowHalfOpen   bool            `json:"allowHalfOpen"`
 }
 
 func Connect(ctx context.Context, addr string, opts *SocketOptions) (net.Conn, error) {

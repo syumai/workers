@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/cloudflare"
+	"github.com/syumai/workers/cloudflare/socket"
 )
 
 func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		dialer, err := cloudflare.NewDialer(req.Context(), nil)
+		dialer, err := socket.NewDialer(req.Context(), nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

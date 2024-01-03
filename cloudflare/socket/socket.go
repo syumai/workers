@@ -1,4 +1,4 @@
-package cloudflare
+package socket
 
 import (
 	"context"

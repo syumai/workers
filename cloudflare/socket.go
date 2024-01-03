@@ -83,6 +83,8 @@ func (t *TCPSocket) Socket() js.Value {
 	return t.socket
 }
 
+var _ net.Conn = (*TCPSocket)(nil)
+
 // Read reads data from the connection.
 // Read can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetReadDeadline.

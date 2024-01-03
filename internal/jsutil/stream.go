@@ -7,38 +7,6 @@ import (
 	"syscall/js"
 )
 
-// streamReaderToReader implements io.Reader sourced from ReadableStream
-// https://developers.cloudflare.com/workers/runtime-apis/streams/readablestream/
-type readableStreamToReader struct {
-	buf          bytes.Buffer
-	streamReader js.Value
-}
-
-// Read reads bytes from ReadableStreamDefaultReader.
-func (sr *readableStreamToReader) Read(p []byte) (n int, err error) {
-	if sr.buf.Len() == 0 {
-		promise, err := AwaitPromise(sr.streamReader.Call("read"))
-		if err != nil {
-			return 0, err
-		}
-		result := promise.Get("value")
-		chunk := make([]byte, result.Get("byteLength").Int())
-		_ = js.CopyBytesToGo(chunk, result)
-		_, err = sr.buf.Write(chunk)
-		if err != nil {
-			return 0, err
-		}
-	}
-	return sr.buf.Read(p)
-}
-
-// ConvertReadableStreamToReader converts ReadableStreamDefaultReader to io.Reader.
-func ConvertReadableStreamToReader(sr js.Value) io.Reader {
-	return &readableStreamToReader{
-		streamReader: sr,
-	}
-}
-
 // streamReaderToReader implements io.Reader sourced from ReadableStreamDefaultReader.
 //   - ReadableStreamDefaultReader: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader
 //   - This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L76

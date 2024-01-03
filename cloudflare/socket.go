@@ -58,7 +58,7 @@ func (sock *TCPSocket) init(ctx context.Context) {
 	sock.SetDeadline(time.Now().Add(999999 * time.Hour))
 	sock.writer = sock.socket.Get("writable").Call("getWriter")
 	sock.reader = sock.socket.Get("readable").Call("getReader")
-	sock.rd = jsutil.ConvertReadableStreamToReader(sock.reader)
+	sock.rd = jsutil.ConvertStreamReaderToReader(sock.reader)
 	sock.ctx, sock.cn = context.WithCancel(ctx)
 	return
 }

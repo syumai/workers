@@ -1,6 +1,6 @@
 # sockets
 
-- makes a TCP connection to tcpbin.com:4242.
+- makes a TCP connection to tcpbin.com:4242 and sends message.
 
 ## Development
 
@@ -14,7 +14,7 @@ This project requires these tools to be installed globally.
 ### Commands
 
 ```
-make dev     # run dev server
-make build   # build Go Wasm binary
+make dev    # run dev server
+make build  # build Go Wasm binary
 make deploy # deploy worker
 ```

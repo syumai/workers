@@ -1,4 +1,4 @@
-module github.com/syumai/workers/_examples/fetch
+module github.com/syumai/workers/_examples/sockets
 
 go 1.21.3
 

@@ -30,6 +30,7 @@
 * [x] Environment variables
 * [x] FetchEvent
 * [x] Cron Triggers
+* [x] TCP Sockets
 
 ## Installation
 

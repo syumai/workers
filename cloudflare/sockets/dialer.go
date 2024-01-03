@@ -4,8 +4,9 @@ import (
 	"context"
 	"net"
 
-	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
 	"github.com/syumai/workers/internal/jsutil"
+
+	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
 )
 
 type SecureTransport string
@@ -35,9 +36,6 @@ func Connect(ctx context.Context, addr string, opts *SocketOptions) (net.Conn, e
 			optionsObj.Set("secureTransport", opts.SecureTransport)
 		}
 	}
-	sock := &Socket{}
-	sock.socket = connect.Invoke(addr, optionsObj)
-	sock.options = opts
-	sock.init(ctx)
-	return sock, nil
+	sockVal := connect.Invoke(addr, optionsObj)
+	return newSocket(ctx, sockVal), nil
 }

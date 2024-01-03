@@ -11,13 +11,20 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-func (sock *Socket) init(ctx context.Context) {
-	sock.SetDeadline(time.Now().Add(999999 * time.Hour))
-	sock.writer = sock.socket.Get("writable").Call("getWriter")
-	sock.reader = sock.socket.Get("readable").Call("getReader")
-	sock.rd = jsutil.ConvertStreamReaderToReader(sock.reader)
-	sock.ctx, sock.cancel = context.WithCancel(ctx)
-	return
+func newSocket(ctx context.Context, sockVal js.Value) *Socket {
+	ctx, cancel := context.WithCancel(ctx)
+	reader := sockVal.Get("readable").Call("getReader")
+	sock := &Socket{
+		socket: sockVal,
+		writer: sockVal.Get("writable").Call("getWriter"),
+		reader: reader,
+		rd:     jsutil.ConvertStreamReaderToReader(reader),
+		ctx:    ctx,
+		cancel: cancel,
+	}
+	// SetDeadline returns no error
+	_ = sock.SetDeadline(time.Now().Add(999999 * time.Hour))
+	return sock
 }
 
 type Socket struct {
@@ -27,17 +34,11 @@ type Socket struct {
 
 	rd io.Reader
 
-	options *SocketOptions
-
 	readDeadline  time.Time
 	writeDeadline time.Time
 
 	ctx    context.Context
 	cancel context.CancelFunc
-}
-
-func (t *Socket) Socket() js.Value {
-	return t.socket
 }
 
 var _ net.Conn = (*Socket)(nil)
@@ -87,11 +88,8 @@ func (t *Socket) Write(b []byte) (n int, err error) {
 
 // StartTls will call startTls on the socket
 func (t *Socket) StartTls() *Socket {
-	sock := &Socket{}
-	sock.socket = t.socket.Call("startTls")
-	sock.options = t.options
-	sock.init(t.ctx)
-	return sock
+	sockVal := t.socket.Call("startTls")
+	return newSocket(t.ctx, sockVal)
 }
 
 // Close closes the connection.

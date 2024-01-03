@@ -11,7 +11,7 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-func (sock *TCPSocket) init(ctx context.Context) {
+func (sock *Socket) init(ctx context.Context) {
 	sock.SetDeadline(time.Now().Add(999999 * time.Hour))
 	sock.writer = sock.socket.Get("writable").Call("getWriter")
 	sock.reader = sock.socket.Get("readable").Call("getReader")
@@ -20,7 +20,7 @@ func (sock *TCPSocket) init(ctx context.Context) {
 	return
 }
 
-type TCPSocket struct {
+type Socket struct {
 	socket js.Value
 	writer js.Value
 	reader js.Value
@@ -36,16 +36,16 @@ type TCPSocket struct {
 	cancel context.CancelFunc
 }
 
-func (t *TCPSocket) Socket() js.Value {
+func (t *Socket) Socket() js.Value {
 	return t.socket
 }
 
-var _ net.Conn = (*TCPSocket)(nil)
+var _ net.Conn = (*Socket)(nil)
 
 // Read reads data from the connection.
 // Read can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetReadDeadline.
-func (t *TCPSocket) Read(b []byte) (n int, err error) {
+func (t *Socket) Read(b []byte) (n int, err error) {
 	ctx, cancel := context.WithDeadline(t.ctx, t.readDeadline)
 	defer cancel()
 	done := make(chan struct{})
@@ -64,7 +64,7 @@ func (t *TCPSocket) Read(b []byte) (n int, err error) {
 // Write writes data to the connection.
 // Write can be made to time out and return an error after a fixed
 // time limit; see SetDeadline and SetWriteDeadline.
-func (t *TCPSocket) Write(b []byte) (n int, err error) {
+func (t *Socket) Write(b []byte) (n int, err error) {
 	ctx, cancel := context.WithDeadline(t.ctx, t.writeDeadline)
 	defer cancel()
 	done := make(chan struct{})
@@ -86,8 +86,8 @@ func (t *TCPSocket) Write(b []byte) (n int, err error) {
 }
 
 // StartTls will call startTls on the socket
-func (t *TCPSocket) StartTls() *TCPSocket {
-	sock := &TCPSocket{}
+func (t *Socket) StartTls() *Socket {
+	sock := &Socket{}
 	sock.socket = t.socket.Call("startTls")
 	sock.options = t.options
 	sock.init(t.ctx)
@@ -96,31 +96,31 @@ func (t *TCPSocket) StartTls() *TCPSocket {
 
 // Close closes the connection.
 // Any blocked Read or Write operations will be unblocked and return errors.
-func (t *TCPSocket) Close() error {
+func (t *Socket) Close() error {
 	t.cancel()
 	t.socket.Call("close")
 	return nil
 }
 
 // CloseRead closes the read side of the connection.
-func (t *TCPSocket) CloseRead() error {
+func (t *Socket) CloseRead() error {
 	t.reader.Call("close")
 	return nil
 }
 
 // CloseWrite closes the write side of the connection.
-func (t *TCPSocket) CloseWrite() error {
+func (t *Socket) CloseWrite() error {
 	t.writer.Call("close")
 	return nil
 }
 
 // LocalAddr returns the local network address, if known.
-func (t *TCPSocket) LocalAddr() net.Addr {
+func (t *Socket) LocalAddr() net.Addr {
 	return nil
 }
 
 // RemoteAddr returns the remote network address, if known.
-func (t *TCPSocket) RemoteAddr() net.Addr {
+func (t *Socket) RemoteAddr() net.Addr {
 	return nil
 }
 
@@ -145,7 +145,7 @@ func (t *TCPSocket) RemoteAddr() net.Addr {
 // the deadline after successful Read or Write calls.
 //
 // A zero value for t means I/O operations will not time out.
-func (t *TCPSocket) SetDeadline(deadline time.Time) error {
+func (t *Socket) SetDeadline(deadline time.Time) error {
 	t.SetReadDeadline(deadline)
 	t.SetWriteDeadline(deadline)
 	return nil
@@ -154,7 +154,7 @@ func (t *TCPSocket) SetDeadline(deadline time.Time) error {
 // SetReadDeadline sets the deadline for future Read calls
 // and any currently-blocked Read call.
 // A zero value for t means Read will not time out.
-func (t *TCPSocket) SetReadDeadline(deadline time.Time) error {
+func (t *Socket) SetReadDeadline(deadline time.Time) error {
 	t.readDeadline = deadline
 	return nil
 }
@@ -164,7 +164,7 @@ func (t *TCPSocket) SetReadDeadline(deadline time.Time) error {
 // Even if write times out, it may return n > 0, indicating that
 // some of the data was successfully written.
 // A zero value for t means Write will not time out.
-func (t *TCPSocket) SetWriteDeadline(deadline time.Time) error {
+func (t *Socket) SetWriteDeadline(deadline time.Time) error {
 	t.writeDeadline = deadline
 	return nil
 }

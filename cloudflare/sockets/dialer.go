@@ -35,7 +35,7 @@ func Connect(ctx context.Context, addr string, opts *SocketOptions) (net.Conn, e
 			optionsObj.Set("secureTransport", opts.SecureTransport)
 		}
 	}
-	sock := &TCPSocket{}
+	sock := &Socket{}
 	sock.socket = connect.Invoke(addr, optionsObj)
 	sock.options = opts
 	sock.init(ctx)

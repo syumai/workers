@@ -66,7 +66,6 @@ func (kv *KVNamespace) GetReader(key string, opts *KVNamespaceGetOptions) (io.Re
 	if err != nil {
 		return nil, err
 	}
-	js.Global().Get("console").Call("log", v)
 	return jsutil.ConvertStreamReaderToReader(v.Call("getReader")), nil
 }
 

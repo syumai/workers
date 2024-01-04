@@ -491,7 +491,7 @@
 				[null, 2],
 				[true, 3],
 				[false, 4],
-				[globalThis, 5],
+				[globalProxy, 5],
 				[this, 6],
 			]);
 			this._idPool = [];   // unused ids that have been garbage collected

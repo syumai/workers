@@ -71,6 +71,9 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	return w.ToJSResponse(), nil
 }
 
+//go:wasmimport workers ready
+func ready()
+
 // Server serves http.Handler on Cloudflare Workers.
 // if the given handler is nil, http.DefaultServeMux will be used.
 func Serve(handler http.Handler) {
@@ -78,6 +81,6 @@ func Serve(handler http.Handler) {
 		handler = http.DefaultServeMux
 	}
 	httpHandler = handler
-	js.Global().Call("ready")
+	ready()
 	select {}
 }

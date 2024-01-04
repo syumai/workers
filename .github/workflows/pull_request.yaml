@@ -22,5 +22,4 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          export PATH=$(go env GOROOT)/misc/wasm:$PATH
-          GOOS=js GOARCH=wasm go test ./...
+          PATH=$PWD/misc/wasm:$PATH GOOS=js GOARCH=wasm go test ./...

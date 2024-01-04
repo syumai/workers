@@ -462,19 +462,27 @@
 			};
 		}
 
-		async run(instance) {
+		async run(instance, context) {
 			if (!(instance instanceof WebAssembly.Instance)) {
 				throw new Error("Go.run: WebAssembly.Instance expected");
 			}
 			this._inst = instance;
 			this.mem = new DataView(this._inst.exports.mem.buffer);
+			const globalProxy = new Proxy(globalThis, {
+				get(target, prop) {
+					if (prop === 'context') {
+						return context;
+					}
+					return Reflect.get(...arguments);
+				}
+			})
 			this._values = [ // JS values that Go currently has references to, indexed by reference id
 				NaN,
 				0,
 				null,
 				true,
 				false,
-				globalThis,
+				globalProxy,
 				this,
 			];
 			this._goRefCounts = new Array(this._values.length).fill(Infinity); // number of references that Go has to a JS value, indexed by reference id

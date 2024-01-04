@@ -21,7 +21,7 @@ export function init(m) {
   mod = m;
 }
 
-async function run() {
+async function run(ctx) {
   let ready;
   const readyPromise = new Promise((resolve) => {
     ready = resolve;
@@ -32,31 +32,35 @@ async function run() {
       ready: () => { ready() }
     },
   });
-  go.run(instance);
+  go.run(instance, ctx);
   await readyPromise;
 }
 
-function createRuntimeContext(env, ctx) {
+function createRuntimeContext(env, ctx, binding) {
   return {
     env,
     ctx,
     connect,
+    binding,
   };
 }
 
 export async function fetch(req, env, ctx) {
-  await run();
-  return handleRequest(req, createRuntimeContext(env, ctx));
+  const binding = {};
+  await run(createRuntimeContext(env, ctx, binding));
+  return binding.handleRequest(req);
 }
 
 export async function scheduled(event, env, ctx) {
-  await run();
-  return runScheduler(event, createRuntimeContext(env, ctx));
+  const binding = {};
+  await run(createRuntimeContext(env, ctx, binding));
+  return binding.runScheduler(event);
 }
 
 // onRequest handles request to Cloudflare Pages
 export async function onRequest(ctx) {
-  await run();
+  const binding = {};
   const { request, env } = ctx;
-  return handleRequest(request, createRuntimeContext(env, ctx));
+  await run(createRuntimeContext(env, ctx, binding));
+  return binding.handleRequest(request);
 }

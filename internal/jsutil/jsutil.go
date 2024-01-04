@@ -7,6 +7,8 @@ import (
 )
 
 var (
+	RuntimeContext      = js.Global().Get("context")
+	Binding             = js.Global().Get("context").Get("binding")
 	ObjectClass         = js.Global().Get("Object")
 	PromiseClass        = js.Global().Get("Promise")
 	RequestClass        = js.Global().Get("Request")

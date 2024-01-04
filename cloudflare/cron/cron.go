@@ -78,5 +78,5 @@ func init() {
 
 		return jsutil.NewPromise(cb)
 	})
-	js.Global().Set("runScheduler", runSchedulerCallback)
+	jsutil.Binding.Set("runScheduler", runSchedulerCallback)
 }

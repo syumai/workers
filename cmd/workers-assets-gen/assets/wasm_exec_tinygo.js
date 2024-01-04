@@ -458,15 +458,23 @@
 			this.importObject.env = this.importObject.gojs;
 		}
 
-		async run(instance) {
+		async run(instance, context) {
 			this._inst = instance;
+			const globalProxy = new Proxy(global, {
+				get(target, prop) {
+					if (prop === 'context') {
+						return context;
+					}
+					return Reflect.get(...arguments);
+				}
+			})
 			this._values = [ // JS values that Go currently has references to, indexed by reference id
 				NaN,
 				0,
 				null,
 				true,
 				false,
-				global,
+				globalProxy,
 				this,
 			];
 			this._goRefCounts = []; // number of references that Go has to a JS value, indexed by reference id
@@ -512,26 +520,5 @@
 				return event.result;
 			};
 		}
-	}
-
-	if (
-		global.require &&
-		global.require.main === module &&
-		global.process &&
-		global.process.versions &&
-		!global.process.versions.electron
-	) {
-		if (process.argv.length != 3) {
-			console.error("usage: go_js_wasm_exec [wasm binary] [arguments]");
-			process.exit(1);
-		}
-
-		const go = new Go();
-		WebAssembly.instantiate(fs.readFileSync(process.argv[2]), go.importObject).then((result) => {
-			return go.run(result.instance);
-		}).catch((err) => {
-			console.error(err);
-			process.exit(1);
-		});
 	}
 })();

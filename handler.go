@@ -17,14 +17,11 @@ var httpHandler http.Handler
 func init() {
 	var handleRequestCallback js.Func
 	handleRequestCallback = js.FuncOf(func(this js.Value, args []js.Value) any {
-		if len(args) > 2 {
+		if len(args) > 1 {
 			panic(fmt.Errorf("too many args given to handleRequest: %d", len(args)))
 		}
 		reqObj := args[0]
-		runtimeCtxObj := js.Null()
-		if len(args) > 1 {
-			runtimeCtxObj = args[1]
-		}
+		runtimeCtxObj := jsutil.RuntimeContext
 		var cb js.Func
 		cb = js.FuncOf(func(_ js.Value, pArgs []js.Value) any {
 			defer cb.Release()
@@ -40,7 +37,7 @@ func init() {
 		})
 		return jsutil.NewPromise(cb)
 	})
-	js.Global().Set("handleRequest", handleRequestCallback)
+	jsutil.Binding.Set("handleRequest", handleRequestCallback)
 }
 
 // handleRequest accepts a Request object and returns Response object.

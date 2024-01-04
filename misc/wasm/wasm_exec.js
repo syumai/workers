@@ -462,12 +462,15 @@
 			};
 		}
 
-		async run(instance, context) {
+		async run(instance) {
 			if (!(instance instanceof WebAssembly.Instance)) {
 				throw new Error("Go.run: WebAssembly.Instance expected");
 			}
 			this._inst = instance;
 			this.mem = new DataView(this._inst.exports.mem.buffer);
+			const context = {
+				binding: {},
+			};
 			const globalProxy = new Proxy(globalThis, {
 				get(target, prop) {
 					if (prop === 'context') {

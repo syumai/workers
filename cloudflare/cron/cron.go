@@ -37,7 +37,7 @@ var scheduledTask Task
 // ScheduleTask sets the Task to be executed
 func ScheduleTask(task Task) {
 	scheduledTask = task
-	jsutil.Global.Call("ready")
+	js.Global().Call("ready")
 	select {}
 }
 
@@ -78,5 +78,5 @@ func init() {
 
 		return jsutil.NewPromise(cb)
 	})
-	jsutil.Global.Set("runScheduler", runSchedulerCallback)
+	js.Global().Set("runScheduler", runSchedulerCallback)
 }

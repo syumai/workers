@@ -40,7 +40,7 @@ func init() {
 		})
 		return jsutil.NewPromise(cb)
 	})
-	jsutil.Global.Set("handleRequest", handleRequestCallback)
+	js.Global().Set("handleRequest", handleRequestCallback)
 }
 
 // handleRequest accepts a Request object and returns Response object.
@@ -78,6 +78,6 @@ func Serve(handler http.Handler) {
 		handler = http.DefaultServeMux
 	}
 	httpHandler = handler
-	jsutil.Global.Call("ready")
+	js.Global().Call("ready")
 	select {}
 }

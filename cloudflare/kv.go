@@ -7,7 +7,6 @@ import (
 	"syscall/js"
 
 	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
-
 	"github.com/syumai/workers/internal/jsutil"
 )
 
@@ -67,7 +66,7 @@ func (kv *KVNamespace) GetReader(key string, opts *KVNamespaceGetOptions) (io.Re
 	if err != nil {
 		return nil, err
 	}
-	jsutil.Global.Get("console").Call("log", v)
+	js.Global().Get("console").Call("log", v)
 	return jsutil.ConvertStreamReaderToReader(v.Call("getReader")), nil
 }
 

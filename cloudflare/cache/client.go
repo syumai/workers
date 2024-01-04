@@ -6,7 +6,7 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-var cache = jsutil.Global.Get("caches")
+var cache = js.Global().Get("caches")
 
 // Cache
 type Cache struct {

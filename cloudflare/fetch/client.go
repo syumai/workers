@@ -3,8 +3,6 @@ package fetch
 import (
 	"net/http"
 	"syscall/js"
-
-	"github.com/syumai/workers/internal/jsutil"
 )
 
 // Client is an HTTP client.
@@ -44,7 +42,7 @@ func WithBinding(bind js.Value) ClientOption {
 // NewClient returns new Client
 func NewClient(opts ...ClientOption) *Client {
 	c := &Client{
-		namespace: jsutil.Global,
+		namespace: js.Global(),
 	}
 	c.applyOptions(opts)
 

@@ -13,7 +13,7 @@ globalThis.tryCatch = (fn) => {
   } catch(e) {
     return {
       error: e,
-    }
+    };
   }
 }
 
@@ -22,10 +22,16 @@ export function init(m) {
 }
 
 async function run() {
+  let ready;
   const readyPromise = new Promise((resolve) => {
-    globalThis.ready = resolve;
+    ready = resolve;
   });
-  const instance = new WebAssembly.Instance(mod, go.importObject);
+  const instance = new WebAssembly.Instance(mod, {
+    ...go.importObject,
+    workers: {
+      ready: () => { ready() }
+    },
+  });
   go.run(instance);
   await readyPromise;
 }
@@ -35,7 +41,7 @@ function createRuntimeContext(env, ctx) {
     env,
     ctx,
     connect,
-  }
+  };
 }
 
 export async function fetch(req, env, ctx) {

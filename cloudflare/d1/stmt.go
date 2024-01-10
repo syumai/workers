@@ -57,7 +57,7 @@ func (s *stmt) Query([]driver.Value) (driver.Rows, error) {
 func (s *stmt) QueryContext(_ context.Context, args []driver.NamedValue) (driver.Rows, error) {
 	argValues := make([]any, len(args))
 	for i, arg := range args {
-		argValues[i] = arg
+		argValues[i] = arg.Value
 	}
 	resultPromise := s.stmtObj.Call("bind", argValues...).Call("all")
 	rowsObj, err := jsutil.AwaitPromise(resultPromise)

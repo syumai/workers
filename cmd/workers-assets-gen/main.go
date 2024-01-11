@@ -14,43 +14,45 @@ import (
 var assets embed.FS
 
 const (
-	assetDirPath  = "assets"
-	commonDirPath = "assets/common"
-	buildDirPath  = "build"
+	assetDirPath        = "assets"
+	commonDirPath       = "assets/common"
+	defaultBuildDirPath = "build"
 )
 
 func main() {
 	var mode string
+	var buildDirPath string
 	flag.StringVar(&mode, "mode", string(ModeTinygo), `build mode: tinygo or go`)
+	flag.StringVar(&buildDirPath, "o", defaultBuildDirPath, `output dir path: defaults to "build"`)
 	flag.Parse()
 	if !Mode(mode).IsValid() {
 		flag.PrintDefaults()
 		os.Exit(1)
 		return
 	}
-	if err := runMain(Mode(mode)); err != nil {
+	if err := runMain(Mode(mode), buildDirPath); err != nil {
 		fmt.Fprintf(os.Stderr, "err: %v", err)
 		os.Exit(1)
 	}
 }
 
-func runMain(mode Mode) error {
+func runMain(mode Mode, buildDirPath string) error {
 	if err := os.RemoveAll(buildDirPath); err != nil {
 		return err
 	}
 	if err := os.MkdirAll(buildDirPath, os.ModePerm); err != nil {
 		return err
 	}
-	if err := copyWasmExecJS(mode); err != nil {
+	if err := copyWasmExecJS(mode, buildDirPath); err != nil {
 		return err
 	}
-	if err := copyCommonAssets(); err != nil {
+	if err := copyCommonAssets(buildDirPath); err != nil {
 		return err
 	}
 	return nil
 }
 
-func copyWasmExecJS(mode Mode) error {
+func copyWasmExecJS(mode Mode, buildDirPath string) error {
 	var fileName string
 	switch mode {
 	case ModeTinygo:
@@ -68,7 +70,7 @@ func copyWasmExecJS(mode Mode) error {
 	return nil
 }
 
-func copyCommonAssets() error {
+func copyCommonAssets(buildDirPath string) error {
 	entries, err := assets.ReadDir(commonDirPath)
 	if err != nil {
 		return err

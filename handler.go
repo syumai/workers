@@ -9,7 +9,6 @@ import (
 
 	"github.com/syumai/workers/internal/jshttp"
 	"github.com/syumai/workers/internal/jsutil"
-	"github.com/syumai/workers/internal/runtimecontext"
 )
 
 var httpHandler http.Handler
@@ -49,7 +48,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if err != nil {
 		panic(err)
 	}
-	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
+	ctx := cfcontext.New(context.Background(), runtimeCtxObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
 	w := &jshttp.ResponseWriter{

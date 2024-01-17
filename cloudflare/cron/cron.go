@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/syumai/workers/internal/jsutil"
-	"github.com/syumai/workers/internal/runtimecontext"
 )
 
 // Event represents information about the Cron that invoked this worker.
@@ -42,7 +41,7 @@ func ScheduleTask(task Task) {
 }
 
 func runScheduler(eventObj js.Value, runtimeCtxObj js.Value) error {
-	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
+	ctx := cfcontext.New(context.Background(), runtimeCtxObj)
 	event, err := toEvent(eventObj)
 	if err != nil {
 		return err

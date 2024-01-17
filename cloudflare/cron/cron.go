@@ -42,7 +42,7 @@ func ScheduleTask(task Task) {
 }
 
 func runScheduler(eventObj js.Value, runtimeCtxObj js.Value) error {
-	ctx := cfcontext.New(context.Background(), runtimeCtxObj, nil)
+	ctx := cfcontext.New(context.Background(), runtimeCtxObj, js.Value{})
 	event, err := toEvent(eventObj)
 	if err != nil {
 		return err

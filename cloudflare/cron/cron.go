@@ -7,6 +7,7 @@ import (
 	"syscall/js"
 	"time"
 
+	"github.com/syumai/workers/internal/cfcontext"
 	"github.com/syumai/workers/internal/jsutil"
 )
 
@@ -41,7 +42,7 @@ func ScheduleTask(task Task) {
 }
 
 func runScheduler(eventObj js.Value, runtimeCtxObj js.Value) error {
-	ctx := cfcontext.New(context.Background(), runtimeCtxObj)
+	ctx := cfcontext.New(context.Background(), runtimeCtxObj, nil)
 	event, err := toEvent(eventObj)
 	if err != nil {
 		return err

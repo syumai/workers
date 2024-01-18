@@ -13,8 +13,12 @@ func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		p := incoming.NewProperties(req.Context())
 
-		buf, _ := json.Marshal(p)
-		fmt.Fprintf(w, "%s", string(buf))
+		encoder := json.NewEncoder(w)
+		w.Header().Set("Content-Type", "application/json")
+		if err := encoder.Encode(p); err != nil {
+			http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err), http.StatusInternalServerError)
+			return
+		}
 	})
 	workers.Serve(handler)
 }

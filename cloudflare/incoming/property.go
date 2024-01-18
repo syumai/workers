@@ -122,12 +122,12 @@ type Properties struct {
 	City                     string
 	VerifiedBotCategory      string
 	// EdgeRequestKeepAliveStatus int
-	RequestPriority string `json:""`
-	HttpProtocol    string `json:""`
-	Region          string `json:"region"`
-	RegionCode      string `json:"regionCode"`
-	AsOrganization  string `json:"asOrganization"`
-	PostalCode      string `json:"postalCode"`
+	RequestPriority string
+	HttpProtocol    string
+	Region          string
+	RegionCode      string
+	AsOrganization  string
+	PostalCode      string
 	BotManagement   *BotManagement
 }
 

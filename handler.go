@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"syscall/js"
 
-	"github.com/syumai/workers/internal/cfcontext"
 	"github.com/syumai/workers/internal/jshttp"
 	"github.com/syumai/workers/internal/jsutil"
+	"github.com/syumai/workers/internal/runtimecontext"
 )
 
 var httpHandler http.Handler
@@ -49,7 +49,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if err != nil {
 		panic(err)
 	}
-	ctx := cfcontext.New(context.Background(), runtimeCtxObj, reqObj.Get("cf"))
+	ctx := runtimecontext.New(context.Background(), reqObj, runtimeCtxObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
 	w := &jshttp.ResponseWriter{

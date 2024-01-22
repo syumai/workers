@@ -5,7 +5,7 @@ import (
 	"errors"
 	"syscall/js"
 
-	"github.com/syumai/workers/internal/cfcontext"
+	"github.com/syumai/workers/internal/runtimecontext"
 )
 
 /**
@@ -49,8 +49,8 @@ var ErrValueNotFound = errors.New("execution context value for specified key not
 // GetRuntimeContextValue gets value for specified key from RuntimeContext.
 // - if the value is undefined, return error.
 func GetRuntimeContextValue(ctx context.Context, key string) (js.Value, error) {
-	runtimeCtxValue := cfcontext.MustExtractRuntimeContext(ctx)
-	v := runtimeCtxValue.Get(key)
+	runtimeObj := runtimecontext.MustExtractRuntimeObj(ctx)
+	v := runtimeObj.Get(key)
 	if v.IsUndefined() {
 		return js.Value{}, ErrValueNotFound
 	}

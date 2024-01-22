@@ -2,22 +2,23 @@ package incoming
 
 import (
 	"context"
+	"errors"
 	"syscall/js"
 
-	"github.com/syumai/workers/internal/cfcontext"
 	"github.com/syumai/workers/internal/jsutil"
+	"github.com/syumai/workers/internal/runtimecontext"
 )
 
 type BotManagementJsDetection struct {
 	Passed bool
 }
 
-func NewBotManagementJsDetection(obj js.Value) *BotManagementJsDetection {
-	if obj.IsUndefined() {
+func NewBotManagementJsDetection(cf js.Value) *BotManagementJsDetection {
+	if cf.IsUndefined() {
 		return nil
 	}
 	return &BotManagementJsDetection{
-		Passed: obj.Get("passed").Bool(),
+		Passed: cf.Get("passed").Bool(),
 	}
 }
 
@@ -29,16 +30,16 @@ type BotManagement struct {
 	Score          int
 }
 
-func NewBotManagement(obj js.Value) *BotManagement {
-	if obj.IsUndefined() {
+func NewBotManagement(cf js.Value) *BotManagement {
+	if cf.IsUndefined() {
 		return nil
 	}
 	return &BotManagement{
-		CorporateProxy: obj.Get("corporateProxy").Bool(),
-		VerifiedBot:    obj.Get("verifiedBot").Bool(),
-		JsDetection:    NewBotManagementJsDetection(obj.Get("jsDetection")),
-		StaticResource: obj.Get("staticResource").Bool(),
-		Score:          obj.Get("score").Int(),
+		CorporateProxy: cf.Get("corporateProxy").Bool(),
+		VerifiedBot:    cf.Get("verifiedBot").Bool(),
+		JsDetection:    NewBotManagementJsDetection(cf.Get("jsDetection")),
+		StaticResource: cf.Get("staticResource").Bool(),
+		Score:          cf.Get("score").Int(),
 	}
 }
 
@@ -62,28 +63,28 @@ type TLSClientAuth struct {
 	CertFingerprintSHA1   string
 }
 
-func NewTLSClientAuth(obj js.Value) *TLSClientAuth {
-	if obj.IsUndefined() {
+func NewTLSClientAuth(cf js.Value) *TLSClientAuth {
+	if cf.IsUndefined() {
 		return nil
 	}
 	return &TLSClientAuth{
-		CertIssuerDNLegacy:    jsutil.MaybeString(obj.Get("certIssuerDNLegacy")),
-		CertIssuerSKI:         jsutil.MaybeString(obj.Get("certIssuerSKI")),
-		CertSubjectDNRFC2253:  jsutil.MaybeString(obj.Get("certSubjectDNRFC2253")),
-		CertSubjectDNLegacy:   jsutil.MaybeString(obj.Get("certSubjectDNLegacy")),
-		CertFingerprintSHA256: jsutil.MaybeString(obj.Get("certFingerprintSHA256")),
-		CertNotBefore:         jsutil.MaybeString(obj.Get("certNotBefore")),
-		CertSKI:               jsutil.MaybeString(obj.Get("certSKI")),
-		CertSerial:            jsutil.MaybeString(obj.Get("certSerial")),
-		CertIssuerDN:          jsutil.MaybeString(obj.Get("certIssuerDN")),
-		CertVerified:          jsutil.MaybeString(obj.Get("certVerified")),
-		CertNotAfter:          jsutil.MaybeString(obj.Get("certNotAfter")),
-		CertSubjectDN:         jsutil.MaybeString(obj.Get("certSubjectDN")),
-		CertPresented:         jsutil.MaybeString(obj.Get("certPresented")),
-		CertRevoked:           jsutil.MaybeString(obj.Get("certRevoked")),
-		CertIssuerSerial:      jsutil.MaybeString(obj.Get("certIssuerSerial")),
-		CertIssuerDNRFC2253:   jsutil.MaybeString(obj.Get("certIssuerDNRFC2253")),
-		CertFingerprintSHA1:   jsutil.MaybeString(obj.Get("certFingerprintSHA1")),
+		CertIssuerDNLegacy:    jsutil.MaybeString(cf.Get("certIssuerDNLegacy")),
+		CertIssuerSKI:         jsutil.MaybeString(cf.Get("certIssuerSKI")),
+		CertSubjectDNRFC2253:  jsutil.MaybeString(cf.Get("certSubjectDNRFC2253")),
+		CertSubjectDNLegacy:   jsutil.MaybeString(cf.Get("certSubjectDNLegacy")),
+		CertFingerprintSHA256: jsutil.MaybeString(cf.Get("certFingerprintSHA256")),
+		CertNotBefore:         jsutil.MaybeString(cf.Get("certNotBefore")),
+		CertSKI:               jsutil.MaybeString(cf.Get("certSKI")),
+		CertSerial:            jsutil.MaybeString(cf.Get("certSerial")),
+		CertIssuerDN:          jsutil.MaybeString(cf.Get("certIssuerDN")),
+		CertVerified:          jsutil.MaybeString(cf.Get("certVerified")),
+		CertNotAfter:          jsutil.MaybeString(cf.Get("certNotAfter")),
+		CertSubjectDN:         jsutil.MaybeString(cf.Get("certSubjectDN")),
+		CertPresented:         jsutil.MaybeString(cf.Get("certPresented")),
+		CertRevoked:           jsutil.MaybeString(cf.Get("certRevoked")),
+		CertIssuerSerial:      jsutil.MaybeString(cf.Get("certIssuerSerial")),
+		CertIssuerDNRFC2253:   jsutil.MaybeString(cf.Get("certIssuerDNRFC2253")),
+		CertFingerprintSHA1:   jsutil.MaybeString(cf.Get("certFingerprintSHA1")),
 	}
 }
 
@@ -94,29 +95,29 @@ type TLSExportedAuthenticator struct {
 	ServerFinished  string
 }
 
-func NewTLSExportedAuthenticator(obj js.Value) *TLSExportedAuthenticator {
-	if obj.IsUndefined() {
+func NewTLSExportedAuthenticator(cf js.Value) *TLSExportedAuthenticator {
+	if cf.IsUndefined() {
 		return nil
 	}
 	return &TLSExportedAuthenticator{
-		ClientFinished:  jsutil.MaybeString(obj.Get("clientFinished")),
-		ClientHandshake: jsutil.MaybeString(obj.Get("clientHandshake")),
-		ServerHandshake: jsutil.MaybeString(obj.Get("serverHandshake")),
-		ServerFinished:  jsutil.MaybeString(obj.Get("serverFinished")),
+		ClientFinished:  jsutil.MaybeString(cf.Get("clientFinished")),
+		ClientHandshake: jsutil.MaybeString(cf.Get("clientHandshake")),
+		ServerHandshake: jsutil.MaybeString(cf.Get("serverHandshake")),
+		ServerFinished:  jsutil.MaybeString(cf.Get("serverFinished")),
 	}
 }
 
 type Properties struct {
 	Longitude                string
 	Latitude                 string
-	TlsCipher                string
+	TLSCipher                string
 	Continent                string
 	Asn                      int
 	ClientAcceptEncoding     string
 	Country                  string
 	TLSClientAuth            *TLSClientAuth
 	TLSExportedAuthenticator *TLSExportedAuthenticator
-	TlsVersion               string
+	TLSVersion               string
 	Colo                     string
 	Timezone                 string
 	City                     string
@@ -131,29 +132,34 @@ type Properties struct {
 	BotManagement   *BotManagement
 }
 
-func NewProperties(ctx context.Context) *Properties {
-	obj := cfcontext.MustExtractIncomingProperty(ctx)
-	return &Properties{
-		Longitude:                jsutil.MaybeString(obj.Get("longitude")),
-		Latitude:                 jsutil.MaybeString(obj.Get("latitude")),
-		TlsCipher:                jsutil.MaybeString(obj.Get("tlsCipher")),
-		Continent:                jsutil.MaybeString(obj.Get("continent")),
-		Asn:                      obj.Get("asn").Int(),
-		ClientAcceptEncoding:     jsutil.MaybeString(obj.Get("clientAcceptEncoding")),
-		Country:                  jsutil.MaybeString(obj.Get("country")),
-		TLSClientAuth:            NewTLSClientAuth(obj.Get("tlsClientAuth")),
-		TLSExportedAuthenticator: NewTLSExportedAuthenticator(obj.Get("tlsExportedAuthenticator")),
-		TlsVersion:               obj.Get("tlsVersion").String(),
-		Colo:                     obj.Get("colo").String(),
-		Timezone:                 obj.Get("timezone").String(),
-		City:                     jsutil.MaybeString(obj.Get("city")),
-		VerifiedBotCategory:      jsutil.MaybeString(obj.Get("verifiedBotCategory")),
-		RequestPriority:          jsutil.MaybeString(obj.Get("requestPriority")),
-		HttpProtocol:             obj.Get("httpProtocol").String(),
-		Region:                   jsutil.MaybeString(obj.Get("region")),
-		RegionCode:               jsutil.MaybeString(obj.Get("regionCode")),
-		AsOrganization:           obj.Get("asOrganization").String(),
-		PostalCode:               jsutil.MaybeString(obj.Get("postalCode")),
-		BotManagement:            NewBotManagement(obj.Get("botManagement")),
+func NewProperties(ctx context.Context) (*Properties, error) {
+	obj := runtimecontext.MustExtractTriggerObj(ctx)
+	cf := obj.Get("cf")
+	if cf.IsUndefined() {
+		return nil, errors.New("runtime is not cloudflare")
 	}
+
+	return &Properties{
+		Longitude:                jsutil.MaybeString(cf.Get("longitude")),
+		Latitude:                 jsutil.MaybeString(cf.Get("latitude")),
+		TLSCipher:                jsutil.MaybeString(cf.Get("tlsCipher")),
+		Continent:                jsutil.MaybeString(cf.Get("continent")),
+		Asn:                      cf.Get("asn").Int(),
+		ClientAcceptEncoding:     jsutil.MaybeString(cf.Get("clientAcceptEncoding")),
+		Country:                  jsutil.MaybeString(cf.Get("country")),
+		TLSClientAuth:            NewTLSClientAuth(cf.Get("tlsClientAuth")),
+		TLSExportedAuthenticator: NewTLSExportedAuthenticator(cf.Get("tlsExportedAuthenticator")),
+		TLSVersion:               cf.Get("tlsVersion").String(),
+		Colo:                     cf.Get("colo").String(),
+		Timezone:                 cf.Get("timezone").String(),
+		City:                     jsutil.MaybeString(cf.Get("city")),
+		VerifiedBotCategory:      jsutil.MaybeString(cf.Get("verifiedBotCategory")),
+		RequestPriority:          jsutil.MaybeString(cf.Get("requestPriority")),
+		HttpProtocol:             cf.Get("httpProtocol").String(),
+		Region:                   jsutil.MaybeString(cf.Get("region")),
+		RegionCode:               jsutil.MaybeString(cf.Get("regionCode")),
+		AsOrganization:           cf.Get("asOrganization").String(),
+		PostalCode:               jsutil.MaybeString(cf.Get("postalCode")),
+		BotManagement:            NewBotManagement(cf.Get("botManagement")),
+	}, nil
 }

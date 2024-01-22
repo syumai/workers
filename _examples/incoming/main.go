@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/syumai/workers"
@@ -11,12 +10,16 @@ import (
 
 func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		p := incoming.NewProperties(req.Context())
+		p, err := incoming.NewProperties(req.Context())
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		encoder := json.NewEncoder(w)
 		w.Header().Set("Content-Type", "application/json")
 		if err := encoder.Encode(p); err != nil {
-			http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	})

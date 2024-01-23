@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/cloudflare/incoming"
+	"github.com/syumai/workers/cloudflare/fetch"
 )
 
 func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		p, err := incoming.NewProperties(req.Context())
+		p, err := fetch.NewIncomingProperties(req.Context())
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

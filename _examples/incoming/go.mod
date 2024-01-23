@@ -1,4 +1,4 @@
-module github.com/syumai/workers/_examples/hello
+module github.com/syumai/workers/_examples/incoming
 
 go 1.21.3
 

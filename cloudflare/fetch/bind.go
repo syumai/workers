@@ -15,7 +15,8 @@ func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Resp
 	if namespace.IsUndefined() {
 		return nil, errors.New("fetch function not found")
 	}
-	promise := namespace.Call("fetch",
+	fetchObj := namespace.Get("fetch")
+	promise := fetchObj.Invoke(
 		// The Request object to fetch.
 		// Docs: https://developers.cloudflare.com/workers/runtime-apis/request
 		jshttp.ToJSRequest(req),
@@ -23,9 +24,11 @@ func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Resp
 		// Docs: https://developers.cloudflare.com/workers/runtime-apis/request#requestinit
 		init.ToJS(),
 	)
+
 	jsRes, err := jsutil.AwaitPromise(promise)
 	if err != nil {
 		return nil, err
 	}
+
 	return jshttp.ToResponse(jsRes)
 }

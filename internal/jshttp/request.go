@@ -17,8 +17,7 @@ func ToBody(streamOrNull js.Value) io.ReadCloser {
 	if streamOrNull.IsNull() {
 		return nil
 	}
-	sr := streamOrNull.Call("getReader")
-	return io.NopCloser(jsutil.ConvertStreamReaderToReader(sr))
+	return jsutil.ConvertReadableStreamToReadCloser(streamOrNull)
 }
 
 // ToRequest converts JavaScript sides Request to *http.Request.

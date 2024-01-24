@@ -54,7 +54,7 @@ func toR2Object(v js.Value) (*R2Object, error) {
 	bodyVal := v.Get("body")
 	var body io.Reader
 	if !bodyVal.IsUndefined() {
-		body = jsutil.ConvertStreamReaderToReader(v.Get("body").Call("getReader"))
+		body = jsutil.ConvertReadableStreamToReadCloser(v.Get("body"))
 	}
 	return &R2Object{
 		instance:       v,

@@ -25,19 +25,19 @@ func ToResponse(res js.Value) (*http.Response, error) {
 		Status:        strconv.Itoa(status) + " " + res.Get("statusText").String(),
 		StatusCode:    status,
 		Header:        header,
-		Body:          io.NopCloser(jsutil.ConvertStreamReaderToReader(blob.Call("stream").Call("getReader"))),
+		Body:          jsutil.ConvertReadableStreamToReadCloser(blob.Call("stream")),
 		ContentLength: contentLength,
 	}, nil
 }
 
 // ToJSResponse converts *http.Response to JavaScript sides Response class object.
 func ToJSResponse(res *http.Response) js.Value {
-	return newJSResponse(res.StatusCode, res.Header, res.Body)
+	return newJSResponse(res.StatusCode, res.Header, res.Body, nil)
 }
 
 // newJSResponse creates JavaScript sides Response class object.
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
-func newJSResponse(statusCode int, headers http.Header, body io.ReadCloser) js.Value {
+func newJSResponse(statusCode int, headers http.Header, body io.ReadCloser, rawBody *js.Value) js.Value {
 	status := statusCode
 	if status == 0 {
 		status = http.StatusOK
@@ -52,6 +52,11 @@ func newJSResponse(statusCode int, headers http.Header, body io.ReadCloser) js.V
 		status == http.StatusNotModified {
 		return jsutil.ResponseClass.New(jsutil.Null, respInit)
 	}
-	readableStream := jsutil.ConvertReaderToReadableStream(body)
+	var readableStream js.Value
+	if rawBody != nil {
+		readableStream = *rawBody
+	} else {
+		readableStream = jsutil.ConvertReaderToReadableStream(body)
+	}
 	return jsutil.ResponseClass.New(readableStream, respInit)
 }

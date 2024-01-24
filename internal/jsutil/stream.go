@@ -7,16 +7,30 @@ import (
 	"syscall/js"
 )
 
-// streamReaderToReader implements io.Reader sourced from ReadableStreamDefaultReader.
-//   - ReadableStreamDefaultReader: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader
-//   - This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L76
-type streamReaderToReader struct {
-	buf          bytes.Buffer
-	streamReader js.Value
+type RawJSBodyWriter interface {
+	WriteRawJSBody(body js.Value)
 }
 
+// readableStreamToReadCloser implements io.Reader sourced from ReadableStreamDefaultReader.
+//   - ReadableStreamDefaultReader: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader
+//   - This implementation is based on: https://deno.land/std@0.139.0/streams/conversion.ts#L76
+type readableStreamToReadCloser struct {
+	buf          bytes.Buffer
+	stream       js.Value
+	streamReader *js.Value
+}
+
+var (
+	_ io.ReadCloser = (*readableStreamToReadCloser)(nil)
+	_ io.WriterTo   = (*readableStreamToReadCloser)(nil)
+)
+
 // Read reads bytes from ReadableStreamDefaultReader.
-func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
+func (sr *readableStreamToReadCloser) Read(p []byte) (n int, err error) {
+	if sr.streamReader == nil {
+		r := sr.stream.Call("getReader")
+		sr.streamReader = &r
+	}
 	if sr.buf.Len() == 0 {
 		promise := sr.streamReader.Call("read")
 		resultCh := make(chan js.Value)
@@ -56,10 +70,31 @@ func (sr *streamReaderToReader) Read(p []byte) (n int, err error) {
 	return sr.buf.Read(p)
 }
 
-// ConvertStreamReaderToReader converts ReadableStreamDefaultReader to io.Reader.
-func ConvertStreamReaderToReader(sr js.Value) io.Reader {
-	return &streamReaderToReader{
-		streamReader: sr,
+func (sr *readableStreamToReadCloser) Close() error {
+	if sr.streamReader == nil {
+		return nil
+	}
+	sr.streamReader.Call("close")
+	return nil
+}
+
+// readerWrapper is wrapper to disable readableStreamToReadCloser's WriteTo method.
+type readerWrapper struct {
+	io.Reader
+}
+
+func (sr *readableStreamToReadCloser) WriteTo(w io.Writer) (n int64, err error) {
+	if w, ok := w.(RawJSBodyWriter); ok {
+		w.WriteRawJSBody(sr.stream)
+		return 0, nil
+	}
+	return io.Copy(w, &readerWrapper{sr})
+}
+
+// ConvertReadableStreamToReadCloser converts ReadableStream to io.ReadCloser.
+func ConvertReadableStreamToReadCloser(stream js.Value) io.ReadCloser {
+	return &readableStreamToReadCloser{
+		stream: stream,
 	}
 }
 

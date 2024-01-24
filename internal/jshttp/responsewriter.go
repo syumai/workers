@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"sync"
 	"syscall/js"
+
+	"github.com/syumai/workers/internal/jsutil"
 )
 
 type ResponseWriter struct {
@@ -14,9 +16,13 @@ type ResponseWriter struct {
 	Writer      *io.PipeWriter
 	ReadyCh     chan struct{}
 	Once        sync.Once
+	RawJSBody   *js.Value
 }
 
-var _ http.ResponseWriter = &ResponseWriter{}
+var (
+	_ http.ResponseWriter    = (*ResponseWriter)(nil)
+	_ jsutil.RawJSBodyWriter = (*ResponseWriter)(nil)
+)
 
 // Ready indicates that ResponseWriter is ready to be converted to Response.
 func (w *ResponseWriter) Ready() {
@@ -38,8 +44,12 @@ func (w *ResponseWriter) WriteHeader(statusCode int) {
 	w.StatusCode = statusCode
 }
 
+func (w *ResponseWriter) WriteRawJSBody(body js.Value) {
+	w.RawJSBody = &body
+}
+
 // ToJSResponse converts *ResponseWriter to JavaScript sides Response.
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
 func (w *ResponseWriter) ToJSResponse() js.Value {
-	return newJSResponse(w.StatusCode, w.HeaderValue, w.Reader)
+	return newJSResponse(w.StatusCode, w.HeaderValue, w.Reader, w.RawJSBody)
 }

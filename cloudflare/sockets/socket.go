@@ -14,12 +14,13 @@ import (
 func newSocket(ctx context.Context, sockVal js.Value, readDeadline, writeDeadline time.Time) *Socket {
 	ctx, cancel := context.WithCancel(ctx)
 	writerVal := sockVal.Get("writable").Call("getWriter")
-	readerVal := sockVal.Get("readable").Call("getReader")
+	readerVal := sockVal.Get("readable")
+	readCloser := jsutil.ConvertReadableStreamToReadCloser(readerVal)
 	return &Socket{
 		ctx:    ctx,
 		cancel: cancel,
 
-		reader:    jsutil.ConvertStreamReaderToReader(readerVal),
+		reader:    readCloser,
 		writerVal: writerVal,
 
 		readDeadline:  readDeadline,
@@ -27,7 +28,7 @@ func newSocket(ctx context.Context, sockVal js.Value, readDeadline, writeDeadlin
 
 		startTLS:   func() js.Value { return sockVal.Call("startTls") },
 		close:      func() { sockVal.Call("close") },
-		closeRead:  func() { readerVal.Call("close") },
+		closeRead:  func() { readCloser.Close() },
 		closeWrite: func() { writerVal.Call("close") },
 	}
 }

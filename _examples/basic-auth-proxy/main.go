@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -37,15 +36,15 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	r, err := fetch.NewRequest(req.Context(), req.Method, u.String(), req.Body)
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, "Internal Error")
-		log.Printf("failed to execute proxy request: %v\n", err)
+		log.Printf("failed to initialize proxy request: %v\n", err)
 		return
 	}
 	r.Header = req.Header.Clone()
 	cli := fetch.NewClient()
 	resp, err := cli.Do(r, nil)
 	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		handleError(w, http.StatusInternalServerError, "Internal Error")
+		log.Printf("failed to execute proxy request: %v\n", err)
 		return
 	}
 	for k, values := range resp.Header {

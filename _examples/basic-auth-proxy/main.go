@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 
-	"github.com/syumai/tinyutil/httputil"
 	"github.com/syumai/workers"
+	"github.com/syumai/workers/cloudflare/fetch"
 )
 
 const (
@@ -33,10 +34,18 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	u := *req.URL
 	u.Scheme = "https"
 	u.Host = "syum.ai"
-	resp, err := httputil.Get(u.String())
+	r, err := fetch.NewRequest(req.Context(), req.Method, u.String(), req.Body)
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, "Internal Error")
 		log.Printf("failed to execute proxy request: %v\n", err)
+		return
+	}
+	r.Header = req.Header.Clone()
+	cli := fetch.NewClient()
+	resp, err := cli.Do(r, nil)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	for k, values := range resp.Header {

@@ -12,7 +12,10 @@ import (
 	"github.com/syumai/workers/internal/runtimecontext"
 )
 
-var httpHandler http.Handler
+var (
+	httpHandler http.Handler
+	closeCh     = make(chan struct{})
+)
 
 func init() {
 	var handleRequestCallback js.Func
@@ -40,6 +43,15 @@ func init() {
 	jsutil.Binding.Set("handleRequest", handleRequestCallback)
 }
 
+type appCloser struct {
+	io.ReadCloser
+}
+
+func (c *appCloser) Close() error {
+	defer close(closeCh)
+	return c.ReadCloser.Close()
+}
+
 // handleRequest accepts a Request object and returns Response object.
 func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if httpHandler == nil {
@@ -55,7 +67,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	w := &jshttp.ResponseWriter{
 		HeaderValue: http.Header{},
 		StatusCode:  http.StatusOK,
-		Reader:      reader,
+		Reader:      &appCloser{reader},
 		Writer:      writer,
 		ReadyCh:     make(chan struct{}),
 	}
@@ -79,5 +91,7 @@ func Serve(handler http.Handler) {
 	}
 	httpHandler = handler
 	ready()
-	select {}
+	select {
+	case <-closeCh:
+	}
 }

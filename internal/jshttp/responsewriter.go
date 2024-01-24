@@ -10,7 +10,7 @@ import (
 type ResponseWriter struct {
 	HeaderValue http.Header
 	StatusCode  int
-	Reader      *io.PipeReader
+	Reader      io.ReadCloser
 	Writer      *io.PipeWriter
 	ReadyCh     chan struct{}
 	Once        sync.Once

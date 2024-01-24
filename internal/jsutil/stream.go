@@ -74,7 +74,7 @@ func (sr *readableStreamToReadCloser) Close() error {
 	if sr.streamReader == nil {
 		return nil
 	}
-	sr.streamReader.Call("close")
+	sr.streamReader.Call("cancel")
 	return nil
 }
 

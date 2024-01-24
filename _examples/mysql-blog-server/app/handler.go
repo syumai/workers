@@ -108,6 +108,7 @@ SELECT id, title, body, created_at FROM articles
 ORDER BY created_at DESC;
    `)
 	if err != nil {
+		log.Println(err)
 		h.handleErr(w, http.StatusInternalServerError,
 			"failed to load article")
 		return

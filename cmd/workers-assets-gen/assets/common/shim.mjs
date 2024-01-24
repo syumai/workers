@@ -1,8 +1,6 @@
 import "./wasm_exec.js";
 import { connect } from 'cloudflare:sockets';
 
-const go = new Go();
-
 let mod;
 
 globalThis.tryCatch = (fn) => {
@@ -22,6 +20,8 @@ export function init(m) {
 }
 
 async function run(ctx) {
+  const go = new Go();
+
   let ready;
   const readyPromise = new Promise((resolve) => {
     ready = resolve;

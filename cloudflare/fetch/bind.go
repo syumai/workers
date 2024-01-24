@@ -3,6 +3,7 @@ package fetch
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jshttp"
@@ -15,8 +16,8 @@ func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Resp
 	if namespace.IsUndefined() {
 		return nil, errors.New("fetch function not found")
 	}
-	fetchObj := namespace.Get("fetch")
-	promise := fetchObj.Invoke(
+	fetchFunc := namespace.Get("fetch")
+	promise := fetchFunc.Invoke(
 		// The Request object to fetch.
 		// Docs: https://developers.cloudflare.com/workers/runtime-apis/request
 		jshttp.ToJSRequest(req),
@@ -30,5 +31,18 @@ func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Resp
 		return nil, err
 	}
 
-	return jshttp.ToResponse(jsRes)
+	// Create TransformStream
+	ts := js.Global().Get("IdentityTransformStream").New()
+	readable := ts.Get("readable")
+	writable := ts.Get("writable")
+	jsRes.Get("body").Call("pipeTo", writable)
+
+	// Create response
+	res := new(http.Response)
+	res.StatusCode = jsRes.Get("status").Int()
+	res.Status = strconv.Itoa(res.StatusCode) + " " + jsRes.Get("statusText").String()
+	res.Header = jshttp.ToHeader(jsRes.Get("headers"))
+	res.Body = jsutil.ConvertReadableStreamToReadCloser(readable)
+
+	return res, nil
 }

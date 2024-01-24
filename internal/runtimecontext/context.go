@@ -2,24 +2,36 @@ package runtimecontext
 
 import (
 	"context"
-	"errors"
 	"syscall/js"
 )
 
-type runtimeCtxKey struct{}
+type (
+	contextKeyTriggerObj struct{}
+	contextKeyRuntimeObj struct{}
+)
 
-func New(ctx context.Context, runtimeCtxObj js.Value) context.Context {
-	return context.WithValue(ctx, runtimeCtxKey{}, runtimeCtxObj)
+func New(ctx context.Context, triggerObj, runtimeObj js.Value) context.Context {
+	ctx = context.WithValue(ctx, contextKeyTriggerObj{}, triggerObj)
+	ctx = context.WithValue(ctx, contextKeyRuntimeObj{}, runtimeObj)
+	return ctx
 }
 
-var ErrRuntimeContextNotFound = errors.New("runtime context was not found")
-
-// MustExtract extracts runtime context object from context.
-// This function panics when runtime context object was not found.
-func MustExtract(ctx context.Context) js.Value {
-	v, ok := ctx.Value(runtimeCtxKey{}).(js.Value)
+// MustExtractTriggerObj extracts trigger object from context.
+// This function panics when trigger object was not found.
+func MustExtractTriggerObj(ctx context.Context) js.Value {
+	v, ok := ctx.Value(contextKeyTriggerObj{}).(js.Value)
 	if !ok {
-		panic(ErrRuntimeContextNotFound)
+		panic("trigger object was not found")
+	}
+	return v
+}
+
+// MustExtractRuntimeObj extracts runtime object from context.
+// This function panics when runtime object was not found.
+func MustExtractRuntimeObj(ctx context.Context) js.Value {
+	v, ok := ctx.Value(contextKeyRuntimeObj{}).(js.Value)
+	if !ok {
+		panic("runtime object was not found")
 	}
 	return v
 }

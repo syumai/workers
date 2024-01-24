@@ -49,7 +49,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if err != nil {
 		panic(err)
 	}
-	ctx := runtimecontext.New(context.Background(), runtimeCtxObj)
+	ctx := runtimecontext.New(context.Background(), reqObj, runtimeCtxObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
 	w := &jshttp.ResponseWriter{

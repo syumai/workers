@@ -3,9 +3,6 @@ main = "./build/worker.mjs"
 compatibility_date = "2023-02-24"
 workers_dev = false
 
-[vars]
-HELLO = "hello, world!"
-
 [triggers]
 crons = ["* * * * *"]
 

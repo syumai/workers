@@ -3,7 +3,6 @@ package fetch
 import (
 	"errors"
 	"net/http"
-	"strconv"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jshttp"
@@ -31,18 +30,5 @@ func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Resp
 		return nil, err
 	}
 
-	// Create TransformStream
-	ts := js.Global().Get("IdentityTransformStream").New()
-	readable := ts.Get("readable")
-	writable := ts.Get("writable")
-	jsRes.Get("body").Call("pipeTo", writable)
-
-	// Create response
-	res := new(http.Response)
-	res.StatusCode = jsRes.Get("status").Int()
-	res.Status = strconv.Itoa(res.StatusCode) + " " + jsRes.Get("statusText").String()
-	res.Header = jshttp.ToHeader(jsRes.Get("headers"))
-	res.Body = jsutil.ConvertReadableStreamToReadCloser(readable)
-
-	return res, nil
+	return jshttp.ToStreamResponse(jsRes)
 }

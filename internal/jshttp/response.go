@@ -26,12 +26,7 @@ func toResponse(res js.Value, body io.ReadCloser) (*http.Response, error) {
 // ToResponse converts JavaScript sides Response to *http.Response.
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
 func ToResponse(res js.Value) (*http.Response, error) {
-	promise := res.Call("blob")
-	blob, err := jsutil.AwaitPromise(promise)
-	if err != nil {
-		return nil, err
-	}
-	body := jsutil.ConvertReadableStreamToReadCloser(blob.Call("stream"))
+	body := jsutil.ConvertReadableStreamToReadCloser(res.Get("body"))
 	return toResponse(res, body)
 }
 

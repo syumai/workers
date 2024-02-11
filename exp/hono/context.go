@@ -37,10 +37,8 @@ func (c *Context) Request() *http.Request {
 	return c.reqFunc()
 }
 
-func (c *Context) Header() Header {
-	return &header{
-		headerObj: c.ctxObj.Get("req").Get("headers"),
-	}
+func (c *Context) SetHeader(key, value string) {
+	c.ctxObj.Call("header", key, value)
 }
 
 func (c *Context) SetStatus(statusCode int) {
@@ -51,13 +49,13 @@ func (c *Context) ResponseBody() io.ReadCloser {
 	return jsutil.ConvertReadableStreamToReadCloser(c.ctxObj.Get("res").Get("body"))
 }
 
-func (c *Context) SetResponseBody(body io.ReadCloser) {
-	var res js.Value
+func (c *Context) SetBody(body io.ReadCloser) {
+	var bodyObj js.Value
 	if sr, ok := body.(jsutil.RawJSBodyGetter); ok {
-		res = jsutil.ResponseClass.New(sr, c.ctxObj.Get("res"))
+		bodyObj = sr.GetRawJSBody()
 	} else {
-		bodyObj := jsutil.ConvertReaderToReadableStream(body)
-		res = jsutil.ResponseClass.New(bodyObj, c.ctxObj.Get("res"))
+		bodyObj = jsutil.ConvertReaderToReadableStream(body)
 	}
-	c.ctxObj.Set("res", res)
+	respObj := c.ctxObj.Call("body", bodyObj)
+	c.ctxObj.Set("res", respObj)
 }

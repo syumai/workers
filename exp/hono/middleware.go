@@ -58,7 +58,7 @@ func runHonoMiddleware(nextFnObj js.Value) error {
 	if middleware == nil {
 		return fmt.Errorf("ServeMiddleware must be called before runHonoMiddleware.")
 	}
-	c := newContext(jsutil.RuntimeContext)
+	c := newContext(jsutil.RuntimeContext.Get("ctx"))
 	next := func() {
 		jsutil.AwaitPromise(nextFnObj.Invoke())
 	}

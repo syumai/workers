@@ -50,12 +50,11 @@ func (c *Context) ResponseBody() io.ReadCloser {
 }
 
 func (c *Context) SetBody(body io.ReadCloser) {
-	var bodyObj js.Value
-	if sr, ok := body.(jsutil.RawJSBodyGetter); ok {
-		bodyObj = sr.GetRawJSBody()
-	} else {
-		bodyObj = jsutil.ConvertReaderToReadableStream(body)
-	}
+	bodyObj := convertBodyToJS(body)
 	respObj := c.ctxObj.Call("body", bodyObj)
+	c.ctxObj.Set("res", respObj)
+}
+
+func (c *Context) SetResponse(respObj js.Value) {
 	c.ctxObj.Set("res", respObj)
 }

@@ -49,7 +49,7 @@ func init() {
 			}()
 			return js.Undefined()
 		})
-		return js.Undefined()
+		return jsutil.NewPromise(cb)
 	})
 	jsutil.Binding.Set("runHonoMiddleware", runHonoMiddlewareCallback)
 }

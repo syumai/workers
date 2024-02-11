@@ -45,6 +45,10 @@ func (c *Context) SetStatus(statusCode int) {
 	c.ctxObj.Call("status", statusCode)
 }
 
+func (c *Context) RawResponse() js.Value {
+	return c.ctxObj.Get("res")
+}
+
 func (c *Context) ResponseBody() io.ReadCloser {
 	return jsutil.ConvertReadableStreamToReadCloser(c.ctxObj.Get("res").Get("body"))
 }

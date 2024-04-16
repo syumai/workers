@@ -1,5 +1,5 @@
 name = "pages-functions-tinygo"
-compatibility_date = "2023-04-30"
+compatibility_date = "2024-04-15"
 
 [build]
 command = "make build"

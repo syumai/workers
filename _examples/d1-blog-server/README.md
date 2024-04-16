@@ -65,9 +65,9 @@ This project requires these tools to be installed globally.
 
 ```
 # development
-make init-db-preview # initialize preview DB (remove all rows)
-make dev             # run dev server
-make build           # build Go Wasm binary
+make init-db-local # initialize local DB (remove all rows)
+make dev           # run dev server
+make build         # build Go Wasm binary
 
 # production
 make init-db # initialize production DB (remove all rows)

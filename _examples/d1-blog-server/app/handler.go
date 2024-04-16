@@ -10,34 +10,27 @@ import (
 	"time"
 
 	"github.com/syumai/workers/_examples/d1-blog-server/app/model"
-	"github.com/syumai/workers/cloudflare/d1"
-	_ "github.com/syumai/workers/cloudflare/d1" // register driver
 )
 
-type articleHandler struct{}
+type articleHandler struct {
+	db *sql.DB
+}
 
 var _ http.Handler = (*articleHandler)(nil)
 
-func NewArticleHandler() http.Handler {
-	return &articleHandler{}
+func NewArticleHandler(db *sql.DB) http.Handler {
+	return &articleHandler{
+		db: db,
+	}
 }
 
 func (h *articleHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	// initialize DB.
-	// D1 connector requires request's context to initialize DB.
-	c, err := d1.OpenConnector("BlogDB")
-	if err != nil {
-		h.handleErr(w, http.StatusInternalServerError, fmt.Sprintf("failed to initialize DB: %v", err))
-	}
-	// use sql.OpenDB instead of sql.Open.
-	db := sql.OpenDB(c)
-
 	switch req.Method {
 	case http.MethodGet:
-		h.listArticles(w, req, db)
+		h.listArticles(w, req)
 		return
 	case http.MethodPost:
-		h.createArticle(w, req, db)
+		h.createArticle(w, req)
 		return
 	}
 	w.WriteHeader(http.StatusNotFound)
@@ -51,7 +44,7 @@ func (h *articleHandler) handleErr(w http.ResponseWriter, status int, msg string
 	w.Write([]byte(msg))
 }
 
-func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request, db *sql.DB) {
+func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request) {
 	var createArticleReq model.CreateArticleRequest
 	if err := json.NewDecoder(req.Body).Decode(&createArticleReq); err != nil {
 		h.handleErr(w, http.StatusBadRequest,
@@ -66,7 +59,7 @@ func (h *articleHandler) createArticle(w http.ResponseWriter, req *http.Request,
 		CreatedAt: uint64(now),
 	}
 
-	result, err := db.Exec(`
+	result, err := h.db.Exec(`
 INSERT INTO articles (title, body, created_at)
 VALUES (?, ?, ?)
    `, article.Title, article.Body, article.CreatedAt)
@@ -95,12 +88,13 @@ VALUES (?, ?, ?)
 	}
 }
 
-func (h *articleHandler) listArticles(w http.ResponseWriter, req *http.Request, db *sql.DB) {
-	rows, err := db.Query(`
+func (h *articleHandler) listArticles(w http.ResponseWriter, req *http.Request) {
+	rows, err := h.db.Query(`
 SELECT id, title, body, created_at FROM articles
 ORDER BY created_at DESC;
    `)
 	if err != nil {
+		fmt.Printf("err: %v\n", err)
 		h.handleErr(w, http.StatusInternalServerError,
 			"failed to load article")
 		return

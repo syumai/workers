@@ -1,7 +1,6 @@
 package cloudflare
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"syscall/js"
@@ -22,8 +21,8 @@ type R2Bucket struct {
 //   - see example: https://github.com/syumai/workers/tree/main/_examples/r2-image-viewer
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
-func NewR2Bucket(ctx context.Context, varName string) (*R2Bucket, error) {
-	inst := cfruntimecontext.MustGetRuntimeContextEnv(ctx).Get(varName)
+func NewR2Bucket(varName string) (*R2Bucket, error) {
+	inst := cfruntimecontext.MustGetRuntimeContextEnv().Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)
 	}

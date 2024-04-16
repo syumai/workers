@@ -1,7 +1,6 @@
 package cloudflare
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"syscall/js"
@@ -20,8 +19,8 @@ type DurableObjectNamespace struct {
 //
 // This binding must be defined in the `wrangler.toml` file. The method will
 // return an `error` when there is no binding defined by `varName`.
-func NewDurableObjectNamespace(ctx context.Context, varName string) (*DurableObjectNamespace, error) {
-	inst := cfruntimecontext.MustGetRuntimeContextEnv(ctx).Get(varName)
+func NewDurableObjectNamespace(varName string) (*DurableObjectNamespace, error) {
+	inst := cfruntimecontext.MustGetRuntimeContextEnv().Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)
 	}

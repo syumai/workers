@@ -27,13 +27,13 @@ func NewArticleHandler() http.Handler {
 
 func (h *articleHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// initialize DB.
-	mysql.RegisterDialContext("tcp", func(_ context.Context, addr string) (net.Conn, error) {
-		return sockets.Connect(req.Context(), addr, &sockets.SocketOptions{
+	mysql.RegisterDialContext("tcp", func(ctx context.Context, addr string) (net.Conn, error) {
+		return sockets.Connect(ctx, addr, &sockets.SocketOptions{
 			SecureTransport: sockets.SecureTransportOff,
 		})
 	})
 	db, err := sql.Open("mysql",
-		cloudflare.Getenv(req.Context(), "MYSQL_DSN"))
+		cloudflare.Getenv("MYSQL_DSN"))
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -24,12 +23,12 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 
 type server struct{}
 
-func (s *server) bucket(ctx context.Context) (*cloudflare.R2Bucket, error) {
-	return cloudflare.NewR2Bucket(ctx, bucketName)
+func (s *server) bucket() (*cloudflare.R2Bucket, error) {
+	return cloudflare.NewR2Bucket(bucketName)
 }
 
 func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
-	bucket, err := s.bucket(req.Context())
+	bucket, err := s.bucket()
 	if err != nil {
 		handleErr(w, "failed to initialize R2Bucket\n", err)
 		return
@@ -61,9 +60,9 @@ func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
 	w.Write([]byte("successfully uploaded image"))
 }
 
-func (s *server) get(w http.ResponseWriter, req *http.Request, key string) {
+func (s *server) get(w http.ResponseWriter, key string) {
 	// get image object from R2
-	bucket, err := s.bucket(req.Context())
+	bucket, err := s.bucket()
 	if err != nil {
 		handleErr(w, "failed to initialize R2Bucket\n", err)
 		return
@@ -88,9 +87,9 @@ func (s *server) get(w http.ResponseWriter, req *http.Request, key string) {
 	io.Copy(w, imgObj.Body)
 }
 
-func (s *server) delete(w http.ResponseWriter, req *http.Request, key string) {
+func (s *server) delete(w http.ResponseWriter, key string) {
 	// delete image object from R2
-	bucket, err := s.bucket(req.Context())
+	bucket, err := s.bucket()
 	if err != nil {
 		handleErr(w, "failed to initialize R2Bucket\n", err)
 		return
@@ -107,10 +106,10 @@ func (s *server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	key := strings.TrimPrefix(req.URL.Path, "/")
 	switch req.Method {
 	case "GET":
-		s.get(w, req, key)
+		s.get(w, key)
 		return
 	case "DELETE":
-		s.delete(w, req, key)
+		s.delete(w, key)
 		return
 	case "POST":
 		s.post(w, req, key)

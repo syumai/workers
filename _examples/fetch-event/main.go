@@ -12,12 +12,10 @@ import (
 )
 
 func handler(w http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-
-	cloudflare.PassThroughOnException(ctx)
+	cloudflare.PassThroughOnException()
 
 	// logging after responding
-	cloudflare.WaitUntil(ctx, func() {
+	cloudflare.WaitUntil(func() {
 		for i := 0; i < 5; i++ {
 			time.Sleep(time.Second)
 		}

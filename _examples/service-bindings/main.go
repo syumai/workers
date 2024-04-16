@@ -12,8 +12,7 @@ import (
 
 func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
-		bind := cloudflare.GetBinding(ctx, "hello")
+		bind := cloudflare.GetBinding("hello")
 		fc := fetch.NewClient(fetch.WithBinding(bind))
 
 		hc := fc.HTTPClient(fetch.RedirectModeFollow)

@@ -26,7 +26,7 @@ func newContext(ctxObj js.Value) *Context {
 			if err != nil {
 				panic(err)
 			}
-			ctx := runtimecontext.New(context.Background(), reqObj, jsutil.RuntimeContext)
+			ctx := runtimecontext.New(context.Background(), reqObj)
 			req = req.WithContext(ctx)
 			return req
 		}),

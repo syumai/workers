@@ -25,13 +25,3 @@ func MustExtractTriggerObj(ctx context.Context) js.Value {
 	}
 	return v
 }
-
-// MustExtractRuntimeObj extracts runtime object from context.
-// This function panics when runtime object was not found.
-func MustExtractRuntimeObj(ctx context.Context) js.Value {
-	v, ok := ctx.Value(contextKeyRuntimeObj{}).(js.Value)
-	if !ok {
-		panic("runtime object was not found")
-	}
-	return v
-}

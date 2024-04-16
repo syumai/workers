@@ -1,6 +1,6 @@
 name = "d1-blog-server"
 main = "./build/worker.mjs"
-compatibility_date = "2023-01-09"
+compatibility_date = "2024-04-15"
 
 [build]
 command = "make build"

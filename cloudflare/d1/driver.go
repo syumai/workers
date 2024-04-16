@@ -1,9 +1,9 @@
 package d1
 
 import (
+	"context"
 	"database/sql"
 	"database/sql/driver"
-	"errors"
 )
 
 func init() {
@@ -16,6 +16,10 @@ var (
 	_ driver.Driver = (*Driver)(nil)
 )
 
-func (d *Driver) Open(string) (driver.Conn, error) {
-	return nil, errors.New("d1: Open is not supported. use d1.OpenConnector and sql.OpenDB instead")
+func (d *Driver) Open(name string) (driver.Conn, error) {
+	connector, err := OpenConnector(name)
+	if err != nil {
+		return nil, err
+	}
+	return connector.Connect(context.Background())
 }

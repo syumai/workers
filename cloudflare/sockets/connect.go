@@ -30,7 +30,7 @@ type SocketOptions struct {
 const defaultDeadline = 999999 * time.Hour
 
 func Connect(ctx context.Context, addr string, opts *SocketOptions) (net.Conn, error) {
-	connect, err := cfruntimecontext.GetRuntimeContextValue(ctx, "connect")
+	connect, err := cfruntimecontext.GetRuntimeContextValue("connect")
 	if err != nil {
 		return nil, err
 	}

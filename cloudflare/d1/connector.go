@@ -18,8 +18,8 @@ var (
 
 // OpenConnector returns Connector of D1.
 // This method checks DB existence. If DB was not found, this function returns error.
-func OpenConnector(ctx context.Context, name string) (driver.Connector, error) {
-	v := cfruntimecontext.MustGetRuntimeContextEnv(ctx).Get(name)
+func OpenConnector(name string) (driver.Connector, error) {
+	v := cfruntimecontext.MustGetRuntimeContextEnv().Get(name)
 	if v.IsUndefined() {
 		return nil, ErrDatabaseNotFound
 	}

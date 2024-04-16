@@ -1,7 +1,6 @@
 package cloudflare
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"syscall/js"
@@ -21,8 +20,8 @@ type KVNamespace struct {
 //   - variable name must be defined in wrangler.toml as kv_namespace's binding.
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
-func NewKVNamespace(ctx context.Context, varName string) (*KVNamespace, error) {
-	inst := cfruntimecontext.MustGetRuntimeContextEnv(ctx).Get(varName)
+func NewKVNamespace(varName string) (*KVNamespace, error) {
+	inst := cfruntimecontext.MustGetRuntimeContextEnv().Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)
 	}

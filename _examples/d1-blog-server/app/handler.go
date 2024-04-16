@@ -25,7 +25,7 @@ func NewArticleHandler() http.Handler {
 func (h *articleHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// initialize DB.
 	// D1 connector requires request's context to initialize DB.
-	c, err := d1.OpenConnector(req.Context(), "BlogDB")
+	c, err := d1.OpenConnector("BlogDB")
 	if err != nil {
 		h.handleErr(w, http.StatusInternalServerError, fmt.Sprintf("failed to initialize DB: %v", err))
 	}

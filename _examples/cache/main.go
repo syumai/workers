@@ -37,7 +37,6 @@ func (rw *responseWriter) ToHTTPResponse() *http.Response {
 }
 
 func handler(w http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
 	rw := responseWriter{ResponseWriter: w}
 	c := cache.New()
 
@@ -64,7 +63,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte(text))
 
 	// Create cache
-	cloudflare.WaitUntil(ctx, func() {
+	cloudflare.WaitUntil(func() {
 		err := c.Put(req, rw.ToHTTPResponse())
 		if err != nil {
 			fmt.Println(err)

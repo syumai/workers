@@ -1,4 +1,4 @@
-module github.com/syumai/workers/_examples/hello
+module github.com/syumai/workers/_examples/fetch-event
 
 go 1.21.3
 

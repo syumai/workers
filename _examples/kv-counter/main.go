@@ -31,7 +31,7 @@ func main() {
 		}
 
 		// initialize KV namespace instance
-		kv, err := cloudflare.NewKVNamespace(req.Context(), counterNamespace)
+		kv, err := cloudflare.NewKVNamespace(counterNamespace)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to init KV: %v", err)
 			os.Exit(1)

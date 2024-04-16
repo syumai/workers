@@ -16,7 +16,7 @@ func main() {
 		bind := cloudflare.GetBinding(ctx, "hello")
 		fc := fetch.NewClient(fetch.WithBinding(bind))
 
-		hc := fc.HTTPClient()
+		hc := fc.HTTPClient(fetch.RedirectModeFollow)
 		res, err := hc.Do(req)
 		if err != nil {
 			fmt.Println(err)

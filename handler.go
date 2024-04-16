@@ -24,13 +24,12 @@ func init() {
 			panic(fmt.Errorf("too many args given to handleRequest: %d", len(args)))
 		}
 		reqObj := args[0]
-		runtimeCtxObj := jsutil.RuntimeContext
 		var cb js.Func
 		cb = js.FuncOf(func(_ js.Value, pArgs []js.Value) any {
 			defer cb.Release()
 			resolve := pArgs[0]
 			go func() {
-				res, err := handleRequest(reqObj, runtimeCtxObj)
+				res, err := handleRequest(reqObj)
 				if err != nil {
 					panic(err)
 				}
@@ -53,7 +52,7 @@ func (c *appCloser) Close() error {
 }
 
 // handleRequest accepts a Request object and returns Response object.
-func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
+func handleRequest(reqObj js.Value) (js.Value, error) {
 	if httpHandler == nil {
 		return js.Value{}, fmt.Errorf("Serve must be called before handleRequest.")
 	}
@@ -61,7 +60,7 @@ func handleRequest(reqObj js.Value, runtimeCtxObj js.Value) (js.Value, error) {
 	if err != nil {
 		panic(err)
 	}
-	ctx := runtimecontext.New(context.Background(), reqObj, runtimeCtxObj)
+	ctx := runtimecontext.New(context.Background(), reqObj)
 	req = req.WithContext(ctx)
 	reader, writer := io.Pipe()
 	w := &jshttp.ResponseWriter{

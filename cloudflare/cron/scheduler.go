@@ -13,8 +13,8 @@ type Task func(ctx context.Context) error
 
 var scheduledTask Task
 
-func runScheduler(eventObj js.Value, runtimeCtxObj js.Value) error {
-	ctx := runtimecontext.New(context.Background(), eventObj, runtimeCtxObj)
+func runScheduler(eventObj js.Value) error {
+	ctx := runtimecontext.New(context.Background(), eventObj)
 	if err := scheduledTask(ctx); err != nil {
 		return err
 	}
@@ -27,13 +27,12 @@ func init() {
 			panic(fmt.Errorf("invalid number of arguments given to runScheduler: %d", len(args)))
 		}
 		eventObj := args[0]
-		runtimeCtxObj := jsutil.RuntimeContext
 		var cb js.Func
 		cb = js.FuncOf(func(_ js.Value, pArgs []js.Value) any {
 			defer cb.Release()
 			resolve := pArgs[0]
 			go func() {
-				err := runScheduler(eventObj, runtimeCtxObj)
+				err := runScheduler(eventObj)
 				if err != nil {
 					panic(err)
 				}

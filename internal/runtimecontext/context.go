@@ -7,12 +7,10 @@ import (
 
 type (
 	contextKeyTriggerObj struct{}
-	contextKeyRuntimeObj struct{}
 )
 
-func New(ctx context.Context, triggerObj, runtimeObj js.Value) context.Context {
+func New(ctx context.Context, triggerObj js.Value) context.Context {
 	ctx = context.WithValue(ctx, contextKeyTriggerObj{}, triggerObj)
-	ctx = context.WithValue(ctx, contextKeyRuntimeObj{}, runtimeObj)
 	return ctx
 }
 

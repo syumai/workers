@@ -82,6 +82,9 @@ type R2HTTPMetadata struct {
 }
 
 func toR2HTTPMetadata(v js.Value) (R2HTTPMetadata, error) {
+	if v.IsUndefined() || v.IsNull() {
+		return R2HTTPMetadata{}, nil
+	}
 	cacheExpiry, err := jsutil.MaybeDate(v.Get("cacheExpiry"))
 	if err != nil {
 		return R2HTTPMetadata{}, fmt.Errorf("error converting cacheExpiry: %w", err)

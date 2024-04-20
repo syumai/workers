@@ -134,8 +134,7 @@ func (rs *readerToReadableStream) Pull(controller js.Value) error {
 		return nil
 	}
 	if err != nil {
-		jsErr := ErrorClass.New(err.Error())
-		controller.Call("error", jsErr)
+		controller.Call("error", Error(err.Error()))
 		if err := rs.reader.Close(); err != nil {
 			return err
 		}
@@ -170,7 +169,7 @@ func ConvertReaderToReadableStream(reader io.ReadCloser) js.Value {
 			go func() {
 				err := stream.Pull(controller)
 				if err != nil {
-					reject.Invoke(ErrorClass.New(err.Error()))
+					reject.Invoke(Error(err.Error()))
 					return
 				}
 				resolve.Invoke()

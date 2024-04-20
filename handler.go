@@ -20,18 +20,21 @@ var (
 func init() {
 	var handleRequestCallback js.Func
 	handleRequestCallback = js.FuncOf(func(this js.Value, args []js.Value) any {
-		if len(args) > 1 {
-			panic(fmt.Errorf("too many args given to handleRequest: %d", len(args)))
-		}
 		reqObj := args[0]
 		var cb js.Func
 		cb = js.FuncOf(func(_ js.Value, pArgs []js.Value) any {
 			defer cb.Release()
 			resolve := pArgs[0]
+			reject := pArgs[1]
 			go func() {
+				if len(args) > 1 {
+					reject.Invoke(jsutil.Errorf("too many args given to handleRequest: %d", len(args)))
+					return
+				}
 				res, err := handleRequest(reqObj)
 				if err != nil {
-					panic(err)
+					reject.Invoke(jsutil.Error(err.Error()))
+					return
 				}
 				resolve.Invoke(res)
 			}()
@@ -58,7 +61,7 @@ func handleRequest(reqObj js.Value) (js.Value, error) {
 	}
 	req, err := jshttp.ToRequest(reqObj)
 	if err != nil {
-		panic(err)
+		return js.Value{}, err
 	}
 	ctx := runtimecontext.New(context.Background(), reqObj)
 	req = req.WithContext(ctx)

@@ -37,9 +37,9 @@ func (sr *readableStreamToReadCloser) Read(p []byte) (n int, err error) {
 		sr.streamReader = &r
 	}
 	if sr.buf.Len() == 0 {
-		promise := sr.streamReader.Call("read")
 		resultCh := make(chan js.Value)
 		errCh := make(chan error)
+		promise := sr.streamReader.Call("read")
 		var then, catch js.Func
 		then = js.FuncOf(func(_ js.Value, args []js.Value) any {
 			defer then.Release()
@@ -167,12 +167,14 @@ func ConvertReaderToReadableStream(reader io.ReadCloser) js.Value {
 			resolve := pArgs[0]
 			reject := pArgs[1]
 			controller := args[0]
-			err := stream.Pull(controller)
-			if err != nil {
-				reject.Invoke(ErrorClass.New(err.Error()))
-				return js.Undefined()
-			}
-			resolve.Invoke()
+			go func() {
+				err := stream.Pull(controller)
+				if err != nil {
+					reject.Invoke(ErrorClass.New(err.Error()))
+					return
+				}
+				resolve.Invoke()
+			}()
 			return js.Undefined()
 		})
 		return NewPromise(cb)

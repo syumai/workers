@@ -90,7 +90,5 @@ func Serve(handler http.Handler) {
 	}
 	httpHandler = handler
 	ready()
-	select {
-	case <-closeCh:
-	}
+	<-closeCh
 }

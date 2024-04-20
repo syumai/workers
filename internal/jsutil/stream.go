@@ -179,11 +179,22 @@ func ConvertReaderToReadableStream(reader io.ReadCloser) js.Value {
 		return NewPromise(cb)
 	}))
 	rsInit.Set("cancel", js.FuncOf(func(js.Value, []js.Value) any {
-		err := stream.Cancel()
-		if err != nil {
-			panic(err)
-		}
-		return js.Undefined()
+		var cb js.Func
+		cb = js.FuncOf(func(this js.Value, pArgs []js.Value) any {
+			defer cb.Release()
+			resolve := pArgs[0]
+			reject := pArgs[1]
+			go func() {
+				err := stream.Cancel()
+				if err != nil {
+					reject.Invoke(Error(err.Error()))
+					return
+				}
+				resolve.Invoke()
+			}()
+			return js.Undefined()
+		})
+		return NewPromise(cb)
 	}))
 	return ReadableStreamClass.New(rsInit)
 }

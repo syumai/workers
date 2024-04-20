@@ -34,6 +34,14 @@ func NewPromise(fn js.Func) js.Value {
 	return PromiseClass.New(fn)
 }
 
+func Error(msg string) js.Value {
+	return ErrorClass.New(msg)
+}
+
+func Errorf(format string, args ...any) js.Value {
+	return ErrorClass.New(fmt.Sprintf(format, args...))
+}
+
 // ArrayFrom calls Array.from to given argument and returns result Array.
 func ArrayFrom(v js.Value) js.Value {
 	return ArrayClass.Call("from", v)

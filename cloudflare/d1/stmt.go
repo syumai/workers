@@ -59,15 +59,30 @@ func (s *stmt) QueryContext(_ context.Context, args []driver.NamedValue) (driver
 	for i, arg := range args {
 		argValues[i] = arg.Value
 	}
-	resultPromise := s.stmtObj.Call("bind", argValues...).Call("all")
+	resultPromise := s.stmtObj.Call("bind", argValues...).Call("raw", map[string]any{"columnNames": true})
 	rowsObj, err := jsutil.AwaitPromise(resultPromise)
 	if err != nil {
 		return nil, err
 	}
-	if !rowsObj.Get("success").Bool() {
-		return nil, errors.New("d1: failed to query")
+	// If there are no rows to retrieve, length is 0.
+	if rowsObj.Length() == 0 {
+		return &rows{
+			columns: nil,
+			rowsObj: rowsObj,
+		}, nil
 	}
+
+	// The first result array includes the column names.
+	colsArray := rowsObj.Index(0)
+	colsLen := colsArray.Length()
+	cols := make([]string, colsLen)
+	for i := 0; i < colsLen; i++ {
+		cols[i] = colsArray.Index(i).String()
+	}
+	// Remove the first result array from the rowsObj.
+	rowsObj.Call("shift")
 	return &rows{
-		rowsObj: rowsObj.Get("results"),
+		columns: cols,
+		rowsObj: rowsObj,
 	}, nil
 }

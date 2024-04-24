@@ -7,8 +7,6 @@ import (
 	"math"
 	"sync"
 	"syscall/js"
-
-	"github.com/syumai/workers/internal/jsutil"
 )
 
 type rows struct {
@@ -16,8 +14,7 @@ type rows struct {
 	currentRow int
 	// columns is cached value of Columns method.
 	// do not use this directly.
-	_columns    []string
-	onceColumns sync.Once
+	columns []string
 	// _rowsLen is cached value of rowsLen method.
 	// do not use this directly.
 	_rowsLen    int
@@ -27,23 +24,10 @@ type rows struct {
 
 var _ driver.Rows = (*rows)(nil)
 
-// Columns returns column names retrieved from query result object's keys.
+// Columns returns column names retrieved from query result.
 // If rows are empty, this returns nil.
 func (r *rows) Columns() []string {
-	r.onceColumns.Do(func() {
-		if r.rowsObj.Length() == 0 {
-			// return nothing when row count is zero.
-			return
-		}
-		colsArray := jsutil.ObjectClass.Call("keys", r.rowsObj.Index(0))
-		colsLen := colsArray.Length()
-		cols := make([]string, colsLen)
-		for i := 0; i < colsLen; i++ {
-			cols[i] = colsArray.Index(i).String()
-		}
-		r._columns = cols
-	})
-	return r._columns
+	return r.columns
 }
 
 func (r *rows) Close() error {
@@ -91,9 +75,9 @@ func (r *rows) Next(dest []driver.Value) error {
 		return io.EOF
 	}
 	rowObj := r.rowsObj.Index(r.currentRow)
-	cols := r.Columns()
-	for i, col := range cols {
-		v, err := convertRowColumnValueToAny(rowObj.Get(col))
+	rowObjLen := rowObj.Length()
+	for i := 0; i < rowObjLen; i++ {
+		v, err := convertRowColumnValueToAny(rowObj.Index(i))
 		if err != nil {
 			return err
 		}

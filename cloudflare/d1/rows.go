@@ -10,7 +10,7 @@ import (
 )
 
 type rows struct {
-	rowsObj    js.Value
+	rowsArray  js.Value
 	currentRow int
 	// columns is cached value of Columns method.
 	// do not use this directly.
@@ -74,10 +74,11 @@ func (r *rows) Next(dest []driver.Value) error {
 	if r.currentRow == r.rowsLen() {
 		return io.EOF
 	}
-	rowObj := r.rowsObj.Index(r.currentRow)
-	rowObjLen := rowObj.Length()
-	for i := 0; i < rowObjLen; i++ {
-		v, err := convertRowColumnValueToAny(rowObj.Index(i))
+	// rowArray is Array of string.
+	rowArray := r.rowsArray.Index(r.currentRow)
+	rowArrayLen := rowArray.Length()
+	for i := 0; i < rowArrayLen; i++ {
+		v, err := convertRowColumnValueToAny(rowArray.Index(i))
 		if err != nil {
 			return err
 		}
@@ -89,7 +90,7 @@ func (r *rows) Next(dest []driver.Value) error {
 
 func (r *rows) rowsLen() int {
 	r.onceRowsLen.Do(func() {
-		r._rowsLen = r.rowsObj.Length()
+		r._rowsLen = r.rowsArray.Length()
 	})
 	return r._rowsLen
 }

@@ -12,9 +12,9 @@ import (
 type rows struct {
 	rowsArray  js.Value
 	currentRow int
-	// columns is cached value of Columns method.
+	// _columns is cached value of Columns method.
 	// do not use this directly.
-	columns []string
+	_columns []string
 	// _rowsLen is cached value of rowsLen method.
 	// do not use this directly.
 	_rowsLen    int
@@ -27,7 +27,7 @@ var _ driver.Rows = (*rows)(nil)
 // Columns returns column names retrieved from query result.
 // If rows are empty, this returns nil.
 func (r *rows) Columns() []string {
-	return r.columns
+	return r._columns
 }
 
 func (r *rows) Close() error {

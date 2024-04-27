@@ -67,22 +67,20 @@ func (s *stmt) QueryContext(_ context.Context, args []driver.NamedValue) (driver
 	// If there are no rows to retrieve, length is 0.
 	if rowsArray.Length() == 0 {
 		return &rows{
-			columns:   nil,
+			_columns:  nil,
 			rowsArray: rowsArray,
 		}, nil
 	}
 
-	// The first result array includes the column names.
-	colsArray := rowsArray.Index(0)
+	// First item of rowsArray is column names
+	colsArray := rowsArray.Call("shift")
 	colsLen := colsArray.Length()
 	cols := make([]string, colsLen)
 	for i := 0; i < colsLen; i++ {
 		cols[i] = colsArray.Index(i).String()
 	}
-	// Remove the first result array from the rowsObj.
-	rowsArray.Call("shift")
 	return &rows{
-		columns:   cols,
+		_columns:  cols,
 		rowsArray: rowsArray,
 	}, nil
 }

@@ -1,3 +1,5 @@
+//go:build js && wasm
+
 package workers
 
 import (
@@ -85,7 +87,7 @@ func handleRequest(reqObj js.Value) (js.Value, error) {
 //go:wasmimport workers ready
 func ready()
 
-// Server serves http.Handler on Cloudflare Workers.
+// Server serves http.Handler on a JS runtime.
 // if the given handler is nil, http.DefaultServeMux will be used.
 func Serve(handler http.Handler) {
 	if handler == nil {

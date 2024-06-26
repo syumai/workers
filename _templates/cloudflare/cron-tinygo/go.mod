@@ -1,4 +1,4 @@
-module github.com/syumai/workers/_templates/cloudflare/cron-tiny-go
+module github.com/syumai/workers/_templates/cloudflare/cron-tinygo
 
 go 1.21.3
 

@@ -6,8 +6,8 @@
 ## Notice
 
 - A free plan Cloudflare Workers only accepts ~1MB sized workers.
-  - Go Wasm binaries easily exceed this limit, so *you'll need to use a paid plan of Cloudflare Workers* (which accepts ~5MB sized workers).
-  - There's also a Tinygo version of this that can be found [here](https://github.com/syumai/workers/tree/main/_templates/cloudflare/cron-tiny-go).
+  - Go Wasm binaries easily exceed this limit, so _you'll need to use a paid plan of Cloudflare Workers_ (which accepts ~5MB sized workers).
+  - There's also a TinyGo version of this that can be found [here](https://github.com/syumai/workers/tree/main/_templates/cloudflare/cron-tinygo).
 
 ## Usage
 
@@ -22,13 +22,13 @@
 
 ## Getting Started
 
-* If not already installed, please install the [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew) command.
+- If not already installed, please install the [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew) command.
 
 ```console
 go install golang.org/x/tools/cmd/gonew@latest
 ```
 
-* Create a new project using this template.
+- Create a new project using this template.
   - The second argument passed to `gonew` is the module path of your new app.
 
 ```console

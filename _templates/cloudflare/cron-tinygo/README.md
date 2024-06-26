@@ -1,4 +1,4 @@
-# cron-tiny-go
+# cron-tinygo
 
 - A template for starting a Cloudflare Worker project with a cron job using Go.
 - This template uses the [workers](https://github.com/syumai/workers) package to schedule and run cron jobs.
@@ -6,7 +6,7 @@
 ## Notice
 
 - A free plan Cloudflare Workers only accepts ~1MB sized workers.
-  - Tiny-go Wasm binaries probably won't exceed this limit, so you might not need to use a paid plan of Cloudflare Workers.
+  - TinyGo Wasm binaries probably won't exceed this limit, so you might not need to use a paid plan of Cloudflare Workers.
   - There's also a Go version of this that can be found [here](https://github.com/syumai/workers/tree/main/_templates/cloudflare/cron-go).
 
 ## Usage
@@ -22,13 +22,13 @@
 
 ## Getting Started
 
-* If not already installed, please install the [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew) command.
+- If not already installed, please install the [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew) command.
 
 ```console
 go install golang.org/x/tools/cmd/gonew@latest
 ```
 
-* Create a new project using this template.
+- Create a new project using this template.
   - The second argument passed to `gonew` is the module path of your new app.
 
 ```console

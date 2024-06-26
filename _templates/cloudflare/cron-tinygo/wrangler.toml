@@ -1,4 +1,4 @@
-name = "tiny-go-cron"
+name = "tinygo-cron"
 main = "./build/worker.mjs"
 compatibility_date = "2023-02-24"
 workers_dev = false

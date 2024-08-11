@@ -30,5 +30,5 @@ func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Resp
 		return nil, err
 	}
 
-	return jshttp.ToStreamResponse(jsRes)
+	return jshttp.ToResponse(jsRes)
 }

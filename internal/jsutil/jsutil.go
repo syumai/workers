@@ -26,6 +26,10 @@ func NewObject() js.Value {
 	return ObjectClass.New()
 }
 
+func NewArray(size int) js.Value {
+	return ArrayClass.New(size)
+}
+
 func NewUint8Array(size int) js.Value {
 	return Uint8ArrayClass.New(size)
 }
@@ -89,7 +93,7 @@ func StrRecordToMap(v js.Value) map[string]string {
 	return result
 }
 
-// MaybeString returns string value of given JavaScript value or returns nil if the value is undefined.
+// MaybeString returns string value of given JavaScript value or returns "" if the value is undefined.
 func MaybeString(v js.Value) string {
 	if v.IsUndefined() {
 		return ""

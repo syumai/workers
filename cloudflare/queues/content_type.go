@@ -48,7 +48,9 @@ func (o QueueContentType) mapValue(val any) (js.Value, error) {
 
 		ua := jsutil.NewUint8Array(len(b))
 		js.CopyBytesToJS(ua, b)
-		return ua.Get("buffer"), nil
+		// accortind to docs, "bytes" type requires an ArrayBuffer to be sent, however practical experience shows that ArrayBufferView should
+		// be used instead and with Uint8Array.buffer as a value, the send simply fails
+		return ua, nil
 
 	case QueueContentTypeJSON, QueueContentTypeV8:
 		return js.ValueOf(val), nil

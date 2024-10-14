@@ -14,6 +14,7 @@ type BatchMessage struct {
 	options *sendOptions
 }
 
+// NewBatchMessage creates a single message to be batched before sending to a queue.
 func NewBatchMessage(body any, opts ...SendOption) *BatchMessage {
 	options := defaultSendOptions()
 	for _, opt := range opts {
@@ -44,6 +45,10 @@ type Producer struct {
 	queue js.Value
 }
 
+// NewProducer creates a new Producer object to send messages to a queue.
+// queueName is the name of the queue environment var to send messages to.
+// In Cloudflare API documentation, this object represents the Queue.
+//   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#producer
 func NewProducer(queueName string) (*Producer, error) {
 	inst := cfruntimecontext.MustGetRuntimeContextEnv().Get(queueName)
 	if inst.IsUndefined() {
@@ -52,6 +57,11 @@ func NewProducer(queueName string) (*Producer, error) {
 	return &Producer{queue: inst}, nil
 }
 
+// Send sends a single message to a queue. This function allows setting send options for the message.
+// If no options are provided, the default options are used (QueueContentTypeJSON and no delay).
+//
+//   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#producer
+//   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#queuesendoptions
 func (p *Producer) Send(content any, opts ...SendOption) error {
 	if p.queue.IsUndefined() {
 		return errors.New("queue object not found")
@@ -72,13 +82,22 @@ func (p *Producer) Send(content any, opts ...SendOption) error {
 	return err
 }
 
-func (p *Producer) SendBatch(messages []*BatchMessage) error {
+// SendBatch sends multiple messages to a queue. This function allows setting options for	each message.
+func (p *Producer) SendBatch(messages []*BatchMessage, opts ...BatchSendOption) error {
 	if p.queue.IsUndefined() {
 		return errors.New("queue object not found")
 	}
 
 	if len(messages) == 0 {
 		return nil
+	}
+
+	var options *batchSendOptions
+	if len(opts) > 0 {
+		options = &batchSendOptions{}
+		for _, opt := range opts {
+			opt(options)
+		}
 	}
 
 	jsArray := jsutil.NewArray(len(messages))
@@ -90,16 +109,7 @@ func (p *Producer) SendBatch(messages []*BatchMessage) error {
 		jsArray.SetIndex(i, jsValue)
 	}
 
-	prom := p.queue.Call("sendBatch", jsArray)
+	prom := p.queue.Call("sendBatch", jsArray, options.toJS())
 	_, err := jsutil.AwaitPromise(prom)
 	return err
-}
-
-func (p *Producer) SendJsonBatch(messages ...any) error {
-	batch := make([]*BatchMessage, len(messages))
-	for i, message := range messages {
-		batch[i] = NewBatchMessage(message)
-	}
-
-	return p.SendBatch(batch)
 }

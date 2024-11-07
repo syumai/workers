@@ -34,6 +34,6 @@ func Ready() {
 	panic("Ready is not supported in non-JS environments")
 }
 
-func WaitForCompletion() {
-	panic("WaitForCompletion is not supported in non-JS environments")
+func Done() <-chan struct{} {
+	panic("Done is not supported in non-JS environments")
 }

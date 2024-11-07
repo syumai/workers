@@ -16,7 +16,7 @@ import (
 
 var (
 	httpHandler http.Handler
-	closeCh     = make(chan struct{})
+	doneCh      = make(chan struct{})
 )
 
 func init() {
@@ -52,7 +52,7 @@ type appCloser struct {
 }
 
 func (c *appCloser) Close() error {
-	defer close(closeCh)
+	defer close(doneCh)
 	return c.ReadCloser.Close()
 }
 
@@ -89,7 +89,7 @@ func handleRequest(reqObj js.Value) (js.Value, error) {
 func Serve(handler http.Handler) {
 	ServeNonBlock(handler)
 	Ready()
-	WaitForCompletion()
+	<-Done()
 }
 
 // ServeNonBlock sets the http.Handler to be served but does not signal readiness or block
@@ -109,7 +109,7 @@ func Ready() {
 	ready()
 }
 
-// WaitForCompletion blocks until the handler set by ServeNonBlock is completed.
-func WaitForCompletion() {
-	<-closeCh
+// Done returns a channel which is closed when the handler is done.
+func Done() <-chan struct{} {
+	return doneCh
 }

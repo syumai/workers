@@ -12,7 +12,10 @@ import (
 
 type Task func(ctx context.Context) error
 
-var scheduledTask Task
+var (
+	scheduledTask Task
+	doneCh        = make(chan struct{})
+)
 
 func runScheduler(eventObj js.Value) error {
 	ctx := runtimecontext.New(context.Background(), eventObj)
@@ -51,7 +54,7 @@ func init() {
 func ScheduleTask(task Task) {
 	scheduledTask = task
 	workers.Ready()
-	WaitForCompletion()
+	<-Done()
 }
 
 // ScheduleTaskNonBlock sets the Task to be executed but does not signal readiness or block
@@ -60,8 +63,8 @@ func ScheduleTaskNonBlock(task Task) {
 	scheduledTask = task
 }
 
-// WaitForCompletion blocks until the task set by ScheduleTaskWithNonBlock is completed.
-// Currently, this function never returns to support cloudflare.WaitUntil feature.
-func WaitForCompletion() {
-	select {}
+// Done returns a channel which is closed when the task is done.
+// Currently, this channel is never closed to support cloudflare.WaitUntil feature.
+func Done() <-chan struct{} {
+	return doneCh
 }

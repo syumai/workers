@@ -58,4 +58,6 @@ func ScheduleTask(task Task) {
 
 // ScheduleTaskNonBlock sets the Task to be executed but does not signal readiness or block
 // indefinitely. The non-blocking form is meant to be used in conjunction with [workers.Serve].
-func ScheduleTaskNonBlock(task Task) { scheduledTask = task }
+func ScheduleTaskNonBlock(task Task) {
+	scheduledTask = task
+}

@@ -1,0 +1,13 @@
+name = "queues-producer"
+main = "./build/worker.mjs"
+compatibility_date = "2022-05-13"
+compatibility_flags = [
+    "streams_enable_constructors"
+]
+
+[[queues.producers]]
+queue = "my-queue"
+binding = "QUEUE"
+
+[build]
+command = "make build"

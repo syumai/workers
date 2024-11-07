@@ -5,13 +5,17 @@ import (
 	"fmt"
 	"syscall/js"
 
+	"github.com/syumai/workers"
 	"github.com/syumai/workers/internal/jsutil"
 	"github.com/syumai/workers/internal/runtimecontext"
 )
 
 type Task func(ctx context.Context) error
 
-var scheduledTask Task
+var (
+	scheduledTask Task
+	doneCh        = make(chan struct{})
+)
 
 func runScheduler(eventObj js.Value) error {
 	ctx := runtimecontext.New(context.Background(), eventObj)
@@ -46,16 +50,21 @@ func init() {
 	jsutil.Binding.Set("runScheduler", runSchedulerCallback)
 }
 
-//go:wasmimport workers ready
-func ready()
-
 // ScheduleTask sets the Task to be executed
 func ScheduleTask(task Task) {
 	scheduledTask = task
-	ready()
-	select {}
+	workers.Ready()
+	<-Done()
 }
 
 // ScheduleTaskNonBlock sets the Task to be executed but does not signal readiness or block
 // indefinitely. The non-blocking form is meant to be used in conjunction with [workers.Serve].
-func ScheduleTaskNonBlock(task Task) { scheduledTask = task }
+func ScheduleTaskNonBlock(task Task) {
+	scheduledTask = task
+}
+
+// Done returns a channel which is closed when the task is done.
+// Currently, this channel is never closed to support cloudflare.WaitUntil feature.
+func Done() <-chan struct{} {
+	return doneCh
+}

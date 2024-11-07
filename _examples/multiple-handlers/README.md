@@ -1,6 +1,6 @@
-# [Cron](https://developers.cloudflare.com/workers/platform/triggers/cron-triggers/)
+# multiple-handlers
 
-* Create a worker to be triggered by Cron.
+* This example shows how to use multiple handlers in a single worker.
 
 ## Development
 

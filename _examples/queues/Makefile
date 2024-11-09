@@ -1,6 +1,6 @@
 .PHONY: dev
 dev:
-	npx wrangler dev --port 8787
+	wrangler dev
 
 .PHONY: build
 build:
@@ -9,4 +9,4 @@ build:
 
 .PHONY: deploy
 deploy:
-	npx wrangler deploy
+	wrangler deploy

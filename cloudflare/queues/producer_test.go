@@ -117,7 +117,7 @@ func TestSend_ContentTypeOption(t *testing.T) {
 
 		{
 			name:                "delay",
-			options:             []SendOption{WithDelay(5 * time.Second)},
+			options:             []SendOption{WithDelaySeconds(5 * time.Second)},
 			expectedDelaySec:    5,
 			expectedContentType: "json",
 		},
@@ -200,11 +200,11 @@ func TestSendBatch_Options(t *testing.T) {
 	}
 
 	var batch []*BatchMessage = []*BatchMessage{
-		NewBatchMessage("hello"),
+		NewTextBatchMessage("hello"),
 	}
 
 	producer := validatingProducer(t, validation)
-	err := producer.SendBatch(batch, WithBatchDelay(5*time.Second))
+	err := producer.SendBatch(batch, WithBatchDelaySeconds(5*time.Second))
 	if err != nil {
 		t.Fatalf("SendBatch failed: %v", err)
 	}

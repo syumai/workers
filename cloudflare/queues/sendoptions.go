@@ -30,8 +30,8 @@ func (o *sendOptions) toJS() js.Value {
 
 type SendOption func(*sendOptions)
 
-// WithDelay changes the number of seconds to delay the message.
-func WithDelay(d time.Duration) SendOption {
+// WithDelaySeconds changes the number of seconds to delay the message.
+func WithDelaySeconds(d time.Duration) SendOption {
 	return func(o *sendOptions) {
 		o.DelaySeconds = int(d.Seconds())
 	}

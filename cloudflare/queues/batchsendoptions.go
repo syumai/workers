@@ -28,8 +28,8 @@ func (o *batchSendOptions) toJS() js.Value {
 
 type BatchSendOption func(*batchSendOptions)
 
-// WithBatchDelay changes the number of seconds to delay the message.
-func WithBatchDelay(d time.Duration) BatchSendOption {
+// WithBatchDelaySeconds changes the number of seconds to delay the message.
+func WithBatchDelaySeconds(d time.Duration) BatchSendOption {
 	return func(o *batchSendOptions) {
 		o.DelaySeconds = int(d.Seconds())
 	}

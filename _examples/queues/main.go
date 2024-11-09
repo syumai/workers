@@ -23,6 +23,7 @@ func main() {
 	http.HandleFunc("/", handleProduce)
 	workers.Serve(nil)
 }
+
 func handleProduce(w http.ResponseWriter, req *http.Request) {
 	if req.URL.Path != "/" {
 		w.WriteHeader(http.StatusNotFound)
@@ -48,7 +49,7 @@ func handleProduce(w http.ResponseWriter, req *http.Request) {
 		err = produceText(q, req)
 	case "application/json":
 		log.Println("Handling json content type")
-		err = produceJson(q, req)
+		err = produceJSON(q, req)
 	default:
 		log.Println("Handling bytes content type")
 		err = produceBytes(q, req)
@@ -68,38 +69,33 @@ func produceText(q *queues.Producer, req *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("failed to read request body: %w", err)
 	}
-	if len(content) == 0 {
-		return fmt.Errorf("empty request body")
-	}
-
-	// text content type supports string and []byte messages
-	if err := q.Send(content, queues.WithContentType(queues.QueueContentTypeText)); err != nil {
+	// text content type supports string
+	if err := q.SendText(string(content)); err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
-
 	return nil
 }
 
-func produceJson(q *queues.Producer, req *http.Request) error {
+func produceJSON(q *queues.Producer, req *http.Request) error {
 	var data any
 	if err := json.NewDecoder(req.Body).Decode(&data); err != nil {
 		return fmt.Errorf("failed to read request body: %w", err)
 	}
-
-	// json content type is default and therefore can be omitted
 	// json content type supports messages of types that can be serialized to json
-	if err := q.Send(data); err != nil {
+	if err := q.SendJSON(data); err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
-
 	return nil
 }
 
 func produceBytes(q *queues.Producer, req *http.Request) error {
-	// bytes content type support messages of type []byte, string, and io.Reader
-	if err := q.Send(req.Body, queues.WithContentType(queues.QueueContentTypeBytes)); err != nil {
+	content, err := io.ReadAll(req.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read request body: %w", err)
+	}
+	// bytes content type support messages of type []byte
+	if err := q.SendBytes(content); err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
-
 	return nil
 }

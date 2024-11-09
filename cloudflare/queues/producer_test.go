@@ -53,7 +53,7 @@ func TestSend(t *testing.T) {
 		}
 
 		producer := validatingProducer(t, validation)
-		err := producer.Send("hello", WithContentType(QueueContentTypeText))
+		err := producer.SendText("hello")
 		if err != nil {
 			t.Fatalf("Send failed: %v", err)
 		}
@@ -74,85 +74,14 @@ func TestSend(t *testing.T) {
 		}
 
 		producer := validatingProducer(t, validation)
-		err := producer.Send("hello", WithContentType(QueueContentTypeJSON))
+		err := producer.SendJSON("hello")
 		if err != nil {
 			t.Fatalf("Send failed: %v", err)
 		}
 	})
 }
 
-func TestSend_ContentTypeOption(t *testing.T) {
-	tests := []struct {
-		name                string
-		options             []SendOption
-		expectedContentType string
-		expectedDelaySec    int
-		wantErr             bool
-	}{
-		{
-			name:                "text",
-			options:             []SendOption{WithContentType(QueueContentTypeText)},
-			expectedContentType: "text",
-		},
-		{
-			name:                "json",
-			options:             []SendOption{WithContentType(QueueContentTypeJSON)},
-			expectedContentType: "json",
-		},
-		{
-			name:                "default",
-			options:             nil,
-			expectedContentType: "json",
-		},
-		{
-			name:                "v8",
-			options:             []SendOption{WithContentType(QueueContentTypeV8)},
-			expectedContentType: "v8",
-		},
-		{
-			name:                "bytes",
-			options:             []SendOption{WithContentType(QueueContentTypeBytes)},
-			expectedContentType: "bytes",
-		},
-
-		{
-			name:                "delay",
-			options:             []SendOption{WithDelay(5 * time.Second)},
-			expectedDelaySec:    5,
-			expectedContentType: "json",
-		},
-
-		{
-			name:    "invalid content type",
-			options: []SendOption{WithContentType("invalid")},
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			validation := func(message js.Value, options js.Value) error {
-				gotCT := options.Get("contentType").String()
-				if gotCT != string(tt.expectedContentType) {
-					return fmt.Errorf("expected content type %q, got %q", tt.expectedContentType, gotCT)
-				}
-				gotDelaySec := jsutil.MaybeInt(options.Get("delaySeconds"))
-				if gotDelaySec != tt.expectedDelaySec {
-					return fmt.Errorf("expected delay %d, got %d", tt.expectedDelaySec, gotDelaySec)
-				}
-				return nil
-			}
-
-			producer := validatingProducer(t, validation)
-			err := producer.Send("hello", tt.options...)
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("expected error: %t, got %v", tt.wantErr, err)
-			}
-		})
-	}
-}
-
-func TestSendBatch_Defaults(t *testing.T) {
+func TestSendBatch(t *testing.T) {
 	validation := func(batch js.Value, options js.Value) error {
 		if batch.Type() != js.TypeObject {
 			return errors.New("message batch must be an object (array)")
@@ -179,9 +108,9 @@ func TestSendBatch_Defaults(t *testing.T) {
 		return nil
 	}
 
-	var batch []*BatchMessage = []*BatchMessage{
-		NewBatchMessage("hello"),
-		NewBatchMessage("world", WithContentType(QueueContentTypeText)),
+	batch := []*BatchMessage{
+		NewJSONBatchMessage("hello"),
+		NewTextBatchMessage("world"),
 	}
 
 	producer := validatingProducer(t, validation)
@@ -199,12 +128,12 @@ func TestSendBatch_Options(t *testing.T) {
 		return nil
 	}
 
-	var batch []*BatchMessage = []*BatchMessage{
-		NewBatchMessage("hello"),
+	batch := []*BatchMessage{
+		NewTextBatchMessage("hello"),
 	}
 
 	producer := validatingProducer(t, validation)
-	err := producer.SendBatch(batch, WithBatchDelay(5*time.Second))
+	err := producer.SendBatch(batch, WithBatchDelaySeconds(5*time.Second))
 	if err != nil {
 		t.Fatalf("SendBatch failed: %v", err)
 	}

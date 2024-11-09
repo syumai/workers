@@ -10,17 +10,11 @@ import (
 type sendOptions struct {
 	// ContentType - Content type of the message
 	// Default is "json"
-	ContentType QueueContentType
+	ContentType contentType
 
 	// DelaySeconds - The number of seconds to delay the message.
 	// Default is 0
 	DelaySeconds int
-}
-
-func defaultSendOptions() *sendOptions {
-	return &sendOptions{
-		ContentType: QueueContentTypeJSON,
-	}
 }
 
 func (o *sendOptions) toJS() js.Value {
@@ -35,13 +29,6 @@ func (o *sendOptions) toJS() js.Value {
 }
 
 type SendOption func(*sendOptions)
-
-// WithContentType changes the content type of the message.
-func WithContentType(contentType QueueContentType) SendOption {
-	return func(o *sendOptions) {
-		o.ContentType = contentType
-	}
-}
 
 // WithDelay changes the number of seconds to delay the message.
 func WithDelay(d time.Duration) SendOption {

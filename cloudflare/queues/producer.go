@@ -26,28 +26,41 @@ func NewProducer(queueName string) (*Producer, error) {
 	return &Producer{queue: inst}, nil
 }
 
-// Send sends a single message to a queue. This function allows setting send options for the message.
+func (p *Producer) SendText(content string, opts ...SendOption) error {
+	return p.send(js.ValueOf(content), contentTypeText, opts...)
+}
+
+func (p *Producer) SendBytes(content []byte, opts ...SendOption) error {
+	ua := jsutil.NewUint8Array(len(content))
+	js.CopyBytesToJS(ua, content)
+	// accortind to docs, "bytes" type requires an ArrayBuffer to be sent, however practical experience shows that ArrayBufferView should
+	// be used instead and with Uint8Array.buffer as a value, the send simply fails
+	return p.send(ua, contentTypeBytes, opts...)
+}
+
+func (p *Producer) SendJSON(content any, opts ...SendOption) error {
+	return p.send(js.ValueOf(content), contentTypeJSON, opts...)
+}
+
+func (p *Producer) SendV8(content js.Value, opts ...SendOption) error {
+	return p.send(content, contentTypeV8, opts...)
+}
+
+// send sends a single message to a queue. This function allows setting send options for the message.
 // If no options are provided, the default options are used (QueueContentTypeJSON and no delay).
 //
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#producer
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#queuesendoptions
-func (p *Producer) Send(content any, opts ...SendOption) error {
-	if p.queue.IsUndefined() {
-		return errors.New("queue object not found")
+func (p *Producer) send(body js.Value, contentType contentType, opts ...SendOption) error {
+	options := &sendOptions{
+		ContentType: contentType,
 	}
-
-	options := defaultSendOptions()
 	for _, opt := range opts {
 		opt(options)
 	}
 
-	jsValue, err := options.ContentType.mapValue(content)
-	if err != nil {
-		return err
-	}
-
-	prom := p.queue.Call("send", jsValue, options.toJS())
-	_, err = jsutil.AwaitPromise(prom)
+	prom := p.queue.Call("send", body, options.toJS())
+	_, err := jsutil.AwaitPromise(prom)
 	return err
 }
 

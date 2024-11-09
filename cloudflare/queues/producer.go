@@ -1,7 +1,6 @@
 package queues
 
 import (
-	"errors"
 	"fmt"
 	"syscall/js"
 
@@ -52,11 +51,11 @@ func (p *Producer) SendV8(content js.Value, opts ...SendOption) error {
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#producer
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#queuesendoptions
 func (p *Producer) send(body js.Value, contentType contentType, opts ...SendOption) error {
-	options := &sendOptions{
+	options := sendOptions{
 		ContentType: contentType,
 	}
 	for _, opt := range opts {
-		opt(options)
+		opt(&options)
 	}
 
 	prom := p.queue.Call("send", body, options.toJS())
@@ -66,29 +65,14 @@ func (p *Producer) send(body js.Value, contentType contentType, opts ...SendOpti
 
 // SendBatch sends multiple messages to a queue. This function allows setting options for	each message.
 func (p *Producer) SendBatch(messages []*BatchMessage, opts ...BatchSendOption) error {
-	if p.queue.IsUndefined() {
-		return errors.New("queue object not found")
-	}
-
-	if len(messages) == 0 {
-		return nil
-	}
-
-	var options *batchSendOptions
-	if len(opts) > 0 {
-		options = &batchSendOptions{}
-		for _, opt := range opts {
-			opt(options)
-		}
+	var options batchSendOptions
+	for _, opt := range opts {
+		opt(&options)
 	}
 
 	jsArray := jsutil.NewArray(len(messages))
 	for i, message := range messages {
-		jsValue, err := message.toJS()
-		if err != nil {
-			return fmt.Errorf("failed to convert message %d to JS: %w", i, err)
-		}
-		jsArray.SetIndex(i, jsValue)
+		jsArray.SetIndex(i, message.toJS())
 	}
 
 	prom := p.queue.Call("sendBatch", jsArray, options.toJS())

@@ -1,7 +1,6 @@
 package queues
 
 import (
-	"errors"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jsutil"
@@ -30,23 +29,18 @@ func NewV8BatchMessage(content js.Value, opts ...SendOption) *BatchMessage {
 
 // newBatchMessage creates a single message to be batched before sending to a queue.
 func newBatchMessage(body js.Value, contentType contentType, opts ...SendOption) *BatchMessage {
-	options := &sendOptions{
+	options := sendOptions{
 		ContentType: contentType,
 	}
 	for _, opt := range opts {
-		opt(options)
+		opt(&options)
 	}
-	return &BatchMessage{body: body, options: options}
+	return &BatchMessage{body: body, options: &options}
 }
 
-func (m *BatchMessage) toJS() (js.Value, error) {
-	if m == nil {
-		return js.Undefined(), errors.New("message is nil")
-	}
-
+func (m *BatchMessage) toJS() js.Value {
 	obj := jsutil.NewObject()
 	obj.Set("body", m.body)
 	obj.Set("options", m.options.toJS())
-
-	return obj, nil
+	return obj
 }

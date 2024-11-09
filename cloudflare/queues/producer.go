@@ -25,29 +25,32 @@ func NewProducer(queueName string) (*Producer, error) {
 	return &Producer{queue: inst}, nil
 }
 
-func (p *Producer) SendText(content string, opts ...SendOption) error {
-	return p.send(js.ValueOf(content), contentTypeText, opts...)
+// SendText sends a single text message to a queue.
+func (p *Producer) SendText(body string, opts ...SendOption) error {
+	return p.send(js.ValueOf(body), contentTypeText, opts...)
 }
 
-func (p *Producer) SendBytes(content []byte, opts ...SendOption) error {
-	ua := jsutil.NewUint8Array(len(content))
-	js.CopyBytesToJS(ua, content)
+// SendBytes sends a single byte array message to a queue.
+func (p *Producer) SendBytes(body []byte, opts ...SendOption) error {
+	ua := jsutil.NewUint8Array(len(body))
+	js.CopyBytesToJS(ua, body)
 	// accortind to docs, "bytes" type requires an ArrayBuffer to be sent, however practical experience shows that ArrayBufferView should
 	// be used instead and with Uint8Array.buffer as a value, the send simply fails
 	return p.send(ua, contentTypeBytes, opts...)
 }
 
-func (p *Producer) SendJSON(content any, opts ...SendOption) error {
-	return p.send(js.ValueOf(content), contentTypeJSON, opts...)
+// SendJSON sends a single JSON message to a queue.
+func (p *Producer) SendJSON(body any, opts ...SendOption) error {
+	return p.send(js.ValueOf(body), contentTypeJSON, opts...)
 }
 
-func (p *Producer) SendV8(content js.Value, opts ...SendOption) error {
-	return p.send(content, contentTypeV8, opts...)
+// SendV8 sends a single raw JS value message to a queue.
+func (p *Producer) SendV8(body js.Value, opts ...SendOption) error {
+	return p.send(body, contentTypeV8, opts...)
 }
 
-// send sends a single message to a queue. This function allows setting send options for the message.
-// If no options are provided, the default options are used (QueueContentTypeJSON and no delay).
-//
+// send sends a single message to a queue.
+// This function allows setting send options for the message.
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#producer
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#queuesendoptions
 func (p *Producer) send(body js.Value, contentType contentType, opts ...SendOption) error {
@@ -63,7 +66,7 @@ func (p *Producer) send(body js.Value, contentType contentType, opts ...SendOpti
 	return err
 }
 
-// SendBatch sends multiple messages to a queue. This function allows setting options for	each message.
+// SendBatch sends multiple messages to a queue. This function allows setting options for each message.
 func (p *Producer) SendBatch(messages []*BatchMessage, opts ...BatchSendOption) error {
 	var options batchSendOptions
 	for _, opt := range opts {

@@ -11,18 +11,22 @@ type BatchMessage struct {
 	options *sendOptions
 }
 
+// NewTextBatchMessage creates a single text message to be batched before sending to a queue.
 func NewTextBatchMessage(content string, opts ...SendOption) *BatchMessage {
 	return newBatchMessage(js.ValueOf(content), contentTypeText, opts...)
 }
 
+// NewBytesBatchMessage creates a single byte array message to be batched before sending to a queue.
 func NewBytesBatchMessage(content []byte, opts ...SendOption) *BatchMessage {
 	return newBatchMessage(js.ValueOf(content), contentTypeBytes, opts...)
 }
 
+// NewJSONBatchMessage creates a single JSON message to be batched before sending to a queue.
 func NewJSONBatchMessage(content any, opts ...SendOption) *BatchMessage {
 	return newBatchMessage(js.ValueOf(content), contentTypeJSON, opts...)
 }
 
+// NewV8BatchMessage creates a single raw JS value message to be batched before sending to a queue.
 func NewV8BatchMessage(content js.Value, opts ...SendOption) *BatchMessage {
 	return newBatchMessage(content, contentTypeV8, opts...)
 }

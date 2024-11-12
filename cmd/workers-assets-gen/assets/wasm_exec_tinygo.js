@@ -24,17 +24,13 @@
 		throw new Error("cannot export Go (neither global, window nor self is defined)");
 	}
 
-	/*
 	if (!global.require && typeof require !== "undefined") {
 		global.require = require;
 	}
-	*/
 
-	/*
 	if (!global.fs && global.require) {
-		global.fs = require("fs");
+		global.fs = require("node:fs");
 	}
-	*/
 
 	const enosys = () => {
 		const err = new Error("not implemented");
@@ -104,16 +100,14 @@
 		}
 	}
 
-	/*
 	if (!global.crypto) {
-		const nodeCrypto = require("crypto");
+		const nodeCrypto = require("node:crypto");
 		global.crypto = {
 			getRandomValues(b) {
 				nodeCrypto.randomFillSync(b);
 			},
 		};
 	}
-	*/
 
 	if (!global.performance) {
 		global.performance = {
@@ -124,15 +118,13 @@
 		};
 	}
 
-	/*
 	if (!global.TextEncoder) {
-		global.TextEncoder = require("util").TextEncoder;
+		global.TextEncoder = require("node:util").TextEncoder;
 	}
 
 	if (!global.TextDecoder) {
-		global.TextDecoder = require("util").TextDecoder;
+		global.TextDecoder = require("node:util").TextDecoder;
 	}
-	*/
 
 	// End of polyfills for common API.
 
@@ -412,7 +404,7 @@
 
 					// func valueInstanceOf(v ref, t ref) bool
 					"syscall/js.valueInstanceOf": (v_ref, t_ref) => {
- 						return unboxValue(v_ref) instanceof unboxValue(t_ref);
+						return unboxValue(v_ref) instanceof unboxValue(t_ref);
 					},
 
 					// func copyBytesToGo(dst []byte, src ref) (int, bool)
@@ -467,7 +459,7 @@
 					}
 					return Reflect.get(...arguments);
 				}
-			})
+			});
 			this._values = [ // JS values that Go currently has references to, indexed by reference id
 				NaN,
 				0,
@@ -482,22 +474,13 @@
 			this._idPool = [];      // unused ids that have been garbage collected
 			this.exited = false;    // whether the Go program has exited
 
-			const mem = new DataView(this._inst.exports.memory.buffer)
-
-			while (true) {
-				const callbackPromise = new Promise((resolve) => {
-					this._resolveCallbackPromise = () => {
-						if (this.exited) {
-							throw new Error("bad callback: Go program has already exited");
-						}
-						setTimeout(resolve, 0); // make sure it is asynchronous
-					};
-				});
+			if (this._inst.exports._start) {
 				this._inst.exports._start();
-				if (this.exited) {
-					break;
-				}
-				await callbackPromise;
+
+				// TODO: wait until the program exists.
+				await new Promise(() => {});
+			} else {
+				this._inst.exports._initialize();
 			}
 		}
 

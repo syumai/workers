@@ -17,7 +17,7 @@
 - Node.js
 - [wrangler](https://developers.cloudflare.com/workers/wrangler/)
   - just run `npm install -g wrangler`
-- Go 1.21.0 or later
+- Go 1.23.3 or later
 
 ## Getting Started
 

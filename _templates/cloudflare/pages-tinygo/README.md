@@ -12,7 +12,7 @@
 - Node.js
 - [wrangler](https://developers.cloudflare.com/workers/wrangler/)
   - just run `npm install -g wrangler`
-* tinygo 0.29.0 or later
+* tinygo 0.34.0 or later
 
 ## Getting Started
 

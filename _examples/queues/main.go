@@ -20,6 +20,11 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 }
 
 func main() {
+	// start Qeueue consumer.
+	// If we would not have an HTTP handler in this worker, we would use queues.Consume instead
+	queues.ConsumeNonBlocking(consumeBatch)
+
+	// start HTTP server
 	http.HandleFunc("/", handleProduce)
 	workers.Serve(nil)
 }
@@ -97,5 +102,14 @@ func produceBytes(q *queues.Producer, req *http.Request) error {
 	if err := q.SendBytes(content); err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
+	return nil
+}
+
+func consumeBatch(batch *queues.ConsumerMessageBatch) error {
+	for _, msg := range batch.Messages {
+		log.Printf("Received message: %v\n", msg.Body.Get("name").String())
+	}
+
+	batch.AckAll()
 	return nil
 }

@@ -98,7 +98,7 @@ To deploy a Worker, the following steps are required.
 
 The [worker-go template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-go) contains all the required files, so I recommend using this template.
 
-But Go (not TinyGo) with many dependencies may exceed the size limit of the Worker (3MB). In that case, you can use the [TinyGo template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-tinygo) instead.
+But Go (not TinyGo) with many dependencies may exceed the size limit of the Worker (3MB for free plan, 10MB for paid plan). In that case, you can use the [TinyGo template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-tinygo) instead.
 
 ### Where can I have discussions about contributions, or ask questions about how to use the library?
 

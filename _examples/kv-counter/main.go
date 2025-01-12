@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/cloudflare"
+	"github.com/syumai/workers/cloudflare/kv"
 )
 
 // counterNamespace is a bounded KV namespace for storing counter.
@@ -31,13 +31,13 @@ func main() {
 		}
 
 		// initialize KV namespace instance
-		kv, err := cloudflare.NewKVNamespace(counterNamespace)
+		counterKV, err := kv.NewNamespace(counterNamespace)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to init KV: %v", err)
 			os.Exit(1)
 		}
 
-		countStr, err := kv.GetString(countKey, nil)
+		countStr, err := counterKV.GetString(countKey, nil)
 		if err != nil {
 			handleErr(w, "failed to get current count\n", err)
 			return
@@ -48,7 +48,7 @@ func main() {
 
 		nextCountStr := strconv.Itoa(count + 1)
 
-		err = kv.PutString(countKey, nextCountStr, nil)
+		err = counterKV.PutString(countKey, nextCountStr, nil)
 		if err != nil {
 			handleErr(w, "failed to put next count\n", err)
 			return

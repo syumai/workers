@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/cloudflare"
+	"github.com/syumai/workers/cloudflare/r2"
 )
 
 // bucketName is R2 bucket name defined in wrangler.toml.
@@ -23,8 +23,8 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 
 type server struct{}
 
-func (s *server) bucket() (*cloudflare.R2Bucket, error) {
-	return cloudflare.NewR2Bucket(bucketName)
+func (s *server) bucket() (*r2.Bucket, error) {
+	return r2.NewBucket(bucketName)
 }
 
 func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
@@ -45,8 +45,8 @@ func (s *server) post(w http.ResponseWriter, req *http.Request, key string) {
 			return
 		}
 	}
-	_, err = bucket.Put(key, req.Body, &cloudflare.R2PutOptions{
-		HTTPMetadata: cloudflare.R2HTTPMetadata{
+	_, err = bucket.Put(key, req.Body, &r2.PutOptions{
+		HTTPMetadata: r2.HTTPMetadata{
 			ContentType: req.Header.Get("Content-Type"),
 		},
 		CustomMetadata: map[string]string{"custom-key": "custom-value"},

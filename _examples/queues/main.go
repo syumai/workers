@@ -22,7 +22,7 @@ func handleErr(w http.ResponseWriter, msg string, err error) {
 func main() {
 	// start Qeueue consumer.
 	// If we would not have an HTTP handler in this worker, we would use queues.Consume instead
-	queues.ConsumeNonBlocking(consumeBatch)
+	queues.ConsumeNonBlock(consumeBatch)
 
 	// start HTTP server
 	http.HandleFunc("/", handleProduce)

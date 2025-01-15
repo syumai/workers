@@ -12,7 +12,7 @@ import (
 // A returned error will cause the batch to be retried (unless the batch or individual messages are acked).
 // NOTE: to do long-running message processing task within the Consumer, use cloudflare.WaitUntil, this will postpone the message
 // acknowledgment until the task is completed witout blocking the queue consumption.
-type Consumer func(batch *ConsumerMessageBatch) error
+type Consumer func(batch *MessageBatch) error
 
 var consumer Consumer
 
@@ -44,7 +44,7 @@ func init() {
 }
 
 func consumeBatch(batch js.Value) error {
-	b, err := newConsumerMessageBatch(batch)
+	b, err := newMessageBatch(batch)
 	if err != nil {
 		return fmt.Errorf("failed to parse message batch: %v", err)
 	}

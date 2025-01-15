@@ -20,17 +20,17 @@ func TestNewConsumerMessage(t *testing.T) {
 		"attempts":  1,
 	}
 
-	got, err := newConsumerMessage(js.ValueOf(m))
+	got, err := newMessage(js.ValueOf(m))
 	if err != nil {
-		t.Fatalf("newConsumerMessage failed: %v", err)
+		t.Fatalf("newMessage failed: %v", err)
 	}
 
 	if body := got.Body.String(); body != "hello" {
 		t.Fatalf("Body() = %v, want %v", body, "hello")
 	}
 
-	if got.Id != id {
-		t.Fatalf("Id = %v, want %v", got.Id, id)
+	if got.ID != id {
+		t.Fatalf("ID = %v, want %v", got.ID, id)
 	}
 
 	if got.Attempts != 1 {
@@ -49,7 +49,7 @@ func TestConsumerMessage_Ack(t *testing.T) {
 		ackCalled = true
 		return nil
 	}))
-	m := &ConsumerMessage{
+	m := &Message{
 		instance: jsObj,
 	}
 
@@ -67,7 +67,7 @@ func TestConsumerMessage_Retry(t *testing.T) {
 		retryCalled = true
 		return nil
 	}))
-	m := &ConsumerMessage{
+	m := &Message{
 		instance: jsObj,
 	}
 
@@ -99,7 +99,7 @@ func TestConsumerMessage_RetryWithDelay(t *testing.T) {
 		return nil
 	}))
 
-	m := &ConsumerMessage{
+	m := &Message{
 		instance: jsObj,
 	}
 
@@ -151,7 +151,7 @@ func TestNewConsumerMessage_StringBody(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &ConsumerMessage{
+			m := &Message{
 				Body: tt.body(),
 			}
 
@@ -175,13 +175,6 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "string",
-			body: func() js.Value {
-				return js.ValueOf("hello")
-			},
-			want: []byte("hello"),
-		},
-		{
 			name: "uint8 array",
 			body: func() js.Value {
 				v := jsutil.Uint8ArrayClass.New(3)
@@ -202,7 +195,7 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 		{
 			name: "incorrect type",
 			body: func() js.Value {
-				return js.ValueOf(42)
+				return js.ValueOf("hello")
 			},
 			wantErr: true,
 		},
@@ -210,7 +203,7 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &ConsumerMessage{
+			m := &Message{
 				Body: tt.body(),
 			}
 
@@ -221,100 +214,6 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 
 			if !bytes.Equal(got, tt.want) {
 				t.Fatalf("BytesBody() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestConsumerMessage_IntBody(t *testing.T) {
-	tests := []struct {
-		name    string
-		body    js.Value
-		want    int
-		wantErr bool
-	}{
-		{
-			name: "int",
-			body: js.ValueOf(42),
-			want: 42,
-		},
-		{
-			name: "float",
-			body: js.ValueOf(42.5),
-			want: 42,
-		},
-		{
-			name:    "string",
-			body:    js.ValueOf("42"),
-			wantErr: true,
-		},
-		{
-			name:    "undefined",
-			body:    js.Undefined(),
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := &ConsumerMessage{
-				Body: tt.body,
-			}
-
-			got, err := m.IntBody()
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("IntBody() error = %v, wantErr %v", err, tt.wantErr)
-			}
-
-			if got != tt.want {
-				t.Fatalf("IntBody() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestConsumerMessage_FloatBody(t *testing.T) {
-	tests := []struct {
-		name    string
-		body    js.Value
-		want    float64
-		wantErr bool
-	}{
-		{
-			name: "int",
-			body: js.ValueOf(42),
-			want: 42.0,
-		},
-		{
-			name: "float",
-			body: js.ValueOf(42.5),
-			want: 42.5,
-		},
-		{
-			name:    "string",
-			body:    js.ValueOf("42"),
-			wantErr: true,
-		},
-		{
-			name:    "undefined",
-			body:    js.Undefined(),
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := &ConsumerMessage{
-				Body: tt.body,
-			}
-
-			got, err := m.FloatBody()
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("FloatBody() error = %v, wantErr %v", err, tt.wantErr)
-			}
-
-			if got != tt.want {
-				t.Fatalf("FloatBody() = %v, want %v", got, tt.want)
 			}
 		})
 	}

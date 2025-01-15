@@ -105,7 +105,7 @@ func produceBytes(q *queues.Producer, req *http.Request) error {
 	return nil
 }
 
-func consumeBatch(batch *queues.ConsumerMessageBatch) error {
+func consumeBatch(batch *queues.MessageBatch) error {
 	for _, msg := range batch.Messages {
 		log.Printf("Received message: %v\n", msg.Body.Get("name").String())
 	}

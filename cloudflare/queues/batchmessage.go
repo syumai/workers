@@ -6,6 +6,8 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
+// FIXME: rename to MessageSendRequest
+// see: https://developers.cloudflare.com/queues/configuration/javascript-apis/#messagesendrequest
 type BatchMessage struct {
 	body    js.Value
 	options *sendOptions

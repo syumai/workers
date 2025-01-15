@@ -175,13 +175,6 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "string",
-			body: func() js.Value {
-				return js.ValueOf("hello")
-			},
-			want: []byte("hello"),
-		},
-		{
 			name: "uint8 array",
 			body: func() js.Value {
 				v := jsutil.Uint8ArrayClass.New(3)
@@ -202,7 +195,7 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 		{
 			name: "incorrect type",
 			body: func() js.Value {
-				return js.ValueOf(42)
+				return js.ValueOf("hello")
 			},
 			wantErr: true,
 		},

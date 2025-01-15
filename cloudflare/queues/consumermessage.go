@@ -67,16 +67,11 @@ func (m *ConsumerMessage) StringBody() (string, error) {
 }
 
 func (m *ConsumerMessage) BytesBody() ([]byte, error) {
-	switch m.Body.Type() {
-	case js.TypeString:
-		return []byte(m.Body.String()), nil
-	case js.TypeObject:
-		if m.Body.InstanceOf(jsutil.Uint8ArrayClass) || m.Body.InstanceOf(jsutil.Uint8ClampedArrayClass) {
-			b := make([]byte, m.Body.Get("byteLength").Int())
-			js.CopyBytesToGo(b, m.Body)
-			return b, nil
-		}
+	if m.Body.Type() != js.TypeObject ||
+		!(m.Body.InstanceOf(jsutil.Uint8ArrayClass) || m.Body.InstanceOf(jsutil.Uint8ClampedArrayClass)) {
+		return nil, fmt.Errorf("message body is not a byte array: %v", m.Body)
 	}
-
-	return nil, fmt.Errorf("message body is not a byte array: %v", m.Body)
+	b := make([]byte, m.Body.Get("byteLength").Int())
+	js.CopyBytesToGo(b, m.Body)
+	return b, nil
 }

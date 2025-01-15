@@ -20,9 +20,9 @@ func TestNewConsumerMessage(t *testing.T) {
 		"attempts":  1,
 	}
 
-	got, err := newConsumerMessage(js.ValueOf(m))
+	got, err := newMessage(js.ValueOf(m))
 	if err != nil {
-		t.Fatalf("newConsumerMessage failed: %v", err)
+		t.Fatalf("newMessage failed: %v", err)
 	}
 
 	if body := got.Body.String(); body != "hello" {
@@ -49,7 +49,7 @@ func TestConsumerMessage_Ack(t *testing.T) {
 		ackCalled = true
 		return nil
 	}))
-	m := &ConsumerMessage{
+	m := &Message{
 		instance: jsObj,
 	}
 
@@ -67,7 +67,7 @@ func TestConsumerMessage_Retry(t *testing.T) {
 		retryCalled = true
 		return nil
 	}))
-	m := &ConsumerMessage{
+	m := &Message{
 		instance: jsObj,
 	}
 
@@ -99,7 +99,7 @@ func TestConsumerMessage_RetryWithDelay(t *testing.T) {
 		return nil
 	}))
 
-	m := &ConsumerMessage{
+	m := &Message{
 		instance: jsObj,
 	}
 
@@ -151,7 +151,7 @@ func TestNewConsumerMessage_StringBody(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &ConsumerMessage{
+			m := &Message{
 				Body: tt.body(),
 			}
 
@@ -203,7 +203,7 @@ func TestConsumerMessage_BytesBody(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &ConsumerMessage{
+			m := &Message{
 				Body: tt.body(),
 			}
 

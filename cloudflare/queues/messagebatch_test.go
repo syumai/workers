@@ -24,9 +24,9 @@ func TestNewConsumerMessageBatch(t *testing.T) {
 		},
 	}
 
-	got, err := newConsumerMessageBatch(js.ValueOf(m))
+	got, err := newMessageBatch(js.ValueOf(m))
 	if err != nil {
-		t.Fatalf("newConsumerMessageBatch failed: %v", err)
+		t.Fatalf("newMessageBatch failed: %v", err)
 	}
 
 	if got.Queue != "some-queue" {
@@ -62,7 +62,7 @@ func TestConsumerMessageBatch_AckAll(t *testing.T) {
 		ackAllCalled = true
 		return nil
 	}))
-	b := &ConsumerMessageBatch{
+	b := &MessageBatch{
 		instance: jsObj,
 	}
 
@@ -80,7 +80,7 @@ func TestConsumerMessageBatch_RetryAll(t *testing.T) {
 		retryAllCalled = true
 		return nil
 	}))
-	b := &ConsumerMessageBatch{
+	b := &MessageBatch{
 		instance: jsObj,
 	}
 
@@ -112,7 +112,7 @@ func TestConsumerMessageBatch_RetryAllWithRetryOption(t *testing.T) {
 		return nil
 	}))
 
-	b := &ConsumerMessageBatch{
+	b := &MessageBatch{
 		instance: jsObj,
 	}
 

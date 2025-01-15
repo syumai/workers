@@ -8,9 +8,9 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-// ConsumerMessage represents a message of the batch received by the consumer.
+// Message represents a message of the batch received by the consumer.
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#message
-type ConsumerMessage struct {
+type Message struct {
 	// instance - The underlying instance of the JS message object passed by the cloudflare
 	instance js.Value
 
@@ -24,13 +24,13 @@ type ConsumerMessage struct {
 	Attempts int
 }
 
-func newConsumerMessage(obj js.Value) (*ConsumerMessage, error) {
+func newMessage(obj js.Value) (*Message, error) {
 	timestamp, err := jsutil.DateToTime(obj.Get("timestamp"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse message timestamp: %v", err)
 	}
 
-	return &ConsumerMessage{
+	return &Message{
 		instance:  obj,
 		Id:        obj.Get("id").String(),
 		Body:      obj.Get("body"),
@@ -41,13 +41,13 @@ func newConsumerMessage(obj js.Value) (*ConsumerMessage, error) {
 
 // Ack acknowledges the message as successfully delivered despite the result returned from the consuming function.
 //   - https://developers.cloudflare.com/queues/configuration/javascript-apis/#message
-func (m *ConsumerMessage) Ack() {
+func (m *Message) Ack() {
 	m.instance.Call("ack")
 }
 
 // Retry marks the message to be re-delivered.
 // The message will be retried after the optional delay configured with RetryOption.
-func (m *ConsumerMessage) Retry(opts ...RetryOption) {
+func (m *Message) Retry(opts ...RetryOption) {
 	var o *retryOptions
 	if len(opts) > 0 {
 		o = &retryOptions{}
@@ -59,14 +59,14 @@ func (m *ConsumerMessage) Retry(opts ...RetryOption) {
 	m.instance.Call("retry", o.toJS())
 }
 
-func (m *ConsumerMessage) StringBody() (string, error) {
+func (m *Message) StringBody() (string, error) {
 	if m.Body.Type() != js.TypeString {
 		return "", fmt.Errorf("message body is not a string: %v", m.Body)
 	}
 	return m.Body.String(), nil
 }
 
-func (m *ConsumerMessage) BytesBody() ([]byte, error) {
+func (m *Message) BytesBody() ([]byte, error) {
 	if m.Body.Type() != js.TypeObject ||
 		!(m.Body.InstanceOf(jsutil.Uint8ArrayClass) || m.Body.InstanceOf(jsutil.Uint8ClampedArrayClass)) {
 		return nil, fmt.Errorf("message body is not a byte array: %v", m.Body)

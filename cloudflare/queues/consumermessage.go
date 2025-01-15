@@ -80,19 +80,3 @@ func (m *ConsumerMessage) BytesBody() ([]byte, error) {
 
 	return nil, fmt.Errorf("message body is not a byte array: %v", m.Body)
 }
-
-func (m *ConsumerMessage) IntBody() (int, error) {
-	if m.Body.Type() == js.TypeNumber {
-		return m.Body.Int(), nil
-	}
-
-	return 0, fmt.Errorf("message body is not a number: %v", m.Body)
-}
-
-func (m *ConsumerMessage) FloatBody() (float64, error) {
-	if m.Body.Type() == js.TypeNumber {
-		return m.Body.Float(), nil
-	}
-
-	return 0, fmt.Errorf("message body is not a number: %v", m.Body)
-}

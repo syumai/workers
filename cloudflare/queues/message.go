@@ -14,8 +14,8 @@ type Message struct {
 	// instance - The underlying instance of the JS message object passed by the cloudflare
 	instance js.Value
 
-	// Id - The unique Cloudflare-generated identifier of the message
-	Id string
+	// ID - The unique Cloudflare-generated identifier of the message
+	ID string
 	// Timestamp - The time when the message was enqueued
 	Timestamp time.Time
 	// Body - The message body. Could be accessed directly or using converting helpers as StringBody, BytesBody, IntBody, FloatBody.
@@ -32,7 +32,7 @@ func newMessage(obj js.Value) (*Message, error) {
 
 	return &Message{
 		instance:  obj,
-		Id:        obj.Get("id").String(),
+		ID:        obj.Get("id").String(),
 		Body:      obj.Get("body"),
 		Attempts:  obj.Get("attempts").Int(),
 		Timestamp: timestamp,

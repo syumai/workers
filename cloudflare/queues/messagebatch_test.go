@@ -42,8 +42,8 @@ func TestNewConsumerMessageBatch(t *testing.T) {
 		t.Fatalf("Body() = %v, want %v", body, "hello")
 	}
 
-	if msg.Id != id {
-		t.Fatalf("Id = %v, want %v", msg.Id, id)
+	if msg.ID != id {
+		t.Fatalf("ID = %v, want %v", msg.ID, id)
 	}
 
 	if msg.Attempts != 1 {

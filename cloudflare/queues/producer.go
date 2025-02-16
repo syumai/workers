@@ -67,7 +67,7 @@ func (p *Producer) send(body js.Value, contentType contentType, opts ...SendOpti
 }
 
 // SendBatch sends multiple messages to a queue. This function allows setting options for each message.
-func (p *Producer) SendBatch(messages []*BatchMessage, opts ...BatchSendOption) error {
+func (p *Producer) SendBatch(messages []*MessageSendRequest, opts ...BatchSendOption) error {
 	var options batchSendOptions
 	for _, opt := range opts {
 		opt(&options)

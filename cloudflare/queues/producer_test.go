@@ -108,9 +108,9 @@ func TestSendBatch(t *testing.T) {
 		return nil
 	}
 
-	batch := []*BatchMessage{
-		NewJSONBatchMessage("hello"),
-		NewTextBatchMessage("world"),
+	batch := []*MessageSendRequest{
+		NewJSONMessageSendRequest("hello"),
+		NewTextMessageSendRequest("world"),
 	}
 
 	producer := validatingProducer(t, validation)
@@ -128,8 +128,8 @@ func TestSendBatch_Options(t *testing.T) {
 		return nil
 	}
 
-	batch := []*BatchMessage{
-		NewTextBatchMessage("hello"),
+	batch := []*MessageSendRequest{
+		NewTextMessageSendRequest("hello"),
 	}
 
 	producer := validatingProducer(t, validation)

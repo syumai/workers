@@ -70,7 +70,7 @@ First, please install the following tools:
 * Node.js (and npm)
 * [wrangler](https://developers.cloudflare.com/workers/wrangler/)
   - You can install it by running `npm install -g wrangler`.
-* Go 1.21.3 or later
+* Go 1.24.0 or later
 * [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew)
   - You can install it by running `go install golang.org/x/tools/cmd/gonew@latest`
 

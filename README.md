@@ -65,24 +65,47 @@ For concrete examples, see `_examples` directory.
 
 ## Quick Start
 
-First, please install the following tools:
+### Requirements
 
 * Node.js (and npm)
-* [wrangler](https://developers.cloudflare.com/workers/wrangler/)
-  - You can install it by running `npm install -g wrangler`.
 * Go 1.24.0 or later
-* [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew)
-  - You can install it by running `go install golang.org/x/tools/cmd/gonew@latest`
 
-After installation, please run the following commands.
+### Create a new Worker project
+
+Run the following command:
 
 ```console
-gonew github.com/syumai/workers/_templates/cloudflare/worker-go your.module/my-app # e.g. github.com/syumai/my-app
-cd my-app
-go mod tidy
-make dev # start running dev server
-curl http://localhost:8787/hello # outputs "Hello!"
+npm create cloudflare@latest -- --template github.com/syumai/workers/_templates/cloudflare/worker-go
 ```
+
+### Initialize the project
+
+1. Navigate to your new project directory:
+
+```console
+cd my-app
+```
+
+2. Initialize Go modules:
+
+```console
+go mod init
+go mod tidy
+```
+
+3. Start the development server:
+
+```console
+npm start
+```
+
+4. Verify the worker is running:
+
+```console
+curl http://localhost:8787/hello
+```
+
+You will see **"Hello!"** as the response.
 
 If you want a more detailed description, please refer to the README.md file in the generated directory.
 

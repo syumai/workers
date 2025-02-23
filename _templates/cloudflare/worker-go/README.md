@@ -5,8 +5,7 @@
 
 ## Notice
 
-- A free plan Cloudflare Workers only accepts ~1MB sized workers.
-  - Go Wasm binaries easily exceeds this limit, so **you'll need to use a paid plan of Cloudflare Workers** (which accepts ~5MB sized workers).
+- Go (not TinyGo) with many dependencies may exceed the size limit of the Worker (3MB for free plan, 10MB for paid plan). In that case, you can use the [TinyGo template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-tinygo) instead.
 
 ## Usage
 
@@ -15,39 +14,36 @@
 ## Requirements
 
 - Node.js
-- [wrangler](https://developers.cloudflare.com/workers/wrangler/)
-  - just run `npm install -g wrangler`
-- Go 1.21.0 or later
+- Go 1.24.0 or later
 
 ## Getting Started
 
-* If not already installed, please install the [gonew](https://pkg.go.dev/golang.org/x/tools/cmd/gonew) command.
+- Create a new worker project using this template.
 
 ```console
-go install golang.org/x/tools/cmd/gonew@latest
+npm create cloudflare@latest -- --template github.com/syumai/workers/_templates/cloudflare/worker-go
 ```
 
-* Create a new project using this template.
-  - Second argument passed to `gonew` is a module path of your new app.
+- Initialize a project.
 
 ```console
-gonew github.com/syumai/workers/_templates/cloudflare/worker-go your.module/my-app # e.g. github.com/syumai/my-app
 cd my-app
+go mod init
 go mod tidy
-make dev # start running dev server
+npm start # start running dev server
 curl http://localhost:8787/hello # outputs "Hello!"
 ```
-
-- To change worker name, please edit `name` property in `wrangler.toml`.
 
 ## Development
 
 ### Commands
 
 ```
-make dev     # run dev server
-make build   # build Go Wasm binary
-make deploy # deploy worker
+npm start      # run dev server
+# or
+go run .       # run dev server without Wrangler (Cloudflare-related features are not available)
+npm run build  # build Go Wasm binary
+npm run deploy # deploy worker
 ```
 
 ### Testing dev server

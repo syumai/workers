@@ -23,6 +23,12 @@ func toResponse(res js.Value, body io.ReadCloser) (*http.Response, error) {
 	}, nil
 }
 
+func ToCustomAI(res js.Value) (string, error) {
+	respString := js.Global().Get("JSON").Call("stringify", res).String()
+
+	return respString, nil
+}
+
 // ToResponse converts JavaScript sides Response to *http.Response.
 //   - Response: https://developer.mozilla.org/docs/Web/API/Response
 func ToResponse(res js.Value) (*http.Response, error) {

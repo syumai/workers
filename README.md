@@ -65,6 +65,10 @@ For concrete examples, see `_examples` directory.
 
 ## Quick Start
 
+* Please use the deploy button or follow the guide below to create new project.
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fsyumai%2Fworker-go-deploy)
+
 ### Requirements
 
 * Node.js (and npm)

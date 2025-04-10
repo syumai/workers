@@ -1,5 +1,5 @@
 import "./wasm_exec.js";
-import { connect } from 'cloudflare:sockets';
+import { createRuntimeContext } from "./runtime.mjs";
 
 let mod;
 
@@ -8,12 +8,12 @@ globalThis.tryCatch = (fn) => {
     return {
       result: fn(),
     };
-  } catch(e) {
+  } catch (e) {
     return {
       error: e,
     };
   }
-}
+};
 
 export function init(m) {
   mod = m;
@@ -29,20 +29,13 @@ async function run(ctx) {
   const instance = new WebAssembly.Instance(mod, {
     ...go.importObject,
     workers: {
-      ready: () => { ready() }
+      ready: () => {
+        ready();
+      },
     },
   });
   go.run(instance, ctx);
   await readyPromise;
-}
-
-function createRuntimeContext(env, ctx, binding) {
-  return {
-    env,
-    ctx,
-    connect,
-    binding,
-  };
 }
 
 export async function fetch(req, env, ctx) {

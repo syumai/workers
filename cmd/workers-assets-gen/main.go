@@ -16,13 +16,18 @@ var assets embed.FS
 const (
 	assetDirPath        = "assets"
 	commonDirPath       = "assets/common"
+	runtimeDirPath      = "assets/runtime"
 	defaultBuildDirPath = "build"
 )
 
 func main() {
-	var mode string
-	var buildDirPath string
+	var (
+		mode         string
+		runtime      string
+		buildDirPath string
+	)
 	flag.StringVar(&mode, "mode", string(ModeTinygo), `build mode: tinygo or go`)
+	flag.StringVar(&runtime, "runtime", string(RuntimeCloudflare), `runtime: cloudflare`)
 	flag.StringVar(&buildDirPath, "o", defaultBuildDirPath, `output dir path: defaults to "build"`)
 	flag.Parse()
 	if !Mode(mode).IsValid() {
@@ -30,13 +35,18 @@ func main() {
 		os.Exit(1)
 		return
 	}
-	if err := runMain(Mode(mode), buildDirPath); err != nil {
+	if !Runtime(runtime).IsValid() {
+		flag.PrintDefaults()
+		os.Exit(1)
+		return
+	}
+	if err := runMain(Mode(mode), Runtime(runtime), buildDirPath); err != nil {
 		fmt.Fprintf(os.Stderr, "err: %v", err)
 		os.Exit(1)
 	}
 }
 
-func runMain(mode Mode, buildDirPath string) error {
+func runMain(mode Mode, runtime Runtime, buildDirPath string) error {
 	if err := os.RemoveAll(buildDirPath); err != nil {
 		return err
 	}
@@ -44,6 +54,9 @@ func runMain(mode Mode, buildDirPath string) error {
 		return err
 	}
 	if err := copyWasmExecJS(mode, buildDirPath); err != nil {
+		return err
+	}
+	if err := copyRuntimeAssets(runtime, buildDirPath); err != nil {
 		return err
 	}
 	if err := copyCommonAssets(buildDirPath); err != nil {
@@ -70,6 +83,15 @@ func copyWasmExecJS(mode Mode, buildDirPath string) error {
 	return nil
 }
 
+func copyRuntimeAssets(runtime Runtime, buildDirPath string) error {
+	destPath := path.Join(buildDirPath, "runtime.mjs")
+	originPath := path.Join(runtimeDirPath, runtime.AssetFileName())
+	if err := copyFile(destPath, originPath); err != nil {
+		return err
+	}
+	return nil
+}
+
 func copyCommonAssets(buildDirPath string) error {
 	entries, err := assets.ReadDir(commonDirPath)
 	if err != nil {
@@ -90,18 +112,12 @@ func copyFile(destPath, originPath string) error {
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 	dest, err := os.Create(destPath)
 	if err != nil {
 		return err
 	}
 	defer dest.Close()
 	_, err = io.Copy(dest, bytes.NewReader(f))
-	if err != nil {
-		return err
-	}
 	if err != nil {
 		return err
 	}

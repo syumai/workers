@@ -40,13 +40,13 @@ async function run(ctx) {
 
 export async function fetch(req, env, ctx) {
   const binding = {};
-  await run(createRuntimeContext(env, ctx, binding));
+  await run(createRuntimeContext({ env, ctx, binding }));
   return binding.handleRequest(req);
 }
 
 export async function scheduled(event, env, ctx) {
   const binding = {};
-  await run(createRuntimeContext(env, ctx, binding));
+  await run(createRuntimeContext({ env, ctx, binding }));
   return binding.runScheduler(event);
 }
 
@@ -54,12 +54,12 @@ export async function scheduled(event, env, ctx) {
 export async function onRequest(ctx) {
   const binding = {};
   const { request, env } = ctx;
-  await run(createRuntimeContext(env, ctx, binding));
+  await run(createRuntimeContext({ env, ctx, binding }));
   return binding.handleRequest(request);
 }
 
 export async function queue(batch, env, ctx) {
   const binding = {};
-  await run(createRuntimeContext(env, ctx, binding));
+  await run(createRuntimeContext({ env, ctx, binding }));
   return binding.handleQueueMessageBatch(batch);
 }

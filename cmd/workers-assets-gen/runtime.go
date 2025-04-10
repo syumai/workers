@@ -4,11 +4,12 @@ type Runtime string
 
 const (
 	RuntimeCloudflare Runtime = "cloudflare"
+	RuntimeBrowser    Runtime = "browser"
 )
 
 func (r Runtime) IsValid() bool {
 	switch r {
-	case RuntimeCloudflare:
+	case RuntimeCloudflare, RuntimeBrowser:
 		return true
 	}
 	return false

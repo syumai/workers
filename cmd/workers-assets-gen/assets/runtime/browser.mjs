@@ -1,5 +1,7 @@
+const modPromise = WebAssembly.compileStreaming(fetch("./build/app.wasm"));
+
 export async function loadModule() {
-  return await WebAssembly.compileStreaming(fetch("./build/app.wasm"));
+  return await modPromise;
 }
 
 export function createRuntimeContext({ binding }) {

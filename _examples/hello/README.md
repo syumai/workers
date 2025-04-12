@@ -15,7 +15,7 @@
 This project requires these tools to be installed globally.
 
 * wrangler
-* tinygo
+* Go
 
 ### Commands
 

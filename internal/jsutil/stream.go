@@ -208,11 +208,12 @@ func ConvertReaderToReadableStream(reader io.ReadCloser) js.Value {
 
 // ConvertReaderToFixedLengthStream converts io.ReadCloser to TransformStream.
 func ConvertReaderToFixedLengthStream(rc io.ReadCloser, size int64) js.Value {
-	stream := FixedLengthStreamClass.New(js.ValueOf(size))
+	stream := MaybeFixedLengthStreamClass.New(js.ValueOf(size))
 	go func(writer js.Value) {
 		defer rc.Close()
 
 		chunk := make([]byte, min(size, defaultChunkSize))
+		AwaitPromise(writer.Get("ready"))
 		for {
 			n, err := rc.Read(chunk)
 			if n > 0 {
@@ -221,6 +222,7 @@ func ConvertReaderToFixedLengthStream(rc io.ReadCloser, size int64) js.Value {
 				writer.Call("write", b)
 			}
 			if err != nil {
+				AwaitPromise(writer.Get("ready"))
 				writer.Call("close")
 				return
 			}

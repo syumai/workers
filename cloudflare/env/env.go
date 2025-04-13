@@ -1,4 +1,6 @@
-package cloudflare
+//go:build js && wasm
+
+package env
 
 import (
 	"syscall/js"

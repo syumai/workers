@@ -51,11 +51,7 @@ npm run deploy # deploy worker
 - Just send HTTP request using some tools like curl.
 
 ```
-$ curl http://localhost:8787/hello
+$ curl http://localhost:8787/ai
 Hello!
 ```
 
-```
-$ curl -X POST -d "test message" http://localhost:8787/echo
-test message
-```

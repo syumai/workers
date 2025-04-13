@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/cloudflare"
+	cloudflare "github.com/syumai/workers/cloudflare/env"
+	// mock "github.com/syumai/workers/cloudflare/env/mock"
 )
 
 func main() {

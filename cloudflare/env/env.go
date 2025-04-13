@@ -1,4 +1,4 @@
-package cloudflare
+package env
 
 import (
 	"syscall/js"

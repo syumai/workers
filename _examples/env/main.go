@@ -6,7 +6,7 @@ import (
 
 	"github.com/syumai/workers"
 	cloudflare "github.com/syumai/workers/cloudflare/env"
-	// mock "github.com/syumai/workers/cloudflare/env/mock"
+	// cloudflare "github.com/syumai/workers/cloudflare/env/mock"
 )
 
 func main() {

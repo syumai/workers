@@ -23,6 +23,7 @@ type ResponseWriter struct {
 var (
 	_ http.ResponseWriter    = (*ResponseWriter)(nil)
 	_ jsutil.RawJSBodyWriter = (*ResponseWriter)(nil)
+	_ http.Flusher           = (*ResponseWriter)(nil)
 )
 
 // Ready indicates that ResponseWriter is ready to be converted to Response.
@@ -47,6 +48,15 @@ func (w *ResponseWriter) WriteHeader(statusCode int) {
 
 func (w *ResponseWriter) WriteRawJSBody(body js.Value) {
 	w.RawJSBody = &body
+}
+
+// Flush is a no-op implementation of http.Flusher.
+//
+// * PipeWriter does not have buffer, and JS-side Response does not have flush method.
+// * But some libraries like `mcp-go` requires this method.
+// * So implement this method as a workaround.
+func (w *ResponseWriter) Flush() {
+	// no-op
 }
 
 // ToJSResponse converts *ResponseWriter to JavaScript sides Response.

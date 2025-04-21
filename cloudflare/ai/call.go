@@ -1,6 +1,6 @@
 //go:build !js
 
-package mock
+package ai
 
 import (
 	"fmt"

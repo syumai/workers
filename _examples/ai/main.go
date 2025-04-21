@@ -8,14 +8,13 @@ import (
 	"strings"
 
 	"github.com/syumai/workers"
-	"github.com/syumai/workers/cloudflare/ai"
-	// ai "github.com/syumai/workers/cloudflare/ai/mock"
+	ai "github.com/syumai/workers/cloudflare/ai"
 )
 
 func main() {
 	http.HandleFunc("/ai", func(w http.ResponseWriter, req *http.Request) {
 
-		// initialize KV namespace instance
+		// initialize AI namespace instance
 		aiCaller, err := ai.NewNamespace("AI")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to init KV: %v", err)

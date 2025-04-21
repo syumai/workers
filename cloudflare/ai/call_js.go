@@ -30,44 +30,55 @@ func New(varName string) (*AI, error) {
 	return &AI{instance: inst}, nil
 }
 
-func (ns *AI) WaitUntil(task func()) {
-	exCtx := ns.instance
-	exCtx.Call("run", jsutil.NewPromise(js.FuncOf(func(this js.Value, pArgs []js.Value) any {
-		resolve := pArgs[0]
-		go func() {
-			task()
-			resolve.Invoke(js.Undefined())
-		}()
-		return js.Undefined()
-	})))
-}
-
-func mapToJS(opts map[string]interface{}, type_ string) js.Value {
+func mapToJS(opts map[string]any, type_ string) js.Value {
 	obj := jsutil.NewObject()
 	for k, v := range opts {
-
-		// if v is an array of bytes
 		if b, ok := v.([]byte); ok {
-			// ua := jsutil.NewUint8Array(len(b))
-			// js.CopyBytesToJS(ua, b)
-			// obj.Set(k, ua)
-
-			// "data" is a byte slice, so we need to convert it to a JS Uint8Array object
-			arrayConstructor := js.Global().Get("Uint8Array")
-			dataJS := arrayConstructor.New(len(b))
-			js.CopyBytesToJS(dataJS, b)
-			obj.Set(k, dataJS)
+			ua := jsutil.NewUint8Array(len(b))
+			js.CopyBytesToJS(ua, b)
+			obj.Set(k, ua)
 		} else {
 			obj.Set(k, v)
 		}
-
 	}
-	obj.Set("type", type_)
+	switch type_ {
+	case "stream":
+		obj.Set("stream", true)
+	}
 	return obj
 }
 
-func (ns *AI) Run(key string, opts map[string]interface{}) (string, error) {
-	p := ns.instance.Call("run", key, mapToJS(opts, "text"))
+func (ns *AI) RunWithOutJson(key string, opts map[string]any) (string, error) {
+
+	logger := js.Global().Get("console").Get("log")
+
+	p := ns.instance.Call("run", key, mapToJS(opts, "stream"))
+	v, err := jsutil.AwaitPromise(p)
+	if err != nil {
+		fmt.Println("err:", err)
+		return "", err
+	}
+
+	logger.Invoke("v:", v)
+
+	// logger := js.Global().Get("console").Get("log")
+	// logger.Invoke("AI response 1:", v)
+
+	// // handle BLOB type (ArrayBuffer).
+	// src := jsutil.Uint8ArrayClass.New(v)
+	// dst := make([]byte, src.Length())
+	// n := js.CopyBytesToGo(dst, src)
+	// if n != len(dst) {
+	// 	fmt.Println("Error copying bytes to Go slice")
+	// }
+	// logger.Invoke("AI response 2:", dst[:n])
+
+	respString := js.Global().Get("JSON").Call("stringify", v).String()
+	return respString, nil
+}
+
+func (ns *AI) Run(key string, opts map[string]any) (string, error) {
+	p := ns.instance.Call("run", key, mapToJS(opts, ""))
 	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return "", err
@@ -78,7 +89,7 @@ func (ns *AI) Run(key string, opts map[string]interface{}) (string, error) {
 
 // GetReader gets stream value by the specified key.
 //   - if a network error happens, returns error.
-func (ns *AI) RunReader(key string, opts map[string]interface{}) (io.Reader, error) {
+func (ns *AI) RunReader(key string, opts map[string]any) (io.Reader, error) {
 	p := ns.instance.Call("run", key, mapToJS(opts, "stream"))
 	v, err := jsutil.AwaitPromise(p)
 	if err != nil {

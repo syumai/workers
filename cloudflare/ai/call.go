@@ -19,20 +19,17 @@ func New(varName string) (*AI, error) {
 	return &AI{instance: varName}, nil
 }
 
-func (ns *AI) WaitUntil(task func()) {
-	fmt.Println("WaitUntil called")
-	go func() {
-		task()
-	}()
-	fmt.Println("Task completed")
-}
-
-func (ns *AI) Run(key string, opts map[string]interface{}) (string, error) {
+func (ns *AI) Run(key string, opts map[string]any) (string, error) {
 	fmt.Println("Run called with key:", key, "and opts:", opts)
 	return "mocked response", nil
 }
 
-func (ns *AI) RunReader(key string, opts map[string]interface{}) (io.Reader, error) {
+func (ns *AI) RunWithOutJson(key string, opts map[string]any) (string, error) {
+	fmt.Println("Run called with key:", key, "and opts:", opts)
+	return "mocked response", nil
+}
+
+func (ns *AI) RunReader(key string, opts map[string]any) (io.Reader, error) {
 	fmt.Println("RunReader called with key:", key, "and opts:", opts)
 	return io.NopCloser(nil), nil
 }

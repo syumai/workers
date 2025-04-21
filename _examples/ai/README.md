@@ -4,7 +4,7 @@
 
 ## Demo
 
-* https://workers-ia.syumai.workers.dev/
+* https://workers-ai-example.syumai.workers.dev/
 
 ## Development
 

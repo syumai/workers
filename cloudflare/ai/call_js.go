@@ -11,12 +11,6 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-type AIInterface interface {
-	WaitUntil(task func())
-	Run(key string, opts map[string]interface{}) (string, error)
-	RunReader(key string, opts map[string]interface{}) (io.Reader, error)
-}
-
 type AI struct {
 	instance js.Value
 }
@@ -48,7 +42,22 @@ func (ns *AI) WaitUntil(task func()) {
 func mapToJS(opts map[string]interface{}, type_ string) js.Value {
 	obj := jsutil.NewObject()
 	for k, v := range opts {
-		obj.Set(k, v)
+
+		// if v is an array of bytes
+		if b, ok := v.([]byte); ok {
+			// ua := jsutil.NewUint8Array(len(b))
+			// js.CopyBytesToJS(ua, b)
+			// obj.Set(k, ua)
+
+			// "data" is a byte slice, so we need to convert it to a JS Uint8Array object
+			arrayConstructor := js.Global().Get("Uint8Array")
+			dataJS := arrayConstructor.New(len(b))
+			js.CopyBytesToJS(dataJS, b)
+			obj.Set(k, dataJS)
+		} else {
+			obj.Set(k, v)
+		}
+
 	}
 	obj.Set("type", type_)
 	return obj

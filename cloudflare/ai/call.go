@@ -11,7 +11,7 @@ type AI struct {
 	instance string
 }
 
-func NewNamespace(varName string) (*AI, error) {
+func New(varName string) (*AI, error) {
 	fmt.Println("NewNamespace called with varName:", varName)
 	if varName == "" {
 		return nil, fmt.Errorf("%s is undefined", varName)

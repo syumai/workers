@@ -11,15 +11,18 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
+// Namespace represents interface of Cloudflare Worker's KV namespace instance.
+//   - https://developers.cloudflare.com/workers-ai/configuration/bindings/#methods
+//   - https://github.com/cloudflare/workerd/blob/v1.20250421.0/types/defines/ai.d.ts#L1247
 type AI struct {
 	instance js.Value
 }
 
 // NewNamespace returns Namespace for given variable name.
-//   - variable name must be defined in wrangler.toml as kv_namespace's binding.
+//   - variable name must be defined in wrangler.toml as `ai` binding.
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
-func NewNamespace(varName string) (*AI, error) {
+func New(varName string) (*AI, error) {
 	inst := cfruntimecontext.MustGetRuntimeContextEnv().Get(varName)
 	if inst.IsUndefined() {
 		return nil, fmt.Errorf("%s is undefined", varName)

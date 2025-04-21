@@ -16,7 +16,7 @@ func main() {
 	http.HandleFunc("/ai", func(w http.ResponseWriter, req *http.Request) {
 
 		// initialize AI namespace instance
-		aiCaller, err := ai.NewNamespace("AI")
+		aiCaller, err := ai.New("AI")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to init AI instance: %v", err)
 			return

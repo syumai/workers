@@ -122,9 +122,48 @@ func main() {
 			"image_b64": base64.StdEncoding.EncodeToString(imgBytes),
 		})
 
-		// w.Header().Set("Content-Type", "image/png")
-		// io.Copy(w, strings.NewReader(aiResult))
 		io.Copy(w, aiResult)
+
+		// aiResultStr, err := io.ReadAll(aiResult)
+		// if err != nil {
+		// 	http.Error(w, "Error reading AI result", http.StatusInternalServerError)
+		// 	return
+		// }
+		// reader := strings.NewReader(string(aiResultStr))
+
+		// // Leer todo como string
+		// buf := new(strings.Builder)
+		// _, err2 := io.Copy(buf, reader)
+		// if err2 != nil {
+		// 	panic(err)
+		// }
+
+		// // Paso 1: quitar el prefijo "data: {", y el sufijo "}"
+		// line := strings.TrimPrefix(buf.String(), "data: {")
+		// line = strings.TrimSuffix(line, "}")
+
+		// // Paso 2: separar los pares clave-valor
+		// parts := strings.Split(line, ",")
+
+		// // Paso 3: construir el slice de bytes
+		// imageBytes := make([]byte, len(parts))
+		// for _, part := range parts {
+		// 	kv := strings.Split(part, ":")
+		// 	keyStr := strings.Trim(kv[0], `"`)
+		// 	valStr := kv[1]
+
+		// 	index, _ := strconv.Atoi(keyStr)
+		// 	value, _ := strconv.Atoi(valStr)
+
+		// 	imageBytes[index] = byte(value)
+		// }
+
+		// // ✅ Ya tienes los bytes de la imagen
+		// fmt.Println("Bytes:", strconv.Itoa(len(imageBytes)))
+
+		// w.Header().Set("Content-Type", "image/png")
+		// w.Write(imageBytes)
+
 	})
 	workers.Serve(nil) // use http.DefaultServeMux
 }

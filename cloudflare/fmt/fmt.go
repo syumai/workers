@@ -1,17 +1,12 @@
-//go:build js && wasm
+//go:build !js
 
 package fmt
 
 import (
-	"syscall/js"
+	"fmt"
 )
 
-// Printer is an interface that abstracts the Println method.
-type Printer interface {
-	Println(args ...interface{})
-}
-
-// Println uses JavaScript's console.log to print the arguments.
+// Println implements the Printer interface using fmt.Println.
 func Println(args ...interface{}) {
-	js.Global().Get("console").Call("log", args...)
+	fmt.Println(args...)
 }

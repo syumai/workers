@@ -1,12 +1,10 @@
-# hello
+# debug
 
-* This app just returns a message `Hello, world!`.
-* If a url param like `?name=syumai` given, then a message `Hello, syumai!` will be returned.
+* This app just show how to debug code using different aproachs
 
 ## Demo
 
-* https://hello.syumai.workers.dev/
-* https://hello.syumai.workers.dev/?name=syumai
+* https://debug.workers.dev/
 
 ## Development
 

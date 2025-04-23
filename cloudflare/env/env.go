@@ -1,23 +1,40 @@
-//go:build js && wasm
+//go:build !js
 
 package env
 
 import (
-	"syscall/js"
-
-	"github.com/syumai/workers/cloudflare/internal/cfruntimecontext"
+	"bufio"
+	"log"
+	"os"
+	"strings"
 )
 
-// Getenv gets a value of an environment variable.
-//   - https://developers.cloudflare.com/workers/platform/environment-variables/
-//   - This function panics when a runtime context is not found.
 func Getenv(name string) string {
-	return cfruntimecontext.MustGetRuntimeContextEnv().Get(name).String()
+	file, err := os.Open("wrangler.toml")
+	if err != nil {
+		log.Fatalf("Failed to open wrangler.toml: %v", err)
+	}
+	defer file.Close()
+
+	// Read properties file instead of CSV
+	properties := make(map[string]string)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 || line[0] == '#' {
+			continue // Skip empty lines and comments
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			properties[key] = value
+		}
+	}
+
+	return properties[name]
 }
 
-// GetBinding gets a value of an environment binding.
-//   - https://developers.cloudflare.com/workers/platform/bindings/about-service-bindings/
-//   - This function panics when a runtime context is not found.
-func GetBinding(name string) js.Value {
-	return cfruntimecontext.MustGetRuntimeContextEnv().Get(name)
-}
+// func GetBinding(name string) js.Value {
+// 	return cfruntimecontext.MustGetRuntimeContextEnv().Get(name)
+// }

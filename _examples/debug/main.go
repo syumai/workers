@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/syumai/workers"
-	fmtMock "github.com/syumai/workers/cloudflare/fmt/mock"
+	cfmt "github.com/syumai/workers/cloudflare/fmt"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 			name = "world"
 		}
 		fmt.Fprintf(w, "Hello, %s!", name)
-		fmtMock.Println("Request received:", req.Method, req.URL)
+		cfmt.Println("Request received:", req.Method, req.URL)
 	})
 	workers.Serve(handler)
 }

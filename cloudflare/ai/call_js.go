@@ -18,7 +18,7 @@ type AI struct {
 	instance js.Value
 }
 
-// NewNamespace returns Namespace for given variable name.
+// New returns Namespace for given variable name.
 //   - variable name must be defined in wrangler.toml as `ai` binding.
 //   - if the given variable name doesn't exist on runtime context, returns error.
 //   - This function panics when a runtime context is not found.
@@ -48,35 +48,6 @@ func mapToJS(opts map[string]any, type_ string) js.Value {
 	return obj
 }
 
-func (ns *AI) RunWithOutJson(key string, opts map[string]any) (string, error) {
-
-	logger := js.Global().Get("console").Get("log")
-
-	p := ns.instance.Call("run", key, mapToJS(opts, "stream"))
-	v, err := jsutil.AwaitPromise(p)
-	if err != nil {
-		fmt.Println("err:", err)
-		return "", err
-	}
-
-	logger.Invoke("v:", v)
-
-	// logger := js.Global().Get("console").Get("log")
-	// logger.Invoke("AI response 1:", v)
-
-	// // handle BLOB type (ArrayBuffer).
-	// src := jsutil.Uint8ArrayClass.New(v)
-	// dst := make([]byte, src.Length())
-	// n := js.CopyBytesToGo(dst, src)
-	// if n != len(dst) {
-	// 	fmt.Println("Error copying bytes to Go slice")
-	// }
-	// logger.Invoke("AI response 2:", dst[:n])
-
-	respString := js.Global().Get("JSON").Call("stringify", v).String()
-	return respString, nil
-}
-
 func (ns *AI) Run(key string, opts map[string]any) (string, error) {
 	p := ns.instance.Call("run", key, mapToJS(opts, ""))
 	v, err := jsutil.AwaitPromise(p)
@@ -87,8 +58,6 @@ func (ns *AI) Run(key string, opts map[string]any) (string, error) {
 	return respString, nil
 }
 
-// GetReader gets stream value by the specified key.
-//   - if a network error happens, returns error.
 func (ns *AI) RunReader(key string, opts map[string]any) (io.Reader, error) {
 	p := ns.instance.Call("run", key, mapToJS(opts, "stream"))
 	v, err := jsutil.AwaitPromise(p)

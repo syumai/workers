@@ -14,6 +14,10 @@ const (
 	userPassword = "password"
 )
 
+func canHaveBody(method string) bool {
+	return method != "GET" && method != "HEAD" && method != ""
+}
+
 func authenticate(req *http.Request) bool {
 	username, password, ok := req.BasicAuth()
 	return ok && username == userName && password == userPassword
@@ -33,7 +37,16 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	u := *req.URL
 	u.Scheme = "https"
 	u.Host = "syum.ai"
-	r, err := fetch.NewRequest(req.Context(), req.Method, u.String(), req.Body)
+
+	// disallow setting body for GET and HEAD
+	// see https://github.com/whatwg/fetch/issues/551
+	var r *fetch.Request
+	var err error
+	if canHaveBody(req.Method) {
+		r, err = fetch.NewRequest(req.Context(), req.Method, u.String(), req.Body)
+	} else {
+		r, err = fetch.NewRequest(req.Context(), req.Method, u.String(), nil)
+	}
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, "Internal Error")
 		log.Printf("failed to initialize proxy request: %v\n", err)

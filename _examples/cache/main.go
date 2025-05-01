@@ -44,6 +44,10 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	rw := responseWriter{ResponseWriter: w}
 	c := cache.New()
 
+	if !canHaveBody(req.Method) {
+		req.Body = nil
+	}
+
 	// Find cache
 	res, _ := c.Match(req, nil)
 	if res != nil {
@@ -68,11 +72,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 
 	// Create cache
 	cloudflare.WaitUntil(func() {
-		r := rw.ToHTTPResponse()
-		if !canHaveBody(req.Method) {
-			r.Body = nil
-		}
-		err := c.Put(req, r)
+		err := c.Put(req, rw.ToHTTPResponse())
 		if err != nil {
 			fmt.Println(err)
 		}

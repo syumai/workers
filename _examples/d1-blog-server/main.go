@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("d1", "BlogDB")
+	db, err := sql.Open("d1", "DB")
 	if err != nil {
 		log.Fatalf("error opening DB: %s", err.Error())
 	}

@@ -12,6 +12,10 @@ import (
 	"github.com/syumai/workers/cloudflare/cache"
 )
 
+func canHaveBody(method string) bool {
+	return method != "GET" && method != "HEAD" && method != ""
+}
+
 type responseWriter struct {
 	http.ResponseWriter
 	StatusCode int
@@ -64,7 +68,11 @@ func handler(w http.ResponseWriter, req *http.Request) {
 
 	// Create cache
 	cloudflare.WaitUntil(func() {
-		err := c.Put(req, rw.ToHTTPResponse())
+		r := rw.ToHTTPResponse()
+		if !canHaveBody(req.Method) {
+			r.Body = nil
+		}
+		err := c.Put(req, r)
 		if err != nil {
 			fmt.Println(err)
 		}

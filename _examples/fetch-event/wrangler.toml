@@ -2,9 +2,10 @@ name = "fetch-event"
 main = "./build/worker.mjs"
 compatibility_date = "2023-02-24"
 
-routes = [
-    { pattern = "example.com/*", zone_name = "example.com" }
-]
+# setup route and uncomment
+# routes = [
+#     { pattern = "example.com/*", zone_name = "example.com" }
+# ]
 
 [build]
 command = "make build"

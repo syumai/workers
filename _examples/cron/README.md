@@ -9,14 +9,14 @@
 This project requires these tools to be installed globally.
 
 * wrangler
-* tinygo
+* Go 1.24.0 or later
 
 ### Commands
 
 ```
 make dev     # run dev server
 make build   # build Go Wasm binary
-make deploy # deploy worker
+make deploy  # deploy worker
 ```
 
 #### Testing cron schedule

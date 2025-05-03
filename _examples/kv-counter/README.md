@@ -13,12 +13,13 @@
 This project requires these tools to be installed globally.
 
 * wrangler
-* tinygo
+* Go 1.24.0 or later
 
 ### Commands
 
 ```
-make dev     # run dev server
-make build   # build Go Wasm binary
-make deploy # deploy worker
+make dev                  # run dev server
+make build                # build Go Wasm binary
+make create-kv-namespace  # creates a kv namespace - add binding to wrangler.toml before deploy
+make deploy               # deploy worker
 ```

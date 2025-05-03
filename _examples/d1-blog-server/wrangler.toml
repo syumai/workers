@@ -4,9 +4,3 @@ compatibility_date = "2024-04-15"
 
 [build]
 command = "make build"
-
-[[ d1_databases ]]
-binding = "BlogDB"
-database_name = "d1-blog-server"
-database_id = "c6d5e4c0-3134-42fa-834c-812b24fea3cf"
-preview_database_id = "BlogDB"

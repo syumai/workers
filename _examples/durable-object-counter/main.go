@@ -12,6 +12,10 @@ func main() {
 	workers.Serve(&MyHandler{})
 }
 
+func canHaveBody(method string) bool {
+	return method != "GET" && method != "HEAD" && method != ""
+}
+
 type MyHandler struct{}
 
 func (_ *MyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -24,6 +28,10 @@ func (_ *MyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	obj, err := COUNTER.Get(id)
 	if err != nil {
 		panic(err)
+	}
+
+	if !canHaveBody(req.Method) {
+		req.Body = nil
 	}
 
 	res, err := obj.Fetch(req)

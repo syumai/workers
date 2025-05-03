@@ -12,6 +12,10 @@ import (
 	"github.com/syumai/workers/cloudflare/cache"
 )
 
+func canHaveBody(method string) bool {
+	return method != "GET" && method != "HEAD" && method != ""
+}
+
 type responseWriter struct {
 	http.ResponseWriter
 	StatusCode int
@@ -39,6 +43,10 @@ func (rw *responseWriter) ToHTTPResponse() *http.Response {
 func handler(w http.ResponseWriter, req *http.Request) {
 	rw := responseWriter{ResponseWriter: w}
 	c := cache.New()
+
+	if !canHaveBody(req.Method) {
+		req.Body = nil
+	}
 
 	// Find cache
 	res, _ := c.Match(req, nil)

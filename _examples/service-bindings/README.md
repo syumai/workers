@@ -10,7 +10,7 @@
 This project requires these tools to be installed globally.
 
 * wrangler
-* tinygo
+* Go 1.24.0 or later
 
 ### Deploy Steps
 
@@ -24,7 +24,7 @@ This project requires these tools to be installed globally.
 3. Deploy this example.
     ```
     make build   # build Go Wasm binary
-    make deploy # deploy worker
+    make deploy  # deploy worker
     ```
 
 ## Documents

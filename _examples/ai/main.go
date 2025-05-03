@@ -124,6 +124,9 @@ func main() {
 
 		io.Copy(w, aiResult)
 
+		// At this point we have the this in the screen
+		//  "data: {"0":137,"1":80,"2":78,"3":71,"4":13,"5":10,"6":26,"7":10,"8":0,"9":0,"10":0,"11":13,"12":73,"13":72..."
+
 		// aiResultStr, err := io.ReadAll(aiResult)
 		// if err != nil {
 		// 	http.Error(w, "Error reading AI result", http.StatusInternalServerError)
@@ -131,21 +134,21 @@ func main() {
 		// }
 		// reader := strings.NewReader(string(aiResultStr))
 
-		// // Leer todo como string
+		// // Try to read the response as string...
 		// buf := new(strings.Builder)
 		// _, err2 := io.Copy(buf, reader)
 		// if err2 != nil {
 		// 	panic(err)
 		// }
 
-		// // Paso 1: quitar el prefijo "data: {", y el sufijo "}"
+		// // First step: remove the prefix "data: {", and the suffix "}"
 		// line := strings.TrimPrefix(buf.String(), "data: {")
 		// line = strings.TrimSuffix(line, "}")
 
-		// // Paso 2: separar los pares clave-valor
+		// // Second step: split the string into parts ... "0":137,"1":80...
 		// parts := strings.Split(line, ",")
 
-		// // Paso 3: construir el slice de bytes
+		// // Third step: extract the bytes in order to create the image
 		// imageBytes := make([]byte, len(parts))
 		// for _, part := range parts {
 		// 	kv := strings.Split(part, ":")
@@ -158,7 +161,8 @@ func main() {
 		// 	imageBytes[index] = byte(value)
 		// }
 
-		// // ✅ Ya tienes los bytes de la imagen
+		// // You have an image... but couln't be displayed because the format is incorrect...
+		// // And dont not why... the PNG format start correct but don't display the image
 		// fmt.Println("Bytes:", strconv.Itoa(len(imageBytes)))
 
 		// w.Header().Set("Content-Type", "image/png")

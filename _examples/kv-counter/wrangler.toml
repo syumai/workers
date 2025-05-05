@@ -5,10 +5,5 @@ compatibility_flags = [
     "streams_enable_constructors"
 ]
 
-[[kv_namespaces]]
-binding = "COUNTER"
-id = "fe0ef36853f04fe986c1ade5271ea6a4"
-preview_id = "916f05d37f4741e0a19aa3d0bd4d282e"
-
 [build]
 command = "make build"

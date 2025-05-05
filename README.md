@@ -65,6 +65,12 @@ For concrete examples, see `_examples` directory.
 
 ## Quick Start
 
+* You can easily create and deploy a project from `Deploy to Cloudflare` button.
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fsyumai%2Fworker-go-deploy)
+
+* If you want to create a project manually, please follow the guide below.
+
 ### Requirements
 
 * Node.js (and npm)

@@ -9,14 +9,15 @@ An example of using Cloudflare Workers that interact with [Cloudflare Queues](ht
 This project requires these tools to be installed globally.
 
 * wrangler
-* tinygo
+* Go 1.24.0 or later
 
 ### Supported commands
 
 ```
-make dev     # run dev server
-make build   # build Go Wasm binary
-make deploy # deploy worker
+make dev          # run dev server
+make build        # build Go Wasm binary
+make create-queue # creates the queue
+make deploy       # deploy worker
 ```
 
 ### Interacting with the local queue

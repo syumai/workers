@@ -66,7 +66,7 @@ func (m *R2MultipartUpload) Key() string {
 func (m *R2MultipartUpload) UploadPart(partNumber int, data []byte, options ...*R2MultipartOptions) (*R2UploadedPart, error) {
 	ua := jsutil.NewUint8Array(len(data))
 	js.CopyBytesToJS(ua, data)
-	
+
 	var p js.Value
 	if len(options) > 0 && options[0] != nil {
 		// Pass options if provided
@@ -75,12 +75,12 @@ func (m *R2MultipartUpload) UploadPart(partNumber int, data []byte, options ...*
 		// Call without options
 		p = m.instance.Call("uploadPart", partNumber, ua.Get("buffer"))
 	}
-	
+
 	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// The returned object should have partNumber and etag fields
 	return &R2UploadedPart{
 		PartNumber: jsutil.MaybeInt(v.Get("partNumber")),
@@ -104,13 +104,13 @@ func (m *R2MultipartUpload) Complete(parts []R2UploadedPart) (*Object, error) {
 		partObj.Set("etag", part.ETag)
 		jsArray.SetIndex(i, partObj)
 	}
-	
+
 	p := m.instance.Call("complete", jsArray)
 	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return toObject(v)
 }
 

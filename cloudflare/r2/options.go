@@ -62,15 +62,15 @@ func (opts *R2PutOptions) toJS() js.Value {
 		return js.Undefined()
 	}
 	obj := jsutil.NewObject()
-	
+
 	if opts.OnlyIf != nil {
 		obj.Set("onlyIf", opts.OnlyIf.toJS())
 	}
-	
+
 	if opts.HTTPMetadata != (HTTPMetadata{}) {
 		obj.Set("httpMetadata", opts.HTTPMetadata.toJS())
 	}
-	
+
 	if opts.CustomMetadata != nil {
 		// convert map[string]string to map[string]any.
 		customMeta := make(map[string]any, len(opts.CustomMetadata))
@@ -93,15 +93,15 @@ func (opts *R2PutOptions) toJS() js.Value {
 	case opts.SHA512 != "":
 		obj.Set("sha512", opts.SHA512)
 	}
-	
+
 	if opts.StorageClass != "" {
 		obj.Set("storageClass", opts.StorageClass)
 	}
-	
+
 	if opts.SSECKey != "" {
 		obj.Set("ssecKey", opts.SSECKey)
 	}
-	
+
 	return obj
 }
 
@@ -119,23 +119,23 @@ func (opts *R2ListOptions) toJS() js.Value {
 		return js.Undefined()
 	}
 	obj := jsutil.NewObject()
-	
+
 	if opts.Limit > 0 {
 		obj.Set("limit", opts.Limit)
 	}
-	
+
 	if opts.Prefix != "" {
 		obj.Set("prefix", opts.Prefix)
 	}
-	
+
 	if opts.Cursor != "" {
 		obj.Set("cursor", opts.Cursor)
 	}
-	
+
 	if opts.Delimiter != "" {
 		obj.Set("delimiter", opts.Delimiter)
 	}
-	
+
 	if len(opts.Include) > 0 {
 		jsArray := jsutil.NewArray(len(opts.Include))
 		for i, inc := range opts.Include {
@@ -143,7 +143,7 @@ func (opts *R2ListOptions) toJS() js.Value {
 		}
 		obj.Set("include", jsArray)
 	}
-	
+
 	return obj
 }
 
@@ -152,11 +152,11 @@ func (r *Bucket) GetWithOptions(key string, options *R2GetOptions) (*ObjectBody,
 	var p js.Value
 	if options != nil {
 		optObj := jsutil.NewObject()
-		
+
 		if options.OnlyIf != nil {
 			optObj.Set("onlyIf", options.OnlyIf.toJS())
 		}
-		
+
 		if options.Range != nil {
 			rangeObj := jsutil.NewObject()
 			if options.Range.Offset > 0 {
@@ -170,16 +170,16 @@ func (r *Bucket) GetWithOptions(key string, options *R2GetOptions) (*ObjectBody,
 			}
 			optObj.Set("range", rangeObj)
 		}
-		
+
 		if options.SSECKey != "" {
 			optObj.Set("ssecKey", options.SSECKey)
 		}
-		
+
 		p = r.instance.Call("get", key, optObj)
 	} else {
 		p = r.instance.Call("get", key)
 	}
-	
+
 	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err
@@ -198,7 +198,7 @@ func (r *Bucket) ListWithOptions(options *R2ListOptions) (*Objects, error) {
 	} else {
 		p = r.instance.Call("list")
 	}
-	
+
 	v, err := jsutil.AwaitPromise(p)
 	if err != nil {
 		return nil, err

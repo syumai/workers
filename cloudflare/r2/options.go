@@ -79,17 +79,18 @@ func (opts *R2PutOptions) toJS() js.Value {
 		}
 		obj.Set("customMetadata", customMeta)
 	}
-	
+
 	// Checksums - only one can be specified at a time
-	if opts.MD5 != "" {
+	switch {
+	case opts.MD5 != "":
 		obj.Set("md5", opts.MD5)
-	} else if opts.SHA1 != "" {
+	case opts.SHA1 != "":
 		obj.Set("sha1", opts.SHA1)
-	} else if opts.SHA256 != "" {
+	case opts.SHA256 != "":
 		obj.Set("sha256", opts.SHA256)
-	} else if opts.SHA384 != "" {
+	case opts.SHA384 != "":
 		obj.Set("sha384", opts.SHA384)
-	} else if opts.SHA512 != "" {
+	case opts.SHA512 != "":
 		obj.Set("sha512", opts.SHA512)
 	}
 	

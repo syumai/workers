@@ -46,7 +46,7 @@ func (o *ObjectBody) Text() (string, error) {
 }
 
 // JSON decodes the body as JSON into the provided value.
-func (o *ObjectBody) JSON(v interface{}) error {
+func (o *ObjectBody) JSON(v any) error {
 	text, err := o.Text()
 	if err != nil {
 		return err

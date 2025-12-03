@@ -5,6 +5,8 @@ package email
 import (
 	"context"
 	"errors"
+	"io"
+	"net/mail"
 	"syscall/js"
 
 	"github.com/syumai/workers"
@@ -12,7 +14,7 @@ import (
 	"github.com/syumai/workers/internal/runtimecontext"
 )
 
-var emailHandler EmailHandler
+var emailHandler Handler
 
 func init() {
 	emailHandler := js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -47,19 +49,20 @@ func NewForwardableEmailMessage(ctx context.Context) (*ForwardableEmailMessage, 
 		return nil, errors.New("email event is null")
 	}
 	return &ForwardableEmailMessage{
-		From: obj.Get("from").String(),
-		To:   obj.Get("to").String(),
-		// Headers: obj.Get("headers"),
-		// Raw:     obj.Get("raw"),
-		// RawSize: int(obj.Get("rawSize").Float()),
+		raw: obj.Get("raw"),
 	}, nil
 }
 
-type EmailHandler func(message *ForwardableEmailMessage) error
+type Handler func(msg *mail.Message) error
 
 type ForwardableEmailMessage struct {
-	From string
-	To   string
+	// 'from', 'to', 'headers' are also available here,
+	// but we'll hand off to golang's mail pkg for parsing
+	raw js.Value
+}
+
+func (f *ForwardableEmailMessage) RawReader() io.Reader {
+	return jsutil.ConvertReadableStreamToReadCloser(f.raw)
 }
 
 func processEmail(eventObj js.Value) error {
@@ -68,10 +71,14 @@ func processEmail(eventObj js.Value) error {
 	if err != nil {
 		return err
 	}
-	return emailHandler(message)
+	msg, err := mail.ReadMessage(message.RawReader())
+	if err != nil {
+		return err
+	}
+	return emailHandler(msg)
 }
 
-func HandleEmail(handler EmailHandler) {
+func Handle(handler Handler) {
 	emailHandler = handler
 	workers.Ready()
 }

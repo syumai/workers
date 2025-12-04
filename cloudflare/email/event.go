@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"syscall/js"
-	"time"
 
 	"github.com/syumai/workers"
 	"github.com/syumai/workers/internal/jsutil"
@@ -93,11 +92,13 @@ func (f *forwardableEmailMessage) Raw() io.ReadCloser {
 type EmailSendable interface {
 	From() string
 	To() string
+	Raw() io.Reader
 }
 
 type EmailMessage struct {
 	from string
 	to   string
+	raw  io.Reader
 }
 
 func (e *EmailMessage) From() string {
@@ -106,10 +107,14 @@ func (e *EmailMessage) From() string {
 func (e *EmailMessage) To() string {
 	return e.to
 }
-func NewEmailMessage(from string, to string) *EmailMessage {
+func (e *EmailMessage) Raw() io.Reader {
+	return e.raw
+}
+func NewEmailMessage(from string, to string, raw io.Reader) *EmailMessage {
 	return &EmailMessage{
 		from: from,
 		to:   to,
+		raw:  raw,
 	}
 }
 
@@ -123,18 +128,11 @@ func NewClient(bind js.Value) *EmailClient {
 	}
 }
 func (c *EmailClient) Send(m EmailSendable) error {
-	// Check if the EMAIL binding is available
-	if c.bind.IsUndefined() {
-		return errors.New("EMAIL binding not found. Make sure you have [[send_email]] configured in your wrangler.toml or wrangler.jsonc")
+
+	if c.bind.IsUndefined() || c.bind.Get("send").IsUndefined() {
+		return errors.New("provided email binding not found. Make sure you have [[send_email]] configured in your wrangler.toml or wrangler.jsonc")
 	}
 
-	// Check if the binding has a send method
-	sendMethod := c.bind.Get("send")
-	if sendMethod.IsUndefined() {
-		return errors.New("EMAIL binding does not have a send method. Make sure you have [[send_email]] configured in your wrangler.toml or wrangler.jsonc")
-	}
-
-	// Get EmailMessage from the global RuntimeContext (jsutil.RuntimeContext)
 	runtimeCtx := jsutil.RuntimeContext
 	emailMessageCtor := runtimeCtx.Get("EmailMessage")
 
@@ -142,17 +140,11 @@ func (c *EmailClient) Send(m EmailSendable) error {
 		return errors.New("EmailMessage not found in runtime context")
 	}
 
-	// Create a proper MIME message with Message-ID
-	messageId := fmt.Sprintf("<%d@example.com>", time.Now().UnixNano())
-	mimeMessage := fmt.Sprintf(
-		"From: %s\r\nTo: %s\r\nSubject: Test Email\r\nMessage-ID: %s\r\nDate: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nThis is the email body",
-		m.From(), m.To(), messageId, time.Now().Format(time.RFC1123),
-	)
+	rawReadableStream := jsutil.ConvertReaderToReadableStream(io.NopCloser(m.Raw()))
 
-	// Create EmailMessage instance using the constructor
-	emailMsg := emailMessageCtor.New(m.From(), m.To(), mimeMessage)
-
-	// Send using the EMAIL binding
+	// Build an `EmailMessage` in javascript
+	emailMsg := emailMessageCtor.New(m.From(), m.To(), rawReadableStream)
+	// Call .send on the message
 	_, err := jsutil.AwaitPromise(c.bind.Call("send", emailMsg))
 	if err != nil {
 		return fmt.Errorf("failed to send email: %v", err)

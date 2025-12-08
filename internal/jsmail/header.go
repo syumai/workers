@@ -3,7 +3,6 @@
 package jsmail
 
 import (
-	"fmt"
 	"net/mail"
 	"net/textproto"
 	"strings"
@@ -17,7 +16,6 @@ import (
 func ToHeader(headers js.Value) mail.Header {
 	entries := jsutil.ArrayFrom(headers.Call("entries"))
 	headerLen := entries.Length()
-	fmt.Printf("\nheaderLen: %v\n", headerLen)
 	h := make(map[string][]string)
 	for i := 0; i < headerLen; i++ {
 		entry := entries.Index(i)

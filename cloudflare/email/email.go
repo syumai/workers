@@ -7,14 +7,19 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/mail"
 	"syscall/js"
 
 	"github.com/syumai/workers"
+	"github.com/syumai/workers/internal/jsmail"
 	"github.com/syumai/workers/internal/jsutil"
 	"github.com/syumai/workers/internal/runtimecontext"
 )
 
-var emailHandler Handler
+var (
+	emailHandler Handler
+	doneCh       = make(chan struct{})
+)
 
 func init() {
 	emailHandler := js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -50,10 +55,11 @@ func newForwardableEmailMessage(ctx context.Context) (*forwardableEmailMessage, 
 	}
 
 	return &forwardableEmailMessage{
-		from: obj.Get("from").String(),
-		to:   obj.Get("to").String(),
-		raw:  obj.Get("raw"),
-		// rawSize: obj.Get("rawSize").Int(),
+		obj:     obj,
+		from:    obj.Get("from").String(),
+		to:      obj.Get("to").String(),
+		raw:     obj.Get("raw"),
+		rawSize: obj.Get("rawSize").Int(),
 	}, nil
 }
 
@@ -65,17 +71,21 @@ type Email interface {
 	Raw() io.ReadCloser
 }
 
-// Emails that originate from inbound handler, can forward it onward or drop, etc
+// ForwardableEmailMessage is an inbound email that can be forwraded
 type ForwardableEmailMessage interface {
-	From() string
-	To() string
-	Raw() io.ReadCloser
+	SendableEmailMessage
+	Headers() mail.Header
+	Forward(rcptTo string, headers mail.Header) error
+	Reply(message SendableEmailMessage) error
+	SetReject(reason string) error
 }
 
 type forwardableEmailMessage struct {
-	from string
-	to   string
-	raw  js.Value
+	obj     js.Value
+	from    string
+	to      string
+	raw     js.Value
+	rawSize int
 }
 
 func (f *forwardableEmailMessage) From() string {
@@ -87,18 +97,22 @@ func (f *forwardableEmailMessage) To() string {
 func (f *forwardableEmailMessage) Raw() io.ReadCloser {
 	return jsutil.ConvertReadableStreamToReadCloser(f.raw)
 }
-
-// Emails that we're sending outbound
-type EmailSendable interface {
-	From() string
-	To() string
-	Raw() io.Reader
+func (f *forwardableEmailMessage) Headers() mail.Header {
+	return jsmail.ToHeader(f.obj.Get("headers"))
 }
 
+// Emails that we're sending outbound
+type SendableEmailMessage interface {
+	From() string
+	To() string
+	Raw() io.ReadCloser
+}
+
+// EmailMessage is an outbound email that can be sent
 type EmailMessage struct {
 	from string
 	to   string
-	raw  io.Reader
+	raw  io.ReadCloser
 }
 
 func (e *EmailMessage) From() string {
@@ -107,10 +121,10 @@ func (e *EmailMessage) From() string {
 func (e *EmailMessage) To() string {
 	return e.to
 }
-func (e *EmailMessage) Raw() io.Reader {
+func (e *EmailMessage) Raw() io.ReadCloser {
 	return e.raw
 }
-func NewEmailMessage(from string, to string, raw io.Reader) *EmailMessage {
+func NewEmailMessage(from string, to string, raw io.ReadCloser) *EmailMessage {
 	return &EmailMessage{
 		from: from,
 		to:   to,
@@ -127,23 +141,11 @@ func NewClient(bind js.Value) *EmailClient {
 		bind: bind,
 	}
 }
-func (c *EmailClient) Send(m EmailSendable) error {
-
+func (c *EmailClient) Send(m SendableEmailMessage) error {
 	if c.bind.IsUndefined() || c.bind.Get("send").IsUndefined() {
 		return errors.New("provided email binding not found. Make sure you have [[send_email]] configured in your wrangler.toml or wrangler.jsonc")
 	}
-
-	runtimeCtx := jsutil.RuntimeContext
-	emailMessageCtor := runtimeCtx.Get("EmailMessage")
-
-	if emailMessageCtor.IsUndefined() {
-		return errors.New("EmailMessage not found in runtime context")
-	}
-
-	rawReadableStream := jsutil.ConvertReaderToReadableStream(io.NopCloser(m.Raw()))
-
-	// Build an `EmailMessage` in javascript
-	emailMsg := emailMessageCtor.New(m.From(), m.To(), rawReadableStream)
+	emailMsg := SendableEmailMessageToJSEmailMessage(m)
 	// Call .send on the message
 	_, err := jsutil.AwaitPromise(c.bind.Call("send", emailMsg))
 	if err != nil {
@@ -151,6 +153,31 @@ func (c *EmailClient) Send(m EmailSendable) error {
 	}
 
 	return nil
+}
+
+func (f *forwardableEmailMessage) Forward(rcpTo string, headers mail.Header) error {
+	var jsHeaders js.Value
+
+	if headers != nil {
+		jsHeaders = jsmail.ToJSHeader(headers)
+	}
+
+	prom := f.obj.Call("forward", rcpTo, jsHeaders)
+	_, err := jsutil.AwaitPromise(prom)
+	return err
+}
+
+func (f *forwardableEmailMessage) Reply(message SendableEmailMessage) error {
+	msg := SendableEmailMessageToJSEmailMessage(message)
+	prom := f.obj.Call("reply", msg)
+	_, err := jsutil.AwaitPromise(prom)
+	return err
+}
+
+func (f *forwardableEmailMessage) SetReject(reason string) error {
+	prom := f.obj.Call("setReject", reason)
+	_, err := jsutil.AwaitPromise(prom)
+	return err
 }
 
 func invokeEmailHandler(eventObj js.Value) error {
@@ -162,7 +189,24 @@ func invokeEmailHandler(eventObj js.Value) error {
 	return emailHandler(message)
 }
 
-func Handle(handler Handler) {
+func HandleNonBlock(handler Handler) {
 	emailHandler = handler
+}
+func Handle(handler Handler) {
+	HandleNonBlock(handler)
 	workers.Ready()
+	<-Done()
+}
+
+// Just like the cron package, doneCh is never actually closed,
+// it's used for blocking/waiting so that worker does not terminate
+func Done() <-chan struct{} {
+	return doneCh
+}
+
+func SendableEmailMessageToJSEmailMessage(message SendableEmailMessage) js.Value {
+	runtimeCtx := jsutil.RuntimeContext
+	emailMessageCtor := runtimeCtx.Get("EmailMessage")
+	rawReadableStream := jsutil.ConvertReaderToReadableStream(io.NopCloser(message.Raw()))
+	return emailMessageCtor.New(message.From(), message.To(), rawReadableStream)
 }

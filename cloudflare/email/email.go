@@ -50,13 +50,6 @@ func init() {
 
 type Handler func(m ForwardableEmailMessage) error
 
-// Email is the base interface for all email messages
-type Email interface {
-	From() string
-	To() string
-	Raw() io.ReadCloser
-}
-
 // SendableEmailMessage represents an email that can be sent outbound
 type SendableEmailMessage interface {
 	From() string
@@ -69,7 +62,7 @@ type ForwardableEmailMessage interface {
 	SendableEmailMessage
 	Headers() mail.Header
 	Forward(rcptTo string, headers mail.Header) error
-	Reply(message SendableEmailMessage) error
+	Reply(SendableEmailMessage) error
 	SetReject(reason string) error
 }
 
@@ -197,7 +190,6 @@ func (c *EmailClient) Send(m SendableEmailMessage) error {
 	if err != nil {
 		return fmt.Errorf("failed to send email: %v", err)
 	}
-
 	return nil
 }
 

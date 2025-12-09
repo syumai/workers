@@ -20,10 +20,8 @@ func ToHeader(headers js.Value) mail.Header {
 		key := textproto.CanonicalMIMEHeaderKey(entry.Index(0).String())
 		values := entry.Index(1).String()
 		h[key] = strings.Split(values, ",")
-
 	}
 	return mail.Header(h)
-
 }
 
 // ToJSHeader converts mail.Header to JavaScript sides Headers.

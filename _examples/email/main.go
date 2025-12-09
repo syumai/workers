@@ -93,7 +93,7 @@ func reply(msg email.ForwardableEmailMessage, body []byte) error {
 
 	buf, err := buildSimpleEmail(from, to, subject, headers, body)
 	if err != nil {
-		return fmt.Errorf("error building reply: %v", err)
+		return fmt.Errorf("error building reply: %w", err)
 	}
 
 	reply := email.NewEmailMessage(from, to, io.NopCloser(buf))
@@ -105,12 +105,12 @@ func reply(msg email.ForwardableEmailMessage, body []byte) error {
 func send(from string, to string, subject string, body []byte) error {
 	buf, err := buildSimpleEmail(from, to, subject, nil, body)
 	if err != nil {
-		return fmt.Errorf("error building email: %v", err)
+		return fmt.Errorf("error building email: %w", err)
 	}
 	mailClient := email.NewClient(cloudflare.GetBinding("EMAIL"))
 	err = mailClient.Send(email.NewEmailMessage(from, to, io.NopCloser(buf)))
 	if err != nil {
-		return fmt.Errorf("error sending email %v", err)
+		return fmt.Errorf("error sending email %w", err)
 	}
 	return nil
 }

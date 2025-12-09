@@ -14,7 +14,7 @@ import (
 func ToHeader(headers js.Value) mail.Header {
 	entries := jsutil.ArrayFrom(headers.Call("entries"))
 	headerLen := entries.Length()
-	h := make(map[string][]string)
+	h := make(map[string][]string, headerLen)
 	for i := 0; i < headerLen; i++ {
 		entry := entries.Index(i)
 		key := textproto.CanonicalMIMEHeaderKey(entry.Index(0).String())

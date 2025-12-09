@@ -182,13 +182,13 @@ func (e *EmailMessage) Raw() io.ReadCloser {
 
 func (c *EmailClient) Send(m SendableEmailMessage) error {
 	if c.bind.IsUndefined() || c.bind.Get("send").IsUndefined() {
-		return errors.New("provided email binding not found. Make sure you have [[send_email]] configured in your wrangler.toml or wrangler.jsonc")
+		return errors.New("provided email binding not found")
 	}
 	emailMsg := SendableEmailMessageToJSEmailMessage(m)
 	// Call .send on the message
 	_, err := jsutil.AwaitPromise(c.bind.Call("send", emailMsg))
 	if err != nil {
-		return fmt.Errorf("failed to send email: %v", err)
+		return fmt.Errorf("failed to send email: %w", err)
 	}
 	return nil
 }

@@ -84,6 +84,8 @@ Run the following command:
 npm create cloudflare@latest -- --template github.com/syumai/workers/_templates/cloudflare/worker-go
 ```
 
+After creating the project, follow the steps below to initialize it.
+
 ### Initialize the project
 
 1. Navigate to your new project directory:

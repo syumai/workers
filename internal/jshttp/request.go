@@ -40,6 +40,7 @@ func ToRequest(req js.Value) (*http.Request, error) {
 		ContentLength:    contentLength,
 		TransferEncoding: strings.Split(header.Get("Transfer-Encoding"), ","),
 		Host:             header.Get("Host"),
+		RemoteAddr:       header.Get("Cf-Connecting-Ip"),
 	}, nil
 }
 

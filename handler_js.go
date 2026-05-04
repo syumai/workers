@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"syscall/js"
 
 	"github.com/syumai/workers/internal/jshttp"
@@ -17,6 +18,7 @@ import (
 var (
 	httpHandler http.Handler
 	doneCh      = make(chan struct{})
+	doneOnce    sync.Once
 )
 
 func init() {
@@ -52,7 +54,7 @@ type appCloser struct {
 }
 
 func (c *appCloser) Close() error {
-	defer close(doneCh)
+	doneOnce.Do(func() { close(doneCh) })
 	return c.ReadCloser.Close()
 }
 

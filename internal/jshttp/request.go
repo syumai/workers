@@ -1,7 +1,6 @@
 package jshttp
 
 import (
-	"bytes"
 	"io"
 	"net/http"
 	"net/url"
@@ -16,7 +15,7 @@ import (
 //   - ReadableStream: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 func ToBody(streamOrNull js.Value) io.ReadCloser {
 	if streamOrNull.IsNull() {
-		return io.NopCloser(bytes.NewReader([]byte{}))
+		return nil
 	}
 	return jsutil.ConvertReadableStreamToReadCloser(streamOrNull)
 }

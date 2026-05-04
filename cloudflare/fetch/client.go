@@ -7,7 +7,7 @@ import (
 
 // Client is an HTTP client.
 type Client struct {
-	// namespace - Objects that Fetch API belongs to. Default is Global
+	// namespace - Objects that Fetch API belongs to. Default is undefined
 	namespace js.Value
 }
 
@@ -42,7 +42,7 @@ func WithBinding(bind js.Value) ClientOption {
 // NewClient returns new Client
 func NewClient(opts ...ClientOption) *Client {
 	c := &Client{
-		namespace: js.Global(),
+		namespace: js.Undefined(),
 	}
 	c.applyOptions(opts)
 

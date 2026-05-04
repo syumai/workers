@@ -57,20 +57,10 @@ function commentOutNodejsBlocks(rawSource: string): string {
 	return result;
 }
 
-const GLOBAL_PROXY_DECL = `const globalProxy = new Proxy(global, {
-\tget(target, prop) {
-\t\tif (prop === 'context') {
-\t\t\treturn context;
-\t\t}
-\t\treturn Reflect.get(...arguments);
-\t}
-})`;
-
 export function transformTinygo(rawSource: string): string {
 	return transformWasmExec(commentOutNodejsBlocks(rawSource), {
 		flavor: "tinygo",
 		globalName: "global",
 		expectedStandaloneGlobals: 1,
-		globalProxyDecl: GLOBAL_PROXY_DECL,
 	});
 }

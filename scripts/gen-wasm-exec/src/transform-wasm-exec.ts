@@ -16,17 +16,25 @@ export interface WasmExecTransformConfig {
 	// expected inside the run() body. Go has 2 (Object.assign target plus the
 	// _values array entry); TinyGo has 1 (the _values array entry only).
 	expectedStandaloneGlobals: number;
-	// Literal source of the `const globalProxy = new Proxy(...)` declaration
-	// to inject. The two flavors use slightly different bodies.
-	globalProxyDecl: string;
+}
+
+function buildGlobalProxyDecl(globalName: string): string {
+	return `const globalProxy = new Proxy(${globalName}, {
+\tget(target, prop) {
+\t\tif (prop === 'context') {
+\t\t\treturn context;
+\t\t}
+\t\treturn Reflect.get(target, prop, target);
+\t}
+})`;
 }
 
 export function transformWasmExec(
 	rawSource: string,
 	config: WasmExecTransformConfig,
 ): string {
-	const { flavor, globalName, expectedStandaloneGlobals, globalProxyDecl } =
-		config;
+	const { flavor, globalName, expectedStandaloneGlobals } = config;
+	const globalProxyDecl = buildGlobalProxyDecl(globalName);
 	const { source, preserved } = preserveBlockComments(rawSource);
 	const j = jscodeshift.withParser("babel");
 	const root = j(source);

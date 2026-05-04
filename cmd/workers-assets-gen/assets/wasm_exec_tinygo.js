@@ -488,7 +488,7 @@
 					if (prop === 'context') {
 						return context;
 					}
-					return Reflect.get(...arguments);
+					return Reflect.get(target, prop, target);
 				}
 			})
 			this._values = [ // JS values that Go currently has references to, indexed by reference id
@@ -550,6 +550,7 @@
 			};
 		}
 	}
+
 	/*
 	if (
 		global.require &&

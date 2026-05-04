@@ -1,5 +1,8 @@
 SHELL := /bin/bash
 
+GO_VERSION ?= 1.26.2
+TINYGO_VERSION ?= 0.41.1
+
 .PHONY: test
 test:
 	@PATH=$(CURDIR)/misc/wasm:$$PATH GOOS=js GOARCH=wasm go test ./...
@@ -12,3 +15,7 @@ build-examples:
 		cd $$dir && GOOS=js GOARCH=wasm go build -o ./build/app.wasm; \
 		cd ../../; \
 	done
+
+.PHONY: gen-wasm-exec
+gen-wasm-exec:
+	cd scripts/gen-wasm-exec && pnpm run gen --go $(GO_VERSION) --tinygo $(TINYGO_VERSION)

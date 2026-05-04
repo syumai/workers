@@ -1,0 +1,20 @@
+{
+  "name": "gen-wasm-exec",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "gen": "node src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "packageManager": "pnpm@11.0.4",
+  "devDependencies": {
+    "@types/jscodeshift": "^17.3.0",
+    "@types/node": "^25.6.0",
+    "jscodeshift": "^17.3.0",
+    "typescript": "^6.0.3"
+  }
+}

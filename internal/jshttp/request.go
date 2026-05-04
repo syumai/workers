@@ -1,7 +1,6 @@
 package jshttp
 
 import (
-	"bytes"
 	"io"
 	"net/http"
 	"net/url"
@@ -16,7 +15,7 @@ import (
 //   - ReadableStream: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 func ToBody(streamOrNull js.Value) io.ReadCloser {
 	if streamOrNull.IsNull() {
-		return io.NopCloser(bytes.NewReader([]byte{}))
+		return nil
 	}
 	return jsutil.ConvertReadableStreamToReadCloser(streamOrNull)
 }
@@ -32,6 +31,8 @@ func ToRequest(req js.Value) (*http.Request, error) {
 
 	contentLength, clErr := strconv.ParseInt(header.Get("Content-Length"), 10, 64)
 	bodyVal := req.Get("body")
+	// NOTE: `body` is ReadableStream or null. Therefore, `undefined` check may not be necessary.
+	// https://developer.mozilla.org/docs/Web/API/Request/body#value
 	if clErr != nil && !bodyVal.IsNull() && !bodyVal.IsUndefined() {
 		contentLength = -1
 	}

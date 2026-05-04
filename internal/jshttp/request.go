@@ -31,7 +31,7 @@ func ToRequest(req js.Value) (*http.Request, error) {
 
 	contentLength, clErr := strconv.ParseInt(header.Get("Content-Length"), 10, 64)
 	bodyVal := req.Get("body")
-	// NOTE: `body`` is ReadableStream or null. Therefore, `undefined` check may not be necessary.
+	// NOTE: `body` is ReadableStream or null. Therefore, `undefined` check may not be necessary.
 	// https://developer.mozilla.org/docs/Web/API/Request/body#value
 	if clErr != nil && !bodyVal.IsNull() && !bodyVal.IsUndefined() {
 		contentLength = -1

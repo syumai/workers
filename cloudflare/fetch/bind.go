@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"errors"
 	"net/http"
 	"syscall/js"
 
@@ -8,24 +9,20 @@ import (
 	"github.com/syumai/workers/internal/jsutil"
 )
 
-var globalFetchFunc = js.Global().Get("fetch")
-
 // fetch is a function that reproduces cloudflare fetch.
 // Docs: https://developers.cloudflare.com/workers/runtime-apis/fetch/
 func fetch(namespace js.Value, req *http.Request, init *RequestInit) (*http.Response, error) {
-	// The Request object to fetch.
-	// Docs: https://developers.cloudflare.com/workers/runtime-apis/request
-	reqObj := jshttp.ToJSRequest(req)
-	// The content of the request.
-	// Docs: https://developers.cloudflare.com/workers/runtime-apis/request#requestinit
-	reqInit := init.ToJS()
-
-	promise := func() js.Value {
-		if namespace.IsUndefined() {
-			return globalFetchFunc.Invoke(reqObj, reqInit)
-		}
-		return namespace.Call("fetch", reqObj, reqInit)
-	}()
+	if namespace.IsUndefined() {
+		return nil, errors.New("fetch function not found")
+	}
+	promise := namespace.Call("fetch",
+		// The Request object to fetch.
+		// Docs: https://developers.cloudflare.com/workers/runtime-apis/request
+		jshttp.ToJSRequest(req),
+		// The content of the request.
+		// Docs: https://developers.cloudflare.com/workers/runtime-apis/request#requestinit
+		init.ToJS(),
+	)
 
 	jsRes, err := jsutil.AwaitPromise(promise)
 	if err != nil {

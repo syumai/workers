@@ -7,7 +7,7 @@ import (
 
 // transport is an implementation of http.RoundTripper
 type transport struct {
-	// namespace - Objects that Fetch API belongs to. Default is undefined
+	// namespace - Objects that Fetch API belongs to. Default is Global
 	namespace js.Value
 	redirect  RedirectMode
 }

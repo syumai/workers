@@ -1,138 +1,65 @@
-# workers
+# workers (deprecated, moved to workers-go)
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/syumai/workers.svg)](https://pkg.go.dev/github.com/syumai/workers)
-[![Discord Server](https://img.shields.io/discord/1095344956421447741?logo=discord&style=social)](https://discord.gg/tYhtatRqGs)
+> [!IMPORTANT]
+> This module has moved to **[github.com/syumai/workers-go](https://github.com/syumai/workers-go)**.
+> See [syumai/workers-go#173](https://github.com/syumai/workers-go/issues/173) for the full rationale
+> and migration plan.
 
-* `workers` is a package to run an HTTP server written in Go on [Cloudflare Workers](https://workers.cloudflare.com/).
-* This package can easily serve *http.Handler* on Cloudflare Workers.
-* Caution: This is an experimental project.
-
-## Features
-
-* [x] serve http.Handler
-* [ ] R2
-  - [x] Head
-  - [x] Get
-  - [x] Put
-  - [x] Delete
-  - [x] List
-  - [ ] Options for R2 methods
-* [ ] KV
-  - [x] Get
-  - [x] List
-  - [x] Put
-  - [x] Delete
-  - [ ] Options for KV methods
-* [x] Cache API
-* [ ] Durable Objects
-  - [x] Calling stubs
-* [x] D1 (alpha)
-* [x] Environment variables
-* [x] FetchEvent
-* [x] Cron Triggers
-* [x] TCP Sockets
-* [x] Queues
-  - [x] Producer
-  - [x] Consumer
-
-## Installation
-
-```
-go get github.com/syumai/workers
-```
-
-## Usage
-
-implement your http.Handler and give it to `workers.Serve()`.
+`github.com/syumai/workers` is kept alive as a **forwarding module** ("mirror") so that existing
+importers keep building. Every exported type, function, constant, and variable in this module is a
+thin alias/wrapper over the corresponding symbol in `github.com/syumai/workers-go`:
 
 ```go
-func main() {
-	var handler http.HandlerFunc = func (w http.ResponseWriter, req *http.Request) { ... }
-	workers.Serve(handler)
-}
+type Foo = workersgo.Foo
+var Bar = workersgo.Bar
 ```
 
-or just call `http.Handle` and `http.HandleFunc`, then invoke `workers.Serve()` with nil.
+These forwarding files are regenerated and pushed here automatically as part of
+[`github.com/syumai/workers-go`'s own release workflow](https://github.com/syumai/workers-go/blob/main/.github/workflows/release.yml):
+right after a `workers-go` release is tagged, that workflow regenerates this module's forwarders
+from the new tag, verifies them, and pushes the result here (over SSH, using a deploy key scoped
+to this repository) together with a matching tag. This repository has **no workflows of its own** —
+there is nothing here that runs on a schedule or reacts to activity in this repository. **Do not
+send pull requests to this repository** — it contains no handwritten code, and any manual change
+will be overwritten by the next sync. File issues and pull requests against
+[syumai/workers-go](https://github.com/syumai/workers-go) instead.
 
-```go
-func main() {
-	http.HandleFunc("/hello", func (w http.ResponseWriter, req *http.Request) { ... })
-	workers.Serve(nil) // if nil is given, http.DefaultServeMux is used.
-}
+## Migration
+
+Update your import paths from `github.com/syumai/workers` to `github.com/syumai/workers-go`:
+
+```sh
+sed -i 's|github.com/syumai/workers|github.com/syumai/workers-go|g' $(grep -rl 'github.com/syumai/workers' --include='*.go' .)
 ```
 
-For concrete examples, see `_examples` directory.
+On macOS, `sed -i` requires an explicit (possibly empty) backup suffix argument:
 
-## Quick Start
-
-* You can easily create and deploy a project from `Deploy to Cloudflare` button.
-
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fsyumai%2Fworker-go-deploy)
-
-* If you want to create a project manually, please follow the guide below.
-
-### Requirements
-
-* Node.js (and npm)
-* Go 1.24.0 or later
-
-### Create a new Worker project
-
-Run the following command:
-
-```console
-npm create cloudflare@latest -- --template github.com/syumai/workers/_templates/cloudflare/worker-go
+```sh
+sed -i '' 's|github.com/syumai/workers|github.com/syumai/workers-go|g' $(grep -rl 'github.com/syumai/workers' --include='*.go' .)
 ```
 
-After creating the project, follow the steps below to initialize it.
+Then update `go.mod`/`go.sum`:
 
-### Initialize the project
-
-1. Navigate to your new project directory:
-
-```console
-cd my-app
-```
-
-2. Initialize Go modules:
-
-```console
-go mod init
+```sh
+go mod edit -droprequire=github.com/syumai/workers
+go get github.com/syumai/workers-go@latest
 go mod tidy
 ```
 
-3. Start the development server:
+## Compatibility notes
 
-```console
-npm start
-```
+* This module is versioned in lockstep with `workers-go`: `workers-go vX.Y.Z` ↔ `workers vX.Y.Z`.
+* `cmd/workers-assets-gen` in this module is a stub; use
+  `github.com/syumai/workers-go/cmd/workers-assets-gen` instead (see
+  [`cmd/workers-assets-gen`](cmd/workers-assets-gen)).
+* Sync from `workers-go` is push-based, driven entirely from `workers-go`'s release workflow; it
+  normally lands within the same workflow run as the `workers-go` release. Old versions of this
+  module are never broken by a failed sync — a failure there simply leaves this module on its
+  previous tag until the next `workers-go` release (or a manual re-run) retries it.
+* This module will eventually be frozen and archived once `workers-go` reaches a stable `v1.0.0`
+  (or after a fixed maintenance window, whichever comes first) — see
+  [syumai/workers-go#173](https://github.com/syumai/workers-go/issues/173) for the current policy.
 
-4. Verify the worker is running:
+## License
 
-```console
-curl http://localhost:8787/hello
-```
-
-You will see **"Hello!"** as the response.
-
-If you want a more detailed description, please refer to the README.md file in the generated directory.
-
-## FAQ
-
-### How do I deploy a worker implemented in this package?
-
-To deploy a Worker, the following steps are required.
-
-* Create a worker project using [wrangler](https://developers.cloudflare.com/workers/wrangler/).
-* Build a Wasm binary.
-* Upload a Wasm binary with a JavaScript code to load and instantiate Wasm (for entry point).
-
-The [worker-go template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-go) contains all the required files, so I recommend using this template.
-
-But Go (not TinyGo) with many dependencies may exceed the size limit of the Worker (3MB for free plan, 10MB for paid plan). In that case, you can use the [TinyGo template](https://github.com/syumai/workers/tree/main/_templates/cloudflare/worker-tinygo) instead.
-
-The TinyGo template requires TinyGo 0.42.0 or later. TinyGo 0.41.x cannot build `net/http` for Wasm (see [tinygo-org/tinygo#5350](https://github.com/tinygo-org/tinygo/issues/5350)).
-
-### Where can I have discussions about contributions, or ask questions about how to use the library?
-
-You can do both through GitHub Issues. If you want to have a more casual conversation, please use the [Discord server](https://discord.gg/tYhtatRqGs).
+MIT, see [LICENSE.md](LICENSE.md).
